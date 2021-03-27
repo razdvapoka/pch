@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
+import ThreeGlobe from "three-globe";
+import globeImage from "./assets/earth-blue-marble.jpeg";
+import bumpImage from "./assets/earth-blue-marble.jpeg";
 
 // Canvas
 const canvas = document.querySelector("#canvas");
@@ -8,24 +11,15 @@ const canvas = document.querySelector("#canvas");
 // Scene
 const scene = new THREE.Scene();
 
-// Test Sphere
-const sphere = new THREE.Mesh(
-  new THREE.SphereGeometry(2, 32, 32),
-  new THREE.MeshStandardMaterial({
-    color: "#867dd1",
-    metalness: 0.3,
-    roughness: 0.4,
-  })
-);
-scene.add(sphere);
+// Test Globe
+const globe = new ThreeGlobe()
+  .globeImageUrl(globeImage)
+  .bumpImageUrl(bumpImage);
+scene.add(globe);
 
 // Lights
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
-directionalLight.position.set(5, 5, 5);
-scene.add(directionalLight);
 
 /**
  * Sizes
@@ -58,9 +52,9 @@ const camera = new THREE.PerspectiveCamera(
   75,
   sizes.width / sizes.height,
   0.1,
-  100
+  1000
 );
-camera.position.set(-3, 3, 3);
+camera.position.set(0, 0, 200);
 scene.add(camera);
 
 // Controls
@@ -75,17 +69,18 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0xcecece);
 
 // GUI
 const gui = new dat.GUI();
-const parameters = {
-  sphereColor: "#bb7777",
-};
-gui.addColor(parameters, "sphereColor").onChange(() => {
-  sphere.material.color.set(parameters.sphereColor);
-});
-gui.add(sphere.material, "metalness", 0, 1, 0.001);
-gui.add(sphere.material, "roughness", 0, 1, 0.001);
+// const parameters = {
+//   sphereColor: "#bb7777",
+// };
+// gui.addColor(parameters, "sphereColor").onChange(() => {
+//   sphere.material.color.set(parameters.sphereColor);
+// });
+// gui.add(sphere.material, "metalness", 0, 1, 0.001);
+// gui.add(sphere.material, "roughness", 0, 1, 0.001);
 
 /**
  * Animate
