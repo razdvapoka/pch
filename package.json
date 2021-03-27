@@ -1,0 +1,22 @@
+{
+  "name": "pch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel index.html",
+    "build": "parcel build index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "modern-css-reset": "^1.4.0",
+    "parcel-bundler": "^1.12.5"
+  },
+  "dependencies": {
+    "dat.gui": "^0.7.7",
+    "three": "^0.126.1"
+  }
+}
