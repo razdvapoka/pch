@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
 import ThreeGlobe from "three-globe";
 import globeImage from "./assets/earth-blue-marble.jpeg";
-import bumpImage from "./assets/earth-blue-marble.jpeg";
+import bumpImage from "./assets/earth-topology.png";
 
 // Canvas
 const canvas = document.querySelector("#canvas");
