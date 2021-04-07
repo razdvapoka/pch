@@ -7,6 +7,8 @@ import ThreeGlobe from "three-globe";
 import globeImage from "./assets/earth-blue-marble.jpeg";
 import bumpImage from "./assets/earth-topology.png";
 
+const CANONIC_WIDTH = 1440;
+
 // GUI
 const parameters = {
   pointColor: "#ff00ff",
@@ -64,6 +66,7 @@ const globe = new ThreeGlobe()
   .globeImageUrl(globeImage)
   .bumpImageUrl(bumpImage)
   .pointsData(airports)
+  .pointsMerge(true)
   .pointAltitude(() => parameters.pointAltitude)
   .pointColor(() => parameters.pointColor)
   .pointRadius(() => parameters.pointRadius);
@@ -93,6 +96,9 @@ window.addEventListener("resize", () => {
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scale = sizes.width / CANONIC_WIDTH;
+  globe.scale.set(scale, scale, scale);
 });
 
 /**
@@ -124,8 +130,6 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0xcecece);
-// gui.add(sphere.material, "metalness", 0, 1, 0.001);
-// gui.add(sphere.material, "roughness", 0, 1, 0.001);
 
 /**
  * Animate
