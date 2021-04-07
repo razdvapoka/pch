@@ -1,0 +1,27 @@
+.fg-black {
+  color: black;
+}
+
+.fg-white {
+  color: white;
+}
+
+.fg-purple {
+  color: #5C63FF;
+}
+
+.bg-black {
+  background-color: black;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.bg-purple {
+  background-color: #5C63FF;
+}
+
+.bg-transparent {
+  background-color: rgba(0,0,0,0);
+}

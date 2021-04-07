@@ -1,0 +1,29 @@
+@import 'modern-css-reset';
+@import './fonts.css';
+
+html {
+  overflow: hidden;
+  font-family: "GT America", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: calc(10 / 1920 * 100vw);
+}
+
+.logo {
+  position: fixed;
+  left: 2rem;
+  top: 2.2rem;
+  width: 17.4rem;
+  height: 8.5rem;
+  color: black;
+  transition: color 0.3s ease;
+}
+
+.logo.white,
+.logo:hover {
+  color: white;
+}
+
+.dg input {
+  font: 400 13.3333px Arial;
+}

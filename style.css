@@ -1,9 +1,0 @@
-@import 'modern-css-reset';
-
-html {
-  overflow: hidden;
-}
-
-.dg input {
-  font: 400 13.3333px Arial;
-}
