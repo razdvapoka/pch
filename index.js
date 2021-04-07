@@ -1,9 +1,57 @@
+import largeAirports from "./large_airports.json";
+import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
 import ThreeGlobe from "three-globe";
 import globeImage from "./assets/earth-blue-marble.jpeg";
 import bumpImage from "./assets/earth-topology.png";
+
+// GUI
+const parameters = {
+  pointColor: "#ff00ff",
+  pointAltitude: 0.01,
+  pointRadius: 0.25,
+  rotateClockwise: () => {
+    anime({
+      duration: 1000,
+      targets: globe.rotation,
+      y: globe.rotation.y - Math.PI * 0.5,
+      easing: "easeInOutCubic",
+    });
+  },
+  rotateCounterClockwise: () => {
+    anime({
+      duration: 1000,
+      targets: globe.rotation,
+      y: globe.rotation.y + Math.PI * 0.5,
+      easing: "easeInOutCubic",
+    });
+  },
+};
+const gui = new dat.GUI({
+  width: 300,
+});
+gui.addColor(parameters, "pointColor").onChange(() => {
+  globe.pointColor(() => parameters.pointColor);
+});
+gui.add(parameters, "pointAltitude", 0, 0.03, 0.0001).onFinishChange(() => {
+  globe.pointAltitude(() => parameters.pointAltitude);
+});
+gui.add(parameters, "pointRadius", 0, 1, 0.01).onFinishChange(() => {
+  globe.pointRadius(() => parameters.pointRadius);
+});
+gui.add(parameters, "rotateClockwise");
+gui.add(parameters, "rotateCounterClockwise");
+
+// Airports
+const airports = largeAirports.map((a) => {
+  const [lng, lat] = a.coordinates.split(", ");
+  return {
+    lat: Number.parseFloat(lat),
+    lng: Number.parseFloat(lng),
+  };
+});
 
 // Canvas
 const canvas = document.querySelector("#canvas");
@@ -14,7 +62,11 @@ const scene = new THREE.Scene();
 // Test Globe
 const globe = new ThreeGlobe()
   .globeImageUrl(globeImage)
-  .bumpImageUrl(bumpImage);
+  .bumpImageUrl(bumpImage)
+  .pointsData(airports)
+  .pointAltitude(() => parameters.pointAltitude)
+  .pointColor(() => parameters.pointColor)
+  .pointRadius(() => parameters.pointRadius);
 scene.add(globe);
 
 // Lights
@@ -49,36 +101,29 @@ window.addEventListener("resize", () => {
 
 // Base camera
 const camera = new THREE.PerspectiveCamera(
-  75,
+  40,
   sizes.width / sizes.height,
   0.1,
-  1000
+  500
 );
-camera.position.set(0, 0, 200);
+camera.position.set(0, 0, 350);
 scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+controls.enableZoom = false;
 
 /**
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
   canvas,
+  antialias: true,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0xcecece);
-
-// GUI
-const gui = new dat.GUI();
-// const parameters = {
-//   sphereColor: "#bb7777",
-// };
-// gui.addColor(parameters, "sphereColor").onChange(() => {
-//   sphere.material.color.set(parameters.sphereColor);
-// });
 // gui.add(sphere.material, "metalness", 0, 1, 0.001);
 // gui.add(sphere.material, "roughness", 0, 1, 0.001);
 
