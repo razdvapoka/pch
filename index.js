@@ -382,8 +382,9 @@ window.addEventListener("resize", () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  const scale = sizes.width / CANONIC_WIDTH;
-  globe.scale.set(scale, scale, scale);
+  // const scale = sizes.width / CANONIC_WIDTH;
+  // globe.scale.set(scale, scale, scale);
+  // cloudSphere.scale.set(scale, scale, scale);
 });
 
 /**
