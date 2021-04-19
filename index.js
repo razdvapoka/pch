@@ -3,7 +3,7 @@
 // import lowBuildingsData from "./lb_formatted_slice.json";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 // import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import * as dat from "dat.gui";
 import ThreeGlobe from "three-globe";
@@ -312,7 +312,6 @@ const cloudSphere = new THREE.Mesh(
   new THREE.SphereBufferGeometry(101, 32, 32),
   new THREE.MeshStandardMaterial({
     color: "white",
-    // map: cloudsMap,
     alphaMap: cloudsMap,
     transparent: true,
     opacity: 0.35,
@@ -397,23 +396,25 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   2500
 );
-camera.position.set(
-  OVERIVIEW_CAMERA_PROPS.positionX,
-  OVERIVIEW_CAMERA_PROPS.positionY,
-  OVERIVIEW_CAMERA_PROPS.positionZ
-);
-camera.rotation.x = OVERIVIEW_CAMERA_PROPS.rotationX;
-camera.rotation.y = OVERIVIEW_CAMERA_PROPS.rotationY;
+// camera.position.set(
+//   OVERIVIEW_CAMERA_PROPS.positionX,
+//   OVERIVIEW_CAMERA_PROPS.positionY,
+//   OVERIVIEW_CAMERA_PROPS.positionZ
+// );
+// camera.rotation.x = OVERIVIEW_CAMERA_PROPS.rotationX;
+// camera.rotation.y = OVERIVIEW_CAMERA_PROPS.rotationY;
 //
-// camera.position.set(0, 0, 15);
+camera.position.set(0, 0, 500);
 scene.add(camera);
 
 // Controls
-// const controls = new OrbitControls(camera, canvas);
+const controls = new OrbitControls(camera, canvas);
 // controls.enableDamping = true;
-// // controls.enableZoom = false;
-// // controls.enabled = false;
-// controls.update();
+controls.addEventListener("change", () => {
+  console.log(camera.position);
+  console.log(camera.rotation);
+});
+controls.update();
 
 /**
  * Renderer
