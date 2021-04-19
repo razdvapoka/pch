@@ -1,15 +1,17 @@
-// import largeAirports from "./large_airports.json";
+// import largeAirportsData from "./airports_formatted_slice.json";
+// import tallBuildingsData from "./tb_formatted_slice.json";
+// import lowBuildingsData from "./lb_formatted_slice.json";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+// import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import * as dat from "dat.gui";
 import ThreeGlobe from "three-globe";
 import globeImage from "./assets/images/wrld-13-bw-gray.png";
 // import bumpImage from "./assets/images/earth-topology.png";
 import lightMapTexture from "./assets/images/tex-lights-bw.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
-import cloudsModel from "./assets/models/clouds.gltf";
+// import cloudsModel from "./assets/models/clouds.gltf";
 // import { diff } from "deep-diff";
 
 const textureLoader = new THREE.TextureLoader();
@@ -64,6 +66,7 @@ const buildingMaterial = new THREE.MeshStandardMaterial({
   roughness: 0.5,
   emissive: new THREE.Color(0.1, 0, 0.4),
 });
+
 const tallBuildingGeometry = createBoxWithRoundedEdges(
   0.974,
   5.437,
@@ -71,21 +74,55 @@ const tallBuildingGeometry = createBoxWithRoundedEdges(
   0.1,
   15
 );
-const tallBuilding = new THREE.Mesh(tallBuildingGeometry, buildingMaterial);
+tallBuildingGeometry.translate(0, -3.5, 0);
 
-// const gltfLoader = new GLTFLoader();
-// gltfLoader.load(cloudsModel, (clouds) => {
-//   console.log(clouds.scene.children[0]);
-//   const em = earthModelGltf.scene.children[0].material;
-//   globeMesh.material = em;
-//   console.log(em);
-// const modelsGroup = buildingsScene.scene.children[0];
-// modelsGroup.scale.set(200, 200, 200);
-// modelsGroup.position.set(200, 300, 300);
-// modelsGroup.position.x = 200;
-//console.log(modelsGroup.children[0]);
-// scene.add(modelsGroup);
-// });
+const lowBuildingGeometry = createBoxWithRoundedEdges(
+  1.558,
+  2.718,
+  1.558,
+  0.1,
+  15
+);
+lowBuildingGeometry.translate(0, -2, 0);
+
+const airportGeometry = new THREE.TorusBufferGeometry(0.8, 0.6, 32, 32);
+airportGeometry.translate(0, 0, -1);
+
+const tallBuilding = new THREE.Mesh(tallBuildingGeometry, buildingMaterial);
+const lowBuilding = new THREE.Mesh(lowBuildingGeometry, buildingMaterial);
+const airport = new THREE.Mesh(airportGeometry, buildingMaterial);
+
+const TB_GAP = 0.9;
+const tallBuildingsGroup = new THREE.Group();
+const tallBuildings = new THREE.Group();
+const b1 = tallBuilding.clone();
+b1.position.x = -TB_GAP;
+b1.position.z = -TB_GAP;
+const b2 = tallBuilding.clone();
+b2.position.x = TB_GAP;
+b2.position.z = TB_GAP;
+const b3 = tallBuilding.clone();
+b3.position.x = -TB_GAP;
+b3.position.z = TB_GAP;
+const b4 = tallBuilding.clone();
+b4.position.x = TB_GAP;
+b4.position.z = -TB_GAP;
+tallBuildings.add(b1, b2, b3, b4);
+tallBuildings.rotateX(Math.PI / 2);
+tallBuildingsGroup.add(tallBuildings);
+
+const LB_GAP = 1.3;
+const lowBuildingsGroup = new THREE.Group();
+const lowBuildings = new THREE.Group();
+const lb1 = lowBuilding.clone();
+lb1.position.x = -LB_GAP;
+lb1.position.z = -LB_GAP;
+const lb2 = lowBuilding.clone();
+lb2.position.x = LB_GAP;
+lb2.position.z = LB_GAP;
+lowBuildings.add(lb1, lb2);
+lowBuildings.rotateX(Math.PI / 2);
+lowBuildingsGroup.add(lowBuildings);
 
 const CANONIC_WIDTH = 1440;
 
@@ -178,15 +215,6 @@ const parameters = {
   },
 };
 
-// Airports
-// const airports = largeAirports.map((a) => {
-//   const [lng, lat] = a.coordinates.split(", ");
-//   return {
-//     lat: Number.parseFloat(lat),
-//     lng: Number.parseFloat(lng),
-//   };
-// });
-
 // Canvas
 const canvas = document.querySelector("#canvas");
 
@@ -196,18 +224,68 @@ scene.background = new THREE.Color("#000000");
 
 // const axesHelper = new THREE.AxesHelper(2000);
 // scene.add(axesHelper);
-scene.add(tallBuilding);
+
+// scene.add(tallBuildings);
+// lowBuildings.position.x = -5;
+// scene.add(lowBuildings);
+// airport.position.x = 5;
+// scene.add(airport);
+
+const data = [
+  {
+    //30.785335, 119.735688
+    lat: 30.785335,
+    lng: 119.735688,
+    objType: "a",
+  },
+  {
+    //30.785335, 119.735688
+    lat: 33.3322783,
+    lng: 114.749361,
+    objType: "lb",
+  },
+  //35.419435, 108.172554
+  {
+    lat: 35.419435,
+    lng: 108.172554,
+    objType: "tb",
+  },
+];
 
 // Test Globe
 const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
   .globeImageUrl(globeImage)
   .atmosphereColor("white")
   .atmosphereAltitude(0.1)
-  // .pointsData(airports)
-  // .pointsMerge(true)
-  .pointAltitude(() => parameters.pointAltitude)
-  .pointColor(() => parameters.pointColor)
-  .pointRadius(() => parameters.pointRadius);
+  .customLayerData(data)
+  // .customLayerData([
+  //   ...largeAirportsData,
+  //   ...tallBuildingsData,
+  //   ...lowBuildingsData,
+  // ])
+  .customThreeObject((objData) => {
+    console.log(objData);
+    switch (objData.objType) {
+      case "a":
+        return airport.clone();
+      case "tb":
+        return tallBuildingsGroup.clone();
+      case "lb":
+        return lowBuildingsGroup.clone();
+    }
+  })
+  .customThreeObjectUpdate((obj, d) => {
+    Object.assign(obj.position, globe.getCoords(d.lat, d.lng, d.alt));
+    obj.lookAt(new THREE.Vector3(0, 0, 0));
+    if (d.objType !== "a") {
+      obj.rotation.z += Math.PI / 2;
+    }
+  });
+// .pointsData(airports)
+// .pointsMerge(true)
+// .pointAltitude(() => parameters.pointAltitude)
+// .pointColor(() => parameters.pointColor)
+// .pointRadius(() => parameters.pointRadius);
 
 globe.rotation.y = -Math.PI * 0.5;
 
@@ -326,13 +404,15 @@ camera.position.set(
 );
 camera.rotation.x = OVERIVIEW_CAMERA_PROPS.rotationX;
 camera.rotation.y = OVERIVIEW_CAMERA_PROPS.rotationY;
+//
+// camera.position.set(0, 0, 15);
 scene.add(camera);
 
 // Controls
 // const controls = new OrbitControls(camera, canvas);
 // controls.enableDamping = true;
-// controls.enableZoom = false;
-// controls.enabled = false;
+// // controls.enableZoom = false;
+// // controls.enabled = false;
 // controls.update();
 
 /**
@@ -408,6 +488,8 @@ gui
 gui
   .add(cloudSphere.material, "opacity", 0, 1, 0.001)
   .name("cloud sphere opacity");
+
+gui.close();
 
 /**
  * Animate
