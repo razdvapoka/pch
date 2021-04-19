@@ -1,15 +1,91 @@
-import largeAirports from "./large_airports.json";
+// import largeAirports from "./large_airports.json";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import * as dat from "dat.gui";
 import ThreeGlobe from "three-globe";
 import globeImage from "./assets/images/wrld-13-bw-gray.png";
 // import bumpImage from "./assets/images/earth-topology.png";
 import lightMapTexture from "./assets/images/tex-lights-bw.png";
+import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
+import cloudsModel from "./assets/models/clouds.gltf";
+// import { diff } from "deep-diff";
 
 const textureLoader = new THREE.TextureLoader();
 const lightMap = textureLoader.load(lightMapTexture);
+const cloudsMap = textureLoader.load(cloudsTexture);
+// const map = textureLoader.load(globeImage);
+
+const createBoxWithRoundedEdges = (
+  width,
+  height,
+  depth,
+  radius0,
+  smoothness
+) => {
+  let shape = new THREE.Shape();
+  let eps = 0.00001;
+  let radius = radius0 - eps;
+  shape.absarc(eps, eps, eps, -Math.PI / 2, -Math.PI, true);
+  shape.absarc(eps, height - radius * 2, eps, Math.PI, Math.PI / 2, true);
+  shape.absarc(
+    width - radius * 2,
+    height - radius * 2,
+    eps,
+    Math.PI / 2,
+    0,
+    true
+  );
+  shape.absarc(width - radius * 2, eps, eps, 0, -Math.PI / 2, true);
+  let geometry = new THREE.ExtrudeBufferGeometry(shape, {
+    depth: depth - radius0 * 2,
+    bevelEnabled: true,
+    bevelSegments: smoothness * 2,
+    steps: 1,
+    bevelSize: radius,
+    bevelThickness: radius0,
+    curveSegments: smoothness,
+  });
+
+  geometry.center();
+
+  return geometry;
+};
+
+const buildingMaterial = new THREE.MeshStandardMaterial({
+  name: "Building Material",
+  side: THREE.DoubleSide,
+  color: new THREE.Color(
+    0.3529411764705882,
+    0.39215686274509803,
+    0.9803921568627451
+  ),
+  roughness: 0.5,
+  emissive: new THREE.Color(0.1, 0, 0.4),
+});
+const tallBuildingGeometry = createBoxWithRoundedEdges(
+  0.974,
+  5.437,
+  0.974,
+  0.1,
+  15
+);
+const tallBuilding = new THREE.Mesh(tallBuildingGeometry, buildingMaterial);
+
+// const gltfLoader = new GLTFLoader();
+// gltfLoader.load(cloudsModel, (clouds) => {
+//   console.log(clouds.scene.children[0]);
+//   const em = earthModelGltf.scene.children[0].material;
+//   globeMesh.material = em;
+//   console.log(em);
+// const modelsGroup = buildingsScene.scene.children[0];
+// modelsGroup.scale.set(200, 200, 200);
+// modelsGroup.position.set(200, 300, 300);
+// modelsGroup.position.x = 200;
+//console.log(modelsGroup.children[0]);
+// scene.add(modelsGroup);
+// });
 
 const CANONIC_WIDTH = 1440;
 
@@ -37,10 +113,16 @@ const getCameraProps = (c) => ({
   rotationY: c.rotation.y,
 });
 
-const getCameraPropsUpdater = (cam, props) => () => {
+const getCameraPropsUpdater = (cam, props, lights, otherLights) => (a) => {
   cam.position.set(props.positionX, props.positionY, props.positionZ);
   cam.rotation.x = props.rotationX;
   cam.rotation.y = props.rotationY;
+  lights.forEach((l) => {
+    l.intensity = (a.progress / 100) * 0.5;
+  });
+  otherLights.forEach((l) => {
+    l.intensity = (1 - a.progress / 100) * 0.5;
+  });
 };
 
 // GUI
@@ -71,7 +153,12 @@ const parameters = {
       targets: cameraProps,
       easing: "easeInOutCubic",
       ...OVERIVIEW_CAMERA_PROPS,
-      update: getCameraPropsUpdater(camera, cameraProps),
+      update: getCameraPropsUpdater(
+        camera,
+        cameraProps,
+        [primaryOverviewLight, secondaryOverviewLight],
+        [primaryChinaLight, secondaryChinaLight]
+      ),
     });
   },
   china: () => {
@@ -81,7 +168,12 @@ const parameters = {
       targets: cameraProps,
       easing: "easeInOutCubic",
       ...CHINA_CAMERA_PROPS,
-      update: getCameraPropsUpdater(camera, cameraProps),
+      update: getCameraPropsUpdater(
+        camera,
+        cameraProps,
+        [primaryChinaLight, secondaryChinaLight],
+        [primaryOverviewLight, secondaryOverviewLight]
+      ),
     });
   },
 };
@@ -102,11 +194,15 @@ const canvas = document.querySelector("#canvas");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#000000");
 
+// const axesHelper = new THREE.AxesHelper(2000);
+// scene.add(axesHelper);
+scene.add(tallBuilding);
+
 // Test Globe
 const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
   .globeImageUrl(globeImage)
   .atmosphereColor("white")
-  .atmosphereAltitude(0.2)
+  .atmosphereAltitude(0.1)
   // .pointsData(airports)
   // .pointsMerge(true)
   .pointAltitude(() => parameters.pointAltitude)
@@ -119,19 +215,74 @@ globe.rotation.y = -Math.PI * 0.5;
 const globeMesh = globe.children[0].children[0].children[0];
 const uv = globeMesh.geometry.getAttribute("uv").array;
 globeMesh.geometry.setAttribute("uv2", new THREE.BufferAttribute(uv, 2));
+// const globeMaterial = new THREE.MeshStandardMaterial({
+//   roughness: 0.5,
+//   metalness: 0.01,
+//   map,
+// });
+// globeMesh.material = globeMaterial;
 
 // Globe material
 const material = globe.globeMaterial();
 material.color = new THREE.Color("#2750CC");
 material.lightMap = lightMap;
 material.lightMapIntensity = 15;
-// material.needsUpdate = true;
 
 scene.add(globe);
 
+const cloudSphere = new THREE.Mesh(
+  new THREE.SphereBufferGeometry(101, 32, 32),
+  new THREE.MeshStandardMaterial({
+    color: "white",
+    // map: cloudsMap,
+    alphaMap: cloudsMap,
+    transparent: true,
+    opacity: 0.35,
+  })
+);
+cloudSphere.rotation.y = Math.PI;
+scene.add(cloudSphere);
+
 // Lights
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-scene.add(ambientLight);
+// const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+// scene.add(ambientLight);
+
+const createLight = (angleDeg, needHelper) => {
+  const light = new THREE.DirectionalLight(0xffffff, 0.5);
+
+  const lightPosition = new THREE.Vector3(0, 0, 200);
+  lightPosition.applyAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    THREE.MathUtils.degToRad(angleDeg)
+  );
+  light.position.copy(lightPosition);
+
+  const lightTarget = new THREE.Object3D();
+  const lightTargetPosition = new THREE.Vector3(0, 0, 1);
+  lightTargetPosition.applyAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    THREE.MathUtils.degToRad(angleDeg) + Math.PI
+  );
+  lightTarget.position.copy(lightTargetPosition);
+
+  light.target = lightTarget;
+
+  scene.add(light, lightTarget);
+
+  if (needHelper) {
+    const helper = new THREE.DirectionalLightHelper(light);
+    scene.add(helper);
+  }
+
+  return light;
+};
+
+const primaryOverviewLight = createLight(-145.41);
+const secondaryOverviewLight = createLight(131.874);
+const primaryChinaLight = createLight(-54.663);
+const secondaryChinaLight = createLight(-203.718);
+primaryChinaLight.intensity = 0;
+secondaryChinaLight.intensity = 0;
 
 /**
  * Sizes
@@ -168,16 +319,21 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   2500
 );
-camera.position.set(-177, 208, 448);
-camera.rotation.x = THREE.MathUtils.degToRad(-25.411);
-camera.rotation.y = THREE.MathUtils.degToRad(-25.204);
+camera.position.set(
+  OVERIVIEW_CAMERA_PROPS.positionX,
+  OVERIVIEW_CAMERA_PROPS.positionY,
+  OVERIVIEW_CAMERA_PROPS.positionZ
+);
+camera.rotation.x = OVERIVIEW_CAMERA_PROPS.rotationX;
+camera.rotation.y = OVERIVIEW_CAMERA_PROPS.rotationY;
 scene.add(camera);
 
 // Controls
-// const controls = new OrbitControls(activeCamera, canvas);
+// const controls = new OrbitControls(camera, canvas);
 // controls.enableDamping = true;
 // controls.enableZoom = false;
 // controls.enabled = false;
+// controls.update();
 
 /**
  * Renderer
@@ -185,6 +341,8 @@ scene.add(camera);
 const renderer = new THREE.WebGLRenderer({
   canvas,
   antialias: true,
+  alpha: true,
+  outputEncoding: THREE.sRGBEncoding,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -193,7 +351,7 @@ renderer.setClearColor(0xcecece);
 // GUI
 
 const gui = new dat.GUI({
-  width: 300,
+  width: 350,
 });
 gui.addColor(parameters, "pointColor").onChange(() => {
   globe.pointColor(() => parameters.pointColor);
@@ -224,6 +382,32 @@ cameraFolder
   .add(camera.rotation, "z", -Math.PI / 2, Math.PI / 2, 0.001)
   .listen();
 cameraFolder.open();
+
+const lightsFolder = gui.addFolder("lights");
+lightsFolder
+  .add(primaryOverviewLight, "intensity", 0, 1, 0.001)
+  .name("overview primary")
+  .listen();
+lightsFolder
+  .add(secondaryOverviewLight, "intensity", 0, 1, 0.001)
+  .name("overview secondary")
+  .listen();
+lightsFolder
+  .add(primaryChinaLight, "intensity", 0, 1, 0.001)
+  .name("china primary")
+  .listen();
+lightsFolder
+  .add(secondaryChinaLight, "intensity", 0, 1, 0.001)
+  .name("china secondary")
+  .listen();
+lightsFolder.open();
+
+gui
+  .add(cloudSphere.rotation, "y", -Math.PI, Math.PI, 0.001)
+  .name("cloud sphere rotation");
+gui
+  .add(cloudSphere.material, "opacity", 0, 1, 0.001)
+  .name("cloud sphere opacity");
 
 /**
  * Animate
