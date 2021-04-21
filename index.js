@@ -8,6 +8,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
 import ThreeGlobe from "three-globe";
 import globeImage from "./assets/images/wrld-13-bw-gray.png";
+// import globeImage from "./assets/images/earth-dark.jpeg";
 // import bumpImage from "./assets/images/earth-topology.png";
 import lightMapTexture from "./assets/images/tex-lights-bw.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
@@ -18,6 +19,9 @@ const textureLoader = new THREE.TextureLoader();
 const lightMap = textureLoader.load(lightMapTexture);
 const cloudsMap = textureLoader.load(cloudsTexture);
 // const map = textureLoader.load(globeImage);
+//
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 const createBoxWithRoundedEdges = (
   width,
@@ -233,6 +237,12 @@ scene.background = new THREE.Color("#000000");
 
 const data = [
   {
+    // 36.870134, 15.015446
+    lat: 40.0060239,
+    lng: 18.349105,
+    objType: "a",
+  },
+  {
     //30.785335, 119.735688
     lat: 30.785335,
     lng: 119.735688,
@@ -264,7 +274,7 @@ const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
   //   ...lowBuildingsData,
   // ])
   .customThreeObject((objData) => {
-    console.log(objData);
+    // console.log(objData);
     switch (objData.objType) {
       case "a":
         return airport.clone();
@@ -286,8 +296,6 @@ const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
 // .pointAltitude(() => parameters.pointAltitude)
 // .pointColor(() => parameters.pointColor)
 // .pointRadius(() => parameters.pointRadius);
-
-globe.rotation.y = -Math.PI * 0.5;
 
 // Globe mesh
 const globeMesh = globe.children[0].children[0].children[0];
@@ -321,7 +329,7 @@ cloudSphere.rotation.y = Math.PI;
 scene.add(cloudSphere);
 
 // Lights
-// const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 // scene.add(ambientLight);
 
 const createLight = (angleDeg, needHelper) => {
@@ -369,7 +377,7 @@ const sizes = {
   height: window.innerHeight,
 };
 
-window.addEventListener("resize", () => {
+const onResize = () => {
   // Update sizes
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
@@ -385,7 +393,32 @@ window.addEventListener("resize", () => {
   // const scale = sizes.width / CANONIC_WIDTH;
   // globe.scale.set(scale, scale, scale);
   // cloudSphere.scale.set(scale, scale, scale);
-});
+};
+
+const onMouseMove = (event) => {
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+};
+
+const onClick = () => {
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(scene.children, true);
+  if (intersects.length > 0) {
+    const c = globe.toGeoCoords(intersects[0].point);
+    console.log(c);
+    const v = Math.random();
+    const t = v < 0.33 ? "a" : v < 0.66 ? "tb" : "lb";
+    data.push({ ...c, objType: t });
+    globe.customLayerData(data);
+  }
+};
+
+window.addEventListener("resize", onResize);
+window.addEventListener("mousemove", onMouseMove);
+window.addEventListener("click", onClick);
 
 /**
  * Camera
@@ -412,8 +445,8 @@ scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 // controls.enableDamping = true;
 controls.addEventListener("change", () => {
-  console.log(camera.position);
-  console.log(camera.rotation);
+  // console.log(camera.position);
+  // console.log(camera.rotation);
 });
 controls.update();
 
@@ -496,13 +529,15 @@ gui.close();
 /**
  * Animate
  */
-//const clock = new THREE.Clock();
+const clock = new THREE.Clock();
 
 const tick = () => {
-  //const elapsedTime = clock.getElapsedTime();
+  const elapsedTime = clock.getElapsedTime();
 
   // Update controls
-  // controls.update();
+  controls.update();
+
+  cloudSphere.rotation.y = elapsedTime / 100;
 
   // Render
   renderer.render(scene, camera);
