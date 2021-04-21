@@ -445,8 +445,8 @@ scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 // controls.enableDamping = true;
 controls.addEventListener("change", () => {
-  // console.log(camera.position);
-  // console.log(camera.rotation);
+  console.log(camera.position);
+  console.log(camera.rotation);
 });
 controls.update();
 
