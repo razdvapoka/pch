@@ -1,132 +1,21 @@
-// import largeAirportsData from "./airports_formatted_slice.json";
-// import tallBuildingsData from "./tb_formatted_slice.json";
-// import lowBuildingsData from "./lb_formatted_slice.json";
+import { geoDistance } from "d3-geo";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-// import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import * as dat from "dat.gui";
 import ThreeGlobe from "three-globe";
-import globeImage from "./assets/images/wrld-13-bw-gray.png";
-// import globeImage from "./assets/images/earth-dark.jpeg";
-// import bumpImage from "./assets/images/earth-topology.png";
-import lightMapTexture from "./assets/images/tex-lights-bw.png";
+import globeImage from "./assets/images/earth-topology.png";
+import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
-// import cloudsModel from "./assets/models/clouds.gltf";
-// import { diff } from "deep-diff";
-
-const textureLoader = new THREE.TextureLoader();
-const lightMap = textureLoader.load(lightMapTexture);
-const cloudsMap = textureLoader.load(cloudsTexture);
-// const map = textureLoader.load(globeImage);
-//
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-const createBoxWithRoundedEdges = (
-  width,
-  height,
-  depth,
-  radius0,
-  smoothness
-) => {
-  let shape = new THREE.Shape();
-  let eps = 0.00001;
-  let radius = radius0 - eps;
-  shape.absarc(eps, eps, eps, -Math.PI / 2, -Math.PI, true);
-  shape.absarc(eps, height - radius * 2, eps, Math.PI, Math.PI / 2, true);
-  shape.absarc(
-    width - radius * 2,
-    height - radius * 2,
-    eps,
-    Math.PI / 2,
-    0,
-    true
-  );
-  shape.absarc(width - radius * 2, eps, eps, 0, -Math.PI / 2, true);
-  let geometry = new THREE.ExtrudeBufferGeometry(shape, {
-    depth: depth - radius0 * 2,
-    bevelEnabled: true,
-    bevelSegments: smoothness * 2,
-    steps: 1,
-    bevelSize: radius,
-    bevelThickness: radius0,
-    curveSegments: smoothness,
-  });
-
-  geometry.center();
-
-  return geometry;
-};
-
-const buildingMaterial = new THREE.MeshStandardMaterial({
-  name: "Building Material",
-  side: THREE.DoubleSide,
-  color: new THREE.Color(
-    0.3529411764705882,
-    0.39215686274509803,
-    0.9803921568627451
-  ),
-  roughness: 0.5,
-  emissive: new THREE.Color(0.1, 0, 0.4),
-});
-
-const tallBuildingGeometry = createBoxWithRoundedEdges(
-  0.974,
-  5.437,
-  0.974,
-  0.1,
-  15
-);
-tallBuildingGeometry.translate(0, -3.5, 0);
-
-const lowBuildingGeometry = createBoxWithRoundedEdges(
-  1.558,
-  2.718,
-  1.558,
-  0.1,
-  15
-);
-lowBuildingGeometry.translate(0, -2, 0);
-
-const airportGeometry = new THREE.TorusBufferGeometry(0.8, 0.6, 32, 32);
-airportGeometry.translate(0, 0, -1);
-
-const tallBuilding = new THREE.Mesh(tallBuildingGeometry, buildingMaterial);
-const lowBuilding = new THREE.Mesh(lowBuildingGeometry, buildingMaterial);
-const airport = new THREE.Mesh(airportGeometry, buildingMaterial);
-
-const TB_GAP = 0.9;
-const tallBuildingsGroup = new THREE.Group();
-const tallBuildings = new THREE.Group();
-const b1 = tallBuilding.clone();
-b1.position.x = -TB_GAP;
-b1.position.z = -TB_GAP;
-const b2 = tallBuilding.clone();
-b2.position.x = TB_GAP;
-b2.position.z = TB_GAP;
-const b3 = tallBuilding.clone();
-b3.position.x = -TB_GAP;
-b3.position.z = TB_GAP;
-const b4 = tallBuilding.clone();
-b4.position.x = TB_GAP;
-b4.position.z = -TB_GAP;
-tallBuildings.add(b1, b2, b3, b4);
-tallBuildings.rotateX(Math.PI / 2);
-tallBuildingsGroup.add(tallBuildings);
-
-const LB_GAP = 1.3;
-const lowBuildingsGroup = new THREE.Group();
-const lowBuildings = new THREE.Group();
-const lb1 = lowBuilding.clone();
-lb1.position.x = -LB_GAP;
-lb1.position.z = -LB_GAP;
-const lb2 = lowBuilding.clone();
-lb2.position.x = LB_GAP;
-lb2.position.z = LB_GAP;
-lowBuildings.add(lb1, lb2);
-lowBuildings.rotateX(Math.PI / 2);
-lowBuildingsGroup.add(lowBuildings);
+import { calcCurve } from "./calcCurve";
+import { airport, tallBuildingsGroup, lowBuildingsGroup } from "./buildings";
+import {
+  pointsGeometry,
+  pointsMaterial,
+  launchCurveAnimationLoop,
+  getArcAnimationHandle,
+} from "./arcs";
+import { arcsData, pathsData, customData } from "./data";
 
 const CANONIC_WIDTH = 1440;
 
@@ -145,6 +34,13 @@ const CHINA_CAMERA_PROPS = {
   rotationX: THREE.MathUtils.degToRad(-23.115),
   rotationY: THREE.MathUtils.degToRad(25.265),
 };
+
+const textureLoader = new THREE.TextureLoader();
+const lightMap = textureLoader.load(lightMapTexture);
+const cloudsMap = textureLoader.load(cloudsTexture);
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 const getCameraProps = (c) => ({
   positionX: c.position.x,
@@ -168,9 +64,6 @@ const getCameraPropsUpdater = (cam, props, lights, otherLights) => (a) => {
 
 // GUI
 const parameters = {
-  pointColor: "#ff00ff",
-  pointAltitude: 0.01,
-  pointRadius: 0.25,
   rotateClockwise: () => {
     anime({
       duration: 1000,
@@ -219,6 +112,8 @@ const parameters = {
   },
 };
 
+let pointsMesh = null;
+
 // Canvas
 const canvas = document.querySelector("#canvas");
 
@@ -226,55 +121,13 @@ const canvas = document.querySelector("#canvas");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#000000");
 
-// const axesHelper = new THREE.AxesHelper(2000);
-// scene.add(axesHelper);
-
-// scene.add(tallBuildings);
-// lowBuildings.position.x = -5;
-// scene.add(lowBuildings);
-// airport.position.x = 5;
-// scene.add(airport);
-
-const data = [
-  {
-    // 36.870134, 15.015446
-    lat: 40.0060239,
-    lng: 18.349105,
-    objType: "a",
-  },
-  {
-    //30.785335, 119.735688
-    lat: 30.785335,
-    lng: 119.735688,
-    objType: "a",
-  },
-  {
-    //30.785335, 119.735688
-    lat: 33.3322783,
-    lng: 114.749361,
-    objType: "lb",
-  },
-  //35.419435, 108.172554
-  {
-    lat: 35.419435,
-    lng: 108.172554,
-    objType: "tb",
-  },
-];
-
-// Test Globe
+// Globe
 const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
   .globeImageUrl(globeImage)
   .atmosphereColor("white")
   .atmosphereAltitude(0.1)
-  .customLayerData(data)
-  // .customLayerData([
-  //   ...largeAirportsData,
-  //   ...tallBuildingsData,
-  //   ...lowBuildingsData,
-  // ])
+  .customLayerData(customData)
   .customThreeObject((objData) => {
-    // console.log(objData);
     switch (objData.objType) {
       case "a":
         return airport.clone();
@@ -282,6 +135,20 @@ const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
         return tallBuildingsGroup.clone();
       case "lb":
         return lowBuildingsGroup.clone();
+      case "arc": {
+        if (!getArcAnimationHandle(objData.id)) {
+          const dist = geoDistance(
+            [objData.startLng, objData.startLat],
+            [objData.endLng, objData.endLat]
+          );
+          const curve = calcCurve(objData);
+          launchCurveAnimationLoop(objData.id, curve.getPoints(400), dist);
+        }
+        if (!pointsMesh) {
+          pointsMesh = new THREE.Points(pointsGeometry, pointsMaterial);
+          globe.add(pointsMesh);
+        }
+      }
     }
   })
   .customThreeObjectUpdate((obj, d) => {
@@ -290,29 +157,29 @@ const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
     if (d.objType !== "a") {
       obj.rotation.z += Math.PI / 2;
     }
+  })
+  .arcsData(arcsData)
+  .arcColor("color")
+  .arcAltitude(0.1)
+  .pathsData(pathsData)
+  .pathPointAlt(0.01)
+  .pathColor(() => "magenta")
+  .pathStroke(() => 2)
+  .onGlobeReady(() => {
+    console.log("globe ready");
+    pointsMaterial.opacity = 1;
   });
-// .pointsData(airports)
-// .pointsMerge(true)
-// .pointAltitude(() => parameters.pointAltitude)
-// .pointColor(() => parameters.pointColor)
-// .pointRadius(() => parameters.pointRadius);
 
 // Globe mesh
 const globeMesh = globe.children[0].children[0].children[0];
 const uv = globeMesh.geometry.getAttribute("uv").array;
 globeMesh.geometry.setAttribute("uv2", new THREE.BufferAttribute(uv, 2));
-// const globeMaterial = new THREE.MeshStandardMaterial({
-//   roughness: 0.5,
-//   metalness: 0.01,
-//   map,
-// });
-// globeMesh.material = globeMaterial;
 
 // Globe material
 const material = globe.globeMaterial();
 material.color = new THREE.Color("#2750CC");
 material.lightMap = lightMap;
-material.lightMapIntensity = 15;
+material.lightMapIntensity = 10;
 
 scene.add(globe);
 
@@ -326,11 +193,11 @@ const cloudSphere = new THREE.Mesh(
   })
 );
 cloudSphere.rotation.y = Math.PI;
-scene.add(cloudSphere);
+globe.add(cloudSphere);
 
 // Lights
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
-// scene.add(ambientLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+scene.add(ambientLight);
 
 const createLight = (angleDeg, needHelper) => {
   const light = new THREE.DirectionalLight(0xffffff, 0.5);
@@ -390,9 +257,9 @@ const onResize = () => {
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // const scale = sizes.width / CANONIC_WIDTH;
-  // globe.scale.set(scale, scale, scale);
-  // cloudSphere.scale.set(scale, scale, scale);
+  // RESPONSIVENESS
+  const scale = sizes.width / CANONIC_WIDTH;
+  globe.scale.set(scale, scale, scale);
 };
 
 const onMouseMove = (event) => {
@@ -409,10 +276,12 @@ const onClick = () => {
   if (intersects.length > 0) {
     const c = globe.toGeoCoords(intersects[0].point);
     console.log(c);
+    /*
     const v = Math.random();
     const t = v < 0.33 ? "a" : v < 0.66 ? "tb" : "lb";
     data.push({ ...c, objType: t });
     globe.customLayerData(data);
+    */
   }
 };
 
@@ -430,20 +299,12 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   2500
 );
-// camera.position.set(
-//   OVERIVIEW_CAMERA_PROPS.positionX,
-//   OVERIVIEW_CAMERA_PROPS.positionY,
-//   OVERIVIEW_CAMERA_PROPS.positionZ
-// );
-// camera.rotation.x = OVERIVIEW_CAMERA_PROPS.rotationX;
-// camera.rotation.y = OVERIVIEW_CAMERA_PROPS.rotationY;
-//
-camera.position.set(0, 0, 500);
+camera.position.set(96.23753242231034, 23.11100485395969, 184.14769205410772);
+camera.lookAt(new THREE.Vector3(0, 0, 0));
 scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
-// controls.enableDamping = true;
 controls.addEventListener("change", () => {
   console.log(camera.position);
   console.log(camera.rotation);
@@ -468,20 +329,10 @@ renderer.setClearColor(0xcecece);
 const gui = new dat.GUI({
   width: 350,
 });
-gui.addColor(parameters, "pointColor").onChange(() => {
-  globe.pointColor(() => parameters.pointColor);
-});
-gui.add(parameters, "pointAltitude", 0, 0.03, 0.0001).onFinishChange(() => {
-  globe.pointAltitude(() => parameters.pointAltitude);
-});
-gui.add(parameters, "pointRadius", 0, 1, 0.01).onFinishChange(() => {
-  globe.pointRadius(() => parameters.pointRadius);
-});
 gui.add(parameters, "rotateClockwise");
 gui.add(parameters, "rotateCounterClockwise");
 gui.add(parameters, "overview");
 gui.add(parameters, "china");
-//gui.close();
 
 const cameraFolder = gui.addFolder("camera");
 cameraFolder.add(camera.position, "x", -500, 500, 1).listen();
