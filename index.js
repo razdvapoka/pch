@@ -90,8 +90,8 @@ const parameters = {
       update: getCameraPropsUpdater(
         camera,
         cameraProps,
-        [primaryOverviewLight, secondaryOverviewLight],
-        [primaryChinaLight, secondaryChinaLight]
+        [light1, light2],
+        [light3, light4]
       ),
     });
   },
@@ -105,11 +105,19 @@ const parameters = {
       update: getCameraPropsUpdater(
         camera,
         cameraProps,
-        [primaryChinaLight, secondaryChinaLight],
-        [primaryOverviewLight, secondaryOverviewLight]
+        [light3, light4],
+        [light1, light2]
       ),
     });
   },
+  light1DegY: -145.41,
+  light1DegX: 0,
+  light2DegY: 131.874,
+  light2DegX: 0,
+  light3DegY: -54.663,
+  light3DegX: 0,
+  light4DegY: -203.718,
+  light4DegX: 0,
 };
 
 let pointsMesh = null;
@@ -199,13 +207,17 @@ globe.add(cloudSphere);
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambientLight);
 
-const createLight = (angleDeg, needHelper) => {
+const createLight = (angleDegY, angleDegX = 0, needHelper = true) => {
   const light = new THREE.DirectionalLight(0xffffff, 0.5);
 
   const lightPosition = new THREE.Vector3(0, 0, 200);
   lightPosition.applyAxisAngle(
     new THREE.Vector3(0, 1, 0),
-    THREE.MathUtils.degToRad(angleDeg)
+    THREE.MathUtils.degToRad(angleDegY)
+  );
+  lightPosition.applyAxisAngle(
+    new THREE.Vector3(1, 0, 0),
+    THREE.MathUtils.degToRad(angleDegX)
   );
   light.position.copy(lightPosition);
 
@@ -213,7 +225,11 @@ const createLight = (angleDeg, needHelper) => {
   const lightTargetPosition = new THREE.Vector3(0, 0, 1);
   lightTargetPosition.applyAxisAngle(
     new THREE.Vector3(0, 1, 0),
-    THREE.MathUtils.degToRad(angleDeg) + Math.PI
+    THREE.MathUtils.degToRad(angleDegY) + Math.PI
+  );
+  lightTargetPosition.applyAxisAngle(
+    new THREE.Vector3(1, 0, 0),
+    THREE.MathUtils.degToRad(angleDegX) + Math.PI
   );
   lightTarget.position.copy(lightTargetPosition);
 
@@ -224,17 +240,18 @@ const createLight = (angleDeg, needHelper) => {
   if (needHelper) {
     const helper = new THREE.DirectionalLightHelper(light);
     scene.add(helper);
+    light.__helper = helper;
   }
 
   return light;
 };
 
-const primaryOverviewLight = createLight(-145.41);
-const secondaryOverviewLight = createLight(131.874);
-const primaryChinaLight = createLight(-54.663);
-const secondaryChinaLight = createLight(-203.718);
-primaryChinaLight.intensity = 0;
-secondaryChinaLight.intensity = 0;
+const light1 = createLight(-145.41);
+const light2 = createLight(131.874);
+const light3 = createLight(-54.663);
+const light4 = createLight(-203.718);
+light3.intensity = 0;
+light4.intensity = 0;
 
 /**
  * Sizes
@@ -349,28 +366,97 @@ cameraFolder
   .listen();
 cameraFolder.open();
 
+const getLightUpdater = (light) => (degX, degY) => {
+  const lightPosition = new THREE.Vector3(0, 0, 200);
+  lightPosition.applyAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    THREE.MathUtils.degToRad(degY)
+  );
+  lightPosition.applyAxisAngle(
+    new THREE.Vector3(0, 0, 1),
+    THREE.MathUtils.degToRad(degX)
+  );
+  light.position.copy(lightPosition);
+
+  const lightTargetPosition = new THREE.Vector3(0, 0, 1);
+  lightTargetPosition.applyAxisAngle(
+    new THREE.Vector3(0, 1, 0),
+    THREE.MathUtils.degToRad(degY) + Math.PI
+  );
+  lightTargetPosition.applyAxisAngle(
+    new THREE.Vector3(0, 0, 1),
+    THREE.MathUtils.degToRad(degX) + Math.PI
+  );
+  light.target.position.copy(lightTargetPosition);
+  if (light.__helper) {
+    light.__helper.update();
+  }
+};
+
 const lightsFolder = gui.addFolder("lights");
+lightsFolder.add(light1, "intensity", 0, 1, 0.001).name("light 1").listen();
+lightsFolder.add(light2, "intensity", 0, 1, 0.001).name("light 2").listen();
+lightsFolder.add(light3, "intensity", 0, 1, 0.001).name("light 3").listen();
+lightsFolder.add(light4, "intensity", 0, 1, 0.001).name("light 4").listen();
 lightsFolder
-  .add(primaryOverviewLight, "intensity", 0, 1, 0.001)
-  .name("overview primary")
-  .listen();
+  .add(parameters, "light1DegY", -360, 360, 1)
+  .name("light 1 y")
+  .onChange(() => {
+    const updater = getLightUpdater(light1);
+    updater(parameters.light1DegX, parameters.light1DegY);
+  });
 lightsFolder
-  .add(secondaryOverviewLight, "intensity", 0, 1, 0.001)
-  .name("overview secondary")
-  .listen();
+  .add(parameters, "light1DegX", -360, 360, 1)
+  .name("light 1 x")
+  .onChange(() => {
+    const updater = getLightUpdater(light1);
+    updater(parameters.light1DegX, parameters.light1DegY);
+  });
 lightsFolder
-  .add(primaryChinaLight, "intensity", 0, 1, 0.001)
-  .name("china primary")
-  .listen();
+  .add(parameters, "light2DegY", -360, 360, 1)
+  .name("light 2 y")
+  .onChange(() => {
+    const updater = getLightUpdater(light2);
+    updater(parameters.light2DegX, parameters.light2DegY);
+  });
 lightsFolder
-  .add(secondaryChinaLight, "intensity", 0, 1, 0.001)
-  .name("china secondary")
-  .listen();
+  .add(parameters, "light2DegX", -360, 360, 1)
+  .name("light 2 x")
+  .onChange(() => {
+    const updater = getLightUpdater(light2);
+    updater(parameters.light2DegX, parameters.light2DegY);
+  });
+lightsFolder
+  .add(parameters, "light3DegY", -360, 360, 1)
+  .name("light 3 y")
+  .onChange(() => {
+    const updater = getLightUpdater(light3);
+    updater(parameters.light3DegX, parameters.light3DegY);
+  });
+lightsFolder
+  .add(parameters, "light3DegX", -360, 360, 1)
+  .name("light 3 x")
+  .onChange(() => {
+    const updater = getLightUpdater(light3);
+    updater(parameters.light3DegX, parameters.light3DegY);
+  });
+lightsFolder
+  .add(parameters, "light4DegY", -360, 360, 1)
+  .name("light 4 y")
+  .onChange(() => {
+    const updater = getLightUpdater(light4);
+    updater(parameters.light4DegX, parameters.light4DegY);
+  });
+lightsFolder
+  .add(parameters, "light4DegX", -360, 360, 1)
+  .name("light 4 x")
+  .onChange(() => {
+    const updater = getLightUpdater(light4);
+    updater(parameters.light4DegX, parameters.light4DegY);
+  });
+
 lightsFolder.open();
 
-gui
-  .add(cloudSphere.rotation, "y", -Math.PI, Math.PI, 0.001)
-  .name("cloud sphere rotation");
 gui
   .add(cloudSphere.material, "opacity", 0, 1, 0.001)
   .name("cloud sphere opacity");
