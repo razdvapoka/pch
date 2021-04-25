@@ -18,6 +18,15 @@ import {
 import { arcsData, pathsData, customData } from "./data";
 
 const CANONIC_WIDTH = 1440;
+const CANONIC_GLOBE_RADIUS = 100;
+
+/**
+ * Sizes
+ */
+const sizes = {
+  width: window.innerWidth,
+  height: window.innerHeight,
+};
 
 const OVERIVIEW_CAMERA_PROPS = {
   positionX: -177,
@@ -129,14 +138,67 @@ const canvas = document.querySelector("#canvas");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#000000");
 
+const labels = {};
+let isGlobeReady = false;
+
+const createLabel = (objData) => {
+  const element = document.createElement("div");
+  element.id = objData.id;
+  element.classList.add("label");
+  const textElement = document.createElement("span");
+  textElement.innerText = objData.label;
+  element.appendChild(textElement);
+  if (objData.subLabel) {
+    const subTextElement = document.createElement("span");
+    subTextElement.classList.add("sub-label");
+    subTextElement.innerText = objData.subLabel;
+    element.appendChild(subTextElement);
+  }
+  document.body.appendChild(element);
+  const scale = sizes.width / CANONIC_WIDTH;
+  return {
+    position: new THREE.Vector3().copy(
+      polar2Cartesian(
+        objData.lat,
+        objData.lng,
+        0.01,
+        CANONIC_GLOBE_RADIUS * scale
+      )
+    ),
+    element,
+    coords: {
+      lat: objData.lat,
+      lng: objData.lng,
+    },
+  };
+};
+
+const polar2Cartesian = (lat, lng, alt, rad) => {
+  const phi = ((90 - lat) * Math.PI) / 180;
+  const theta = ((90 - lng) * Math.PI) / 180;
+  const r = rad * (1 + alt);
+  return {
+    x: r * Math.sin(phi) * Math.cos(theta),
+    y: r * Math.cos(phi),
+    z: r * Math.sin(phi) * Math.sin(theta),
+  };
+};
+
 // Globe
 const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
+  .rendererSize(new THREE.Vector2(sizes.width, sizes.height))
   .globeImageUrl(globeImage)
   .atmosphereColor("white")
   .atmosphereAltitude(0.1)
   .customLayerData(customData)
   .customThreeObject((objData) => {
     switch (objData.objType) {
+      case "label": {
+        if (!labels[objData.id]) {
+          labels[objData.id] = createLabel(objData);
+        }
+        return;
+      }
       case "a":
         return airport.clone();
       case "tb":
@@ -174,8 +236,12 @@ const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
   .pathColor(() => "magenta")
   .pathStroke(() => 2)
   .onGlobeReady(() => {
-    console.log("globe ready");
+    const scale = sizes.width / CANONIC_WIDTH;
+    globe.scale.set(scale, scale, scale);
+    isGlobeReady = true;
     pointsMaterial.opacity = 1;
+    console.log("globe ready");
+    console.log(globe);
   });
 
 // Globe mesh
@@ -253,14 +319,6 @@ const light4 = createLight(-203.718);
 light3.intensity = 0;
 light4.intensity = 0;
 
-/**
- * Sizes
- */
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
-};
-
 const onResize = () => {
   // Update sizes
   sizes.width = window.innerWidth;
@@ -277,6 +335,18 @@ const onResize = () => {
   // RESPONSIVENESS
   const scale = sizes.width / CANONIC_WIDTH;
   globe.scale.set(scale, scale, scale);
+
+  Object.keys(labels).map((labelKey) => {
+    const label = labels[labelKey];
+    label.position = new THREE.Vector3().copy(
+      polar2Cartesian(
+        label.coords.lat,
+        label.coords.lng,
+        0.01,
+        CANONIC_GLOBE_RADIUS * scale
+      )
+    );
+  });
 };
 
 const onMouseMove = (event) => {
@@ -473,6 +543,31 @@ const tick = () => {
 
   // Update controls
   controls.update();
+
+  if (isGlobeReady) {
+    Object.keys(labels).forEach((labelKey) => {
+      const label = labels[labelKey];
+      const screenPosition = label.position.clone();
+      screenPosition.project(camera);
+      raycaster.setFromCamera(screenPosition, camera);
+      const intersects = raycaster.intersectObject(globeMesh);
+      if (intersects.length === 0) {
+        label.element.classList.add("visible");
+      } else {
+        const intersectionDistance = intersects[0].distance;
+        const labelDistance = label.position.distanceTo(camera.position);
+        if (intersectionDistance < labelDistance) {
+          label.element.classList.remove("visible");
+        } else {
+          label.element.classList.add("visible");
+        }
+      }
+
+      const translateX = screenPosition.x * sizes.width * 0.5;
+      const translateY = -screenPosition.y * sizes.height * 0.5;
+      label.element.style.transform = `translate(calc(${translateX}px - 50%), calc(${translateY}px - 50%))`;
+    });
+  }
 
   cloudSphere.rotation.y = elapsedTime / 100;
 

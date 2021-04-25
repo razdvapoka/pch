@@ -8,6 +8,11 @@ html {
   font-weight: 400;
   font-size: calc(10 / 1920 * 100vw);
   background-color: black;
+  color: white;
+}
+
+a, a:visited {
+  color: inherit;
 }
 
 .logo {
@@ -16,15 +21,65 @@ html {
   top: 2.2rem;
   width: 17.4rem;
   height: 8.5rem;
-  color: black;
   transition: color 0.3s ease;
 }
 
-.logo.white,
-.logo:hover {
+h1 {
+  font-size: 6.7rem;
+  font-weight: 300;
+  letter-spacing: -0.4rem;
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, 0);
+}
+
+.next-button {
+  padding: 1.8rem 3.1rem;
+  border: 1px solid white;
+  font-size: 2.5rem;
+  line-height: 1;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  position: fixed;
+  bottom: 2.2rem;
+  left: 50%;
+  transform: translate(-50%, 0);
   color: white;
+  background: transparent;
+  border-radius: 0.5rem;
 }
 
 .dg input {
   font: 400 13.3333px Arial;
+}
+
+.label {
+  opacity: 0;
+  font-size: 2.5rem;
+  line-height: 1;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  background-color: #5C63FF ;
+  color: black;
+  padding: 0.2rem 1.2rem 0.3rem;
+  border-radius: 0.5rem;
+  transition: opacity 0.2s ease;
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  user-select: none;
+}
+
+.sub-label {
+  position: absolute;
+  top: calc(100% + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  color: #5c63ff;
+}
+
+.label.visible {
+  opacity: 1
 }

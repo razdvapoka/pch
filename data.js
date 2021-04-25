@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import { uid } from "uid";
 
 export const arcsData = [
@@ -63,25 +64,46 @@ export const customData = [
     lat: 38.048961,
     lng: 15.816407,
     objType: "a",
+    id: uid(),
   },
   {
     lat: 40.0060239,
     lng: 18.349105,
     objType: "a",
+    id: uid(),
   },
   {
     lat: 30.785335,
     lng: 119.735688,
     objType: "a",
+    id: uid(),
   },
   {
     lat: 33.3322783,
     lng: 114.749361,
     objType: "lb",
+    label: "facility 1",
+    id: uid(),
   },
   {
     lat: 35.419435,
     lng: 108.172554,
     objType: "tb",
+    id: uid(),
+  },
+  {
+    lat: 32.40188920911271,
+    lng: 108.19698028012733,
+    objType: "label",
+    label: "facility 1",
+    subLabel: "airport",
+    id: uid(),
+  },
+  {
+    lat: 37.40188920911271,
+    lng: 100.19698028012733,
+    objType: "label",
+    label: "facility 2",
+    id: uid(),
   },
 ];
