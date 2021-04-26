@@ -6,6 +6,7 @@ const buildingColor = new THREE.Color(
   0.39215686274509803,
   0.9803921568627451
 );
+console.log(buildingColor);
 
 const buildingMaterial = new THREE.MeshStandardMaterial({
   name: "Building Material",
@@ -70,6 +71,7 @@ lb2.position.x = LB_GAP;
 lb2.position.z = LB_GAP;
 lowBuildings.add(lb1, lb2);
 lowBuildings.rotateX(Math.PI / 2);
+lowBuildings.rotateY(Math.PI / 1.3);
 lowBuildingsGroup.add(lowBuildings);
 
 export { airport, lowBuildingsGroup, tallBuildingsGroup };

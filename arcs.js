@@ -3,7 +3,6 @@ import { uid } from "uid";
 import pointTexture from "./assets/images/point-texture-2.png";
 import anime from "animejs/lib/anime.es.js";
 
-const DIST_TIMEOUT_COEFF = 1000 * 0.8;
 const POINT_VELOCITY = 0.8 / 5000;
 
 const textureLoader = new THREE.TextureLoader();
@@ -57,7 +56,7 @@ const animateCurvePoint = (curvePoints, duration) => {
 };
 
 const launchCurveAnimationLoop = (id, curvePoints, dist) => {
-  const maxTimeout = DIST_TIMEOUT_COEFF / dist;
+  const maxTimeout = 2000;
   const duration = dist / POINT_VELOCITY;
   arcAnimationHandles[id] = setTimeout(() => {
     animateCurvePoint(curvePoints, duration);
