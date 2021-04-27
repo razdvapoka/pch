@@ -40,6 +40,7 @@ const INTRO_CAM_PHI = 1.3532513064958416;
 const CHINA_CAM_THETA = Math.PI - 1.1732590418436886;
 const CHINA_CAM_PHI = 1.2649334407322725;
 const ROTATION_DURATION = 500;
+const heading = document.querySelector("h1");
 
 const setObjectPositionOnSphere = (object, theta, phi, radius) => {
   object.position.z = radius * Math.sin(phi) * Math.cos(theta);
@@ -375,7 +376,6 @@ const launchIntro2ChinaAnimation = () => {
     easing: "easeInOutCubic",
     autoplay: false,
     complete: () => {
-      const heading = document.querySelector("h1");
       heading.innerText = "Today";
       heading.classList.remove("intro-heading");
       heading.classList.add("today-heading");
@@ -724,6 +724,7 @@ const addUIHandlers = () => {
       explosion.element.classList.add("active");
       nextButton.style.display = "none";
       pathButtons.style.display = "flex";
+      heading.innerText = "Tomorrow";
     });
   };
 
