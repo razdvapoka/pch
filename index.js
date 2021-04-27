@@ -11,14 +11,13 @@ import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import { calcCurve } from "./calcCurve";
 import { getOverlay } from "./overlay";
 import { airport, tallBuildingsGroup, lowBuildingsGroup } from "./buildings";
-import largeAirports from "./large_airports.json";
+import largeAirports from "./large_airports_shortlist.json";
 import {
   pointsGeometry,
   pointsMaterial,
   launchCurveAnimationLoop,
   getArcAnimationHandle,
 } from "./arcs";
-
 import {
   arcsData,
   pathsData,
@@ -29,6 +28,11 @@ import {
   INTRO_STATE,
   B2B_STEP_1,
 } from "./data";
+import {
+  loadServersModel,
+  initServersScene,
+  setServerSceneCamera,
+} from "./scenes/servers";
 
 const airportObjects = largeAirports.map((a) => {
   const [lng, lat] = a.coordinates.split(", ");
@@ -83,6 +87,19 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 // State
+let scene = null;
+const setScene = (s) => {
+  scene = s;
+};
+
+let serversModel = null;
+let serversScene = null;
+const setServersModel = (gltf) => {
+  serversModel = gltf.scene.children[0];
+  serversScene = initServersScene(serversModel);
+};
+loadServersModel(setServersModel);
+
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -158,7 +175,7 @@ const parameters = {
 const canvas = document.querySelector("#canvas");
 
 // Scene
-const scene = new THREE.Scene();
+scene = new THREE.Scene();
 scene.background = new THREE.Color("#000000");
 
 // const axesHelper = new THREE.AxesHelper(1000);
@@ -193,6 +210,7 @@ const createLabel = (objData) => {
       lat: objData.lat,
       lng: objData.lng,
     },
+    data: objData,
   };
 };
 
@@ -319,7 +337,6 @@ globeMesh.geometry.setAttribute("uv2", new THREE.BufferAttribute(uv, 2));
 const material = globe.globeMaterial();
 material.color = new THREE.Color("#2750CC");
 material.lightMap = lightMap;
-// material.lightMapIntensity = 7;
 material.lightMapIntensity = 15;
 
 scene.add(globe);
@@ -336,8 +353,6 @@ const cloudSphere = new THREE.Mesh(
 globe.add(cloudSphere);
 
 // Lights
-// const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-// scene.add(ambientLight);
 
 const createLight = (theta, phi, r = 200, needHelper = false) => {
   const light = new THREE.DirectionalLight(0xffffff, 0.5);
@@ -462,6 +477,7 @@ const onClick = () => {
   const intersects = raycaster.intersectObjects(scene.children, true);
   if (intersects.length > 0) {
     const c = globe.toGeoCoords(intersects[0].point);
+    // console.log(intersects[0].point);
     console.log(c);
     // console.log(camera);
     // const v = Math.random();
@@ -505,7 +521,7 @@ const intro2ChinaRotator = getCameraRotator(
   CHINA_CAM_PHI - INTRO_CAM_PHI,
   CAM_R - INTRO_CAM_R
 );
-const zoomRotator = getCameraRotator(0, 0, -100, 2000);
+const zoomRotator = getCameraRotator(0, 0, -100, 600);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
@@ -738,8 +754,13 @@ const addUIHandlers = () => {
     anime({
       targets: overlay.material.uniforms.uAlpha,
       easing: "easeInOutCubic",
-      duration: 800,
+      duration: 600,
       value: 1,
+      complete: () => {
+        setScene(serversScene);
+        setServerSceneCamera(camera);
+        document.querySelector("html").style.color = "black";
+      },
     });
   };
 
@@ -770,6 +791,10 @@ const addUIHandlers = () => {
       pathButtons.style.display = "flex";
       heading.innerText = "Tomorrow";
     });
+    const postponementLabel = Object.values(labels).find(
+      (l) => l.data.label === "postponement"
+    );
+    postponementLabel.element.innerText = "fulfillment";
   };
 
   const hideAndRevealNav = (cb) => {
