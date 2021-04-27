@@ -9,6 +9,7 @@ import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import { calcCurve } from "./calcCurve";
 import { getOverlay } from "./overlay";
+import { loadModel } from "./scenes/servers";
 import { airport, tallBuildingsGroup, lowBuildingsGroup } from "./buildings";
 import {
   pointsGeometry,
@@ -26,6 +27,8 @@ import {
   EUROPE_STATE,
   INTRO_STATE,
 } from "./data";
+
+loadModel();
 
 const CANONIC_WIDTH = 1440;
 const CANONIC_GLOBE_RADIUS = 100;
