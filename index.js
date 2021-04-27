@@ -690,11 +690,33 @@ const updateNavButtons = (state) => {
 };
 
 const addUIHandlers = () => {
+  const uploadLogoInput = document.querySelector(".upload-logo-input");
   const nextButton = document.querySelector(".next-button");
   const pathButtons = document.querySelector(".path-buttons");
   const rightButton = document.querySelector(".right-nav-button");
   const leftButton = document.querySelector(".left-nav-button");
   const launchButton = document.querySelector(".launch-button");
+  const clientLogo = document.querySelector(".client-logo");
+  const uploadLogoLabel = document.querySelector(".upload-logo");
+
+  const handleLogoUpload = (e) => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const fileReader = new FileReader();
+      fileReader.onload = (d) => {
+        const svgString = d.target.result;
+        const url =
+          `url('data:image/svg+xml;utf8,` +
+          encodeURIComponent(svgString) +
+          `')`;
+        clientLogo.style.backgroundImage = url;
+        clientLogo.style.display = "block";
+        uploadLogoLabel.style.display = "none";
+      };
+      fileReader.readAsText(file);
+    }
+  };
 
   const handleNextButtonClick = () => {
     Object.keys(explosions).map((explosionKey) => {
@@ -791,6 +813,7 @@ const addUIHandlers = () => {
   launchButton.addEventListener("click", handleLaunchButtonClick);
   rightButton.addEventListener("click", handleRightButtonClick);
   leftButton.addEventListener("click", handleLeftButtonClick);
+  uploadLogoInput.addEventListener("change", handleLogoUpload);
 };
 
 addUIHandlers();

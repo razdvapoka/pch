@@ -42,7 +42,7 @@ a, a:visited {
   font-weight: 200;
   line-height: 1.4;
   letter-spacing: -0.15rem;
-  top: 3.3rem;
+  top: 3.7rem;
 }
 
 .today-heading {
@@ -219,3 +219,48 @@ a, a:visited {
   opacity: 0;
   pointer-events: none;
 }
+
+.upload-logo {
+  user-select: none;
+  position: fixed;
+  top: 3.7rem;
+  right: 2rem;
+  font-weight: 100;
+  font-size: 4rem;
+  line-height: 1.4;
+  letter-spacing: -0.15rem;
+  color: white;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.client-logo {
+  user-select: none;
+  position: fixed;
+  top: 2.2rem;
+  right: 2rem;
+  color: white;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  height: 10rem;
+  width: 10rem;
+  display: none;
+}
+
+.upload-logo-input {
+  display: none;
+}
+
+.upload-logo-plus {
+  display: inline-block;
+  width: 2.7rem;
+  height: 2.6rem;
+  background-image: url(/assets/svg/plus.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  margin-right: 1.5rem;
+}
+
