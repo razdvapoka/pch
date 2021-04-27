@@ -9,7 +9,6 @@ import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import { calcCurve } from "./calcCurve";
 import { getOverlay } from "./overlay";
-import { loadModel } from "./scenes/servers";
 import { airport, tallBuildingsGroup, lowBuildingsGroup } from "./buildings";
 import {
   pointsGeometry,
@@ -28,8 +27,6 @@ import {
   INTRO_STATE,
   B2B_STEP_1,
 } from "./data";
-
-loadModel();
 
 const CANONIC_WIDTH = 1440;
 const CANONIC_GLOBE_RADIUS = 100;
@@ -70,6 +67,7 @@ const lightMap = textureLoader.load(lightMapTexture);
 const cloudsMap = textureLoader.load(cloudsTexture);
 
 const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 // State
 const sizes = {
@@ -426,38 +424,38 @@ const onResize = () => {
   });
 };
 
-// const onMouseMove = (event) => {
-//   // calculate mouse position in normalized device coordinates
-//   // (-1 to +1) for both components
+const onMouseMove = (event) => {
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
 
-//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-//   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-// };
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+};
 //
 //
 // const Z_AXIS = new THREE.Vector3(0, 0, 1);
 // const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
-// const onClick = () => {
-//   const tc = camera.position.angleTo(Z_AXIS);
-//   const pc = camera.position.angleTo(Y_AXIS);
-//   console.log(tc, pc);
-//   // raycaster.setFromCamera(mouse, camera);
-//   // const intersects = raycaster.intersectObjects(scene.children, true);
-//   // if (intersects.length > 0) {
-//   // const c = globe.toGeoCoords(intersects[0].point);
-//   // console.log(c);
-//   // console.log(camera);
-//   // const v = Math.random();
-//   // const t = v < 0.33 ? "a" : v < 0.66 ? "tb" : "lb";
-//   // data.push({ ...c, objType: t });
-//   // globe.customLayerData(data);
-//   // }
-// };
+const onClick = () => {
+  // const tc = camera.position.angleTo(Z_AXIS);
+  // const pc = camera.position.angleTo(Y_AXIS);
+  // console.log(tc, pc);
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(scene.children, true);
+  if (intersects.length > 0) {
+    const c = globe.toGeoCoords(intersects[0].point);
+    console.log(c);
+    // console.log(camera);
+    // const v = Math.random();
+    // const t = v < 0.33 ? "a" : v < 0.66 ? "tb" : "lb";
+    // data.push({ ...c, objType: t });
+    // globe.customLayerData(data);
+  }
+};
 
 window.addEventListener("resize", onResize);
-// window.addEventListener("mousemove", onMouseMove);
-// window.addEventListener("click", onClick);
+window.addEventListener("mousemove", onMouseMove);
+window.addEventListener("click", onClick);
 
 /**
  * Camera
