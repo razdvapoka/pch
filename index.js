@@ -485,6 +485,7 @@ renderer.setClearColor(0xcecece);
 
 const gui = new dat.GUI({
   width: 350,
+  autoPlace: false,
 });
 
 const getLightUpdater = (light) => (theta, phi, r) => {
