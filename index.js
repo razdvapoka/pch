@@ -99,13 +99,20 @@ let pointsMesh = null;
 
 // Camera rotation
 //
-const getObjectRotator = (theta, phi, r, object, props) => () => {
+const getObjectRotator = (
+  theta,
+  phi,
+  r,
+  object,
+  props,
+  duration = ROTATION_DURATION
+) => () => {
   const { theta: objTheta, phi: objPhi, r: objR } = props;
   const newObjTheta = objTheta + theta;
   const newObjPhi = objPhi + phi;
   const newObjR = objR + r;
   anime({
-    duration: ROTATION_DURATION,
+    duration,
     easing: "easeInOutCubic",
     update: (a) => {
       const alpha = a.progress / 100;
@@ -259,7 +266,7 @@ const handleGlobeReady = () => {
     anime({
       targets: overlay.material.uniforms.uAlpha,
       easing: "easeInOutCubic",
-      duration: 2000,
+      duration: 800,
       value: 0,
       complete: () => {
         camera.remove(overlay);
@@ -468,8 +475,8 @@ scene.add(camera);
 const overlay = getOverlay();
 camera.add(overlay);
 
-const getCameraRotator = (theta, phi, r = 0) =>
-  getObjectRotator(theta, phi, r, camera, cameraRotationProps);
+const getCameraRotator = (theta, phi, r = 0, duration = ROTATION_DURATION) =>
+  getObjectRotator(theta, phi, r, camera, cameraRotationProps, duration);
 
 const china2USARotator = getCameraRotator(Math.PI * 0.8, -Math.PI * 0.08);
 const china2EuropeRotator = getCameraRotator(-Math.PI * 0.5, -Math.PI * 0.12);
@@ -482,7 +489,7 @@ const intro2ChinaRotator = getCameraRotator(
   CHINA_CAM_PHI - INTRO_CAM_PHI,
   CAM_R - INTRO_CAM_R
 );
-const zoomRotator = getCameraRotator(0, 0, -100);
+const zoomRotator = getCameraRotator(0, 0, -100, 2000);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
@@ -715,7 +722,7 @@ const addUIHandlers = () => {
     anime({
       targets: overlay.material.uniforms.uAlpha,
       easing: "easeInOutCubic",
-      duration: 500,
+      duration: 800,
       value: 1,
     });
   };
