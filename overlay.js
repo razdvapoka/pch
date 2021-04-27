@@ -7,6 +7,9 @@ export const getOverlay = () => {
     transparent: true,
     uniforms: {
       uAlpha: { value: 1 },
+      uColorR: { value: 0 },
+      uColorG: { value: 0 },
+      uColorB: { value: 0 },
     },
     vertexShader: `
         void main()
@@ -16,10 +19,13 @@ export const getOverlay = () => {
     `,
     fragmentShader: `
         uniform float uAlpha;
+        uniform float uColorR;
+        uniform float uColorG;
+        uniform float uColorB;
 
         void main()
         {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+            gl_FragColor = vec4(uColorR, uColorG, uColorB, uAlpha);
         }
     `,
   });

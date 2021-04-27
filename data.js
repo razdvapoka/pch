@@ -157,3 +157,4 @@ export const USA_STATE = "USA_STATE";
 export const EUROPE_STATE = "EUROPE_STATE";
 export const CHINA_STATE = "CHINA_STATE";
 export const INTRO_STATE = "INTRO_STATE";
+export const B2B_STEP_1 = "B2B_STEP_1";

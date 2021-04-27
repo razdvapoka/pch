@@ -26,6 +26,7 @@ import {
   CHINA_STATE,
   EUROPE_STATE,
   INTRO_STATE,
+  B2B_STEP_1,
 } from "./data";
 
 loadModel();
@@ -481,6 +482,7 @@ const intro2ChinaRotator = getCameraRotator(
   CHINA_CAM_PHI - INTRO_CAM_PHI,
   CAM_R - INTRO_CAM_R
 );
+const zoomRotator = getCameraRotator(0, 0, -100);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
@@ -698,6 +700,25 @@ const addUIHandlers = () => {
   const launchButton = document.querySelector(".launch-button");
   const clientLogo = document.querySelector(".client-logo");
   const uploadLogoLabel = document.querySelector(".upload-logo");
+  const b2bButton = document.querySelector(".b2b-button");
+
+  const handleB2BButtonClick = () => {
+    zoomRotator();
+    camera.add(overlay);
+    overlay.material.uniforms.uColorR.value = 1;
+    overlay.material.uniforms.uColorG.value = 1;
+    overlay.material.uniforms.uColorB.value = 1;
+    pathButtons.classList.add("hidden");
+    leftButton.classList.add("hidden");
+    rightButton.classList.add("hidden");
+    currentState = B2B_STEP_1;
+    anime({
+      targets: overlay.material.uniforms.uAlpha,
+      easing: "easeInOutCubic",
+      duration: 500,
+      value: 1,
+    });
+  };
 
   const handleLogoUpload = (e) => {
     const files = e.target.files;
@@ -815,6 +836,7 @@ const addUIHandlers = () => {
   rightButton.addEventListener("click", handleRightButtonClick);
   leftButton.addEventListener("click", handleLeftButtonClick);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
+  b2bButton.addEventListener("click", handleB2BButtonClick);
 };
 
 addUIHandlers();

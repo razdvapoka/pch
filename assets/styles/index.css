@@ -229,7 +229,7 @@ a, a:visited {
   font-size: 4rem;
   line-height: 1.4;
   letter-spacing: -0.15rem;
-  color: white;
+  color: inherit;
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -240,7 +240,7 @@ a, a:visited {
   position: fixed;
   top: 2.2rem;
   right: 2rem;
-  color: white;
+  color: inherit;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
