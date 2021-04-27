@@ -31,6 +31,7 @@ const CENTER = new THREE.Vector3(0, 0, 0);
 const CAM_R = 220;
 const DEFAULT_CAM_THETA = Math.PI - 1.1732590418436886;
 const DEFAULT_CAM_PHI = 1.2649334407322725;
+const ROTATION_DURATION = 500;
 
 const setObjectPositionOnSphere = (object, theta, phi, radius) => {
   object.position.z = radius * Math.sin(phi) * Math.cos(theta);
@@ -39,34 +40,47 @@ const setObjectPositionOnSphere = (object, theta, phi, radius) => {
   object.lookAt(CENTER);
 };
 
-const d2r = THREE.Math.degToRad;
-// const r2d = THREE.Math.radToDeg;
+const polar2Cartesian = (lat, lng, alt, rad) => {
+  const phi = ((90 - lat) * Math.PI) / 180;
+  const theta = ((90 - lng) * Math.PI) / 180;
+  const r = rad * (1 + alt);
+  return {
+    x: r * Math.sin(phi) * Math.cos(theta),
+    y: r * Math.cos(phi),
+    z: r * Math.sin(phi) * Math.sin(theta),
+  };
+};
 
-let currentState = CHINA_STATE;
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const d2r = THREE.Math.degToRad;
 
 const textureLoader = new THREE.TextureLoader();
 const lightMap = textureLoader.load(lightMapTexture);
 const cloudsMap = textureLoader.load(cloudsTexture);
 
 const raycaster = new THREE.Raycaster();
-// const mouse = new THREE.Vector2();
 
-/**
- * Sizes
- */
+// State
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
-
+const labels = {};
+const explosions = {};
+let isGlobeReady = false;
+let currentState = CHINA_STATE;
 let cameraTheta = DEFAULT_CAM_THETA;
 let cameraPhi = DEFAULT_CAM_PHI;
+let pointsMesh = null;
+
+// Camera rotation
 
 const getCameraRotator = (theta, phi) => () => {
   const newCameraTheta = cameraTheta + theta;
   const newCameraPhi = cameraPhi + phi;
   anime({
-    duration: 500,
+    duration: ROTATION_DURATION,
     easing: "easeInOutCubic",
     update: (a) => {
       const alpha = a.progress / 100;
@@ -80,10 +94,13 @@ const getCameraRotator = (theta, phi) => () => {
     },
   });
 };
+
 const china2USARotator = getCameraRotator(Math.PI * 0.8, -Math.PI * 0.08);
-const USA2ChinaRotator = getCameraRotator(-Math.PI * 0.8, Math.PI * 0.08);
 const china2EuropeRotator = getCameraRotator(-Math.PI * 0.5, -Math.PI * 0.12);
+const USA2ChinaRotator = getCameraRotator(-Math.PI * 0.8, Math.PI * 0.08);
+const USA2EuropeRotator = getCameraRotator(Math.PI * 0.7, -Math.PI * 0.04);
 const europe2ChinaRotator = getCameraRotator(Math.PI * 0.5, Math.PI * 0.12);
+const europe2USARotator = getCameraRotator(-Math.PI * 0.7, Math.PI * 0.04);
 
 // GUI
 const parameters = {
@@ -97,8 +114,6 @@ const parameters = {
   light2Phi: d2r(279),
 };
 
-let pointsMesh = null;
-
 // Canvas
 const canvas = document.querySelector("#canvas");
 
@@ -108,10 +123,6 @@ scene.background = new THREE.Color("#000000");
 
 // const axesHelper = new THREE.AxesHelper(1000);
 // scene.add(axesHelper);
-
-const labels = {};
-const explosions = {};
-let isGlobeReady = false;
 
 const createLabel = (objData) => {
   const element = document.createElement("div");
@@ -171,15 +182,58 @@ const createExplosion = (objData) => {
   };
 };
 
-const polar2Cartesian = (lat, lng, alt, rad) => {
-  const phi = ((90 - lat) * Math.PI) / 180;
-  const theta = ((90 - lng) * Math.PI) / 180;
-  const r = rad * (1 + alt);
-  return {
-    x: r * Math.sin(phi) * Math.cos(theta),
-    y: r * Math.cos(phi),
-    z: r * Math.sin(phi) * Math.sin(theta),
-  };
+const handleCustomObject = (objData) => {
+  switch (objData.objType) {
+    case "label": {
+      if (!labels[objData.id]) {
+        labels[objData.id] = createLabel(objData);
+      }
+      return;
+    }
+    case "explosion": {
+      if (!explosions[objData.id]) {
+        explosions[objData.id] = createExplosion(objData);
+      }
+      return;
+    }
+    case "a":
+      return airport.clone();
+    case "tb":
+      return tallBuildingsGroup.clone();
+    case "lb":
+      return lowBuildingsGroup.clone();
+    case "arc": {
+      if (!getArcAnimationHandle(objData.id)) {
+        const dist = geoDistance(
+          [objData.startLng, objData.startLat],
+          [objData.endLng, objData.endLat]
+        );
+        const curve = calcCurve(objData);
+        launchCurveAnimationLoop(objData.id, curve.getPoints(400), dist);
+      }
+      if (!pointsMesh) {
+        pointsMesh = new THREE.Points(pointsGeometry, pointsMaterial);
+        globe.add(pointsMesh);
+      }
+    }
+  }
+};
+
+const handleCustomObjectUpdate = (obj, d) => {
+  Object.assign(obj.position, globe.getCoords(d.lat, d.lng, d.alt));
+  obj.lookAt(new THREE.Vector3(0, 0, 0));
+  if (d.objType !== "a") {
+    obj.rotation.z += Math.PI / 2;
+  }
+};
+
+const handleGlobeReady = () => {
+  const scale = sizes.width / CANONIC_WIDTH;
+  globe.scale.set(scale, scale, scale);
+  isGlobeReady = true;
+  pointsMaterial.opacity = 1;
+  console.log("globe ready");
+  console.log(globe);
 };
 
 // Globe
@@ -189,49 +243,8 @@ const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
   .atmosphereColor("white")
   .atmosphereAltitude(0.1)
   .customLayerData(customData)
-  .customThreeObject((objData) => {
-    switch (objData.objType) {
-      case "label": {
-        if (!labels[objData.id]) {
-          labels[objData.id] = createLabel(objData);
-        }
-        return;
-      }
-      case "explosion": {
-        if (!explosions[objData.id]) {
-          explosions[objData.id] = createExplosion(objData);
-        }
-        return;
-      }
-      case "a":
-        return airport.clone();
-      case "tb":
-        return tallBuildingsGroup.clone();
-      case "lb":
-        return lowBuildingsGroup.clone();
-      case "arc": {
-        if (!getArcAnimationHandle(objData.id)) {
-          const dist = geoDistance(
-            [objData.startLng, objData.startLat],
-            [objData.endLng, objData.endLat]
-          );
-          const curve = calcCurve(objData);
-          launchCurveAnimationLoop(objData.id, curve.getPoints(400), dist);
-        }
-        if (!pointsMesh) {
-          pointsMesh = new THREE.Points(pointsGeometry, pointsMaterial);
-          globe.add(pointsMesh);
-        }
-      }
-    }
-  })
-  .customThreeObjectUpdate((obj, d) => {
-    Object.assign(obj.position, globe.getCoords(d.lat, d.lng, d.alt));
-    obj.lookAt(new THREE.Vector3(0, 0, 0));
-    if (d.objType !== "a") {
-      obj.rotation.z += Math.PI / 2;
-    }
-  })
+  .customThreeObject(handleCustomObject)
+  .customThreeObjectUpdate(handleCustomObjectUpdate)
   .arcsData(arcsData)
   .arcColor("color")
   .arcAltitude((arc) => arc.alt)
@@ -239,14 +252,7 @@ const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
   .pathsData(pathsData)
   .pathPointAlt(0.01)
   .pathColor(() => "rgb(90, 100, 250)")
-  .onGlobeReady(() => {
-    const scale = sizes.width / CANONIC_WIDTH;
-    globe.scale.set(scale, scale, scale);
-    isGlobeReady = true;
-    pointsMaterial.opacity = 1;
-    console.log("globe ready");
-    console.log(globe);
-  });
+  .onGlobeReady(handleGlobeReady);
 
 // Globe mesh
 const globeMesh = globe.children[0].children[0].children[0];
@@ -270,7 +276,6 @@ const cloudSphere = new THREE.Mesh(
     opacity: 0.1,
   })
 );
-cloudSphere.rotation.y = Math.PI;
 globe.add(cloudSphere);
 
 // Lights
@@ -299,13 +304,8 @@ const createLight = (theta, phi, needHelper = false) => {
 
 const light1 = createLight(d2r(51), d2r(89));
 const light2 = createLight(d2r(23), d2r(279));
-// const light3 = createLight(0, 0);
-// const light4 = createLight(0, 0);
 light1.intensity = 0.75;
 light2.intensity = 0.25;
-// light2.intensity = 0;
-// light3.intensity = 0;
-// light4.intensity = 0;
 
 const onResize = () => {
   // Update sizes
@@ -346,22 +346,20 @@ const onResize = () => {
 // };
 
 // const onClick = () => {
-//   raycaster.setFromCamera(mouse, camera);
-//   const intersects = raycaster.intersectObjects(scene.children, true);
-//   if (intersects.length > 0) {
-//     const c = globe.toGeoCoords(intersects[0].point);
-//     console.log(c);
-//     console.log(camera);
-//     const tc = camera.position.angleTo(Z_AXIS);
-//     const pc = camera.position.angleTo(Y_AXIS);
-//     console.log(tc, pc);
-//     [>
-//     const v = Math.random();
-//     const t = v < 0.33 ? "a" : v < 0.66 ? "tb" : "lb";
-//     data.push({ ...c, objType: t });
-//     globe.customLayerData(data);
-//     */
-//   }
+//   // const tc = camera.position.angleTo(Z_AXIS);
+//   // const pc = camera.position.angleTo(Y_AXIS);
+//   // console.log(tc, pc);
+//   // raycaster.setFromCamera(mouse, camera);
+//   // const intersects = raycaster.intersectObjects(scene.children, true);
+//   // if (intersects.length > 0) {
+//   // const c = globe.toGeoCoords(intersects[0].point);
+//   // console.log(c);
+//   // console.log(camera);
+//   // const v = Math.random();
+//   // const t = v < 0.33 ? "a" : v < 0.66 ? "tb" : "lb";
+//   // data.push({ ...c, objType: t });
+//   // globe.customLayerData(data);
+//   // }
 // };
 
 window.addEventListener("resize", onResize);
@@ -383,10 +381,6 @@ scene.add(camera);
 
 // Controls
 // const controls = new OrbitControls(camera, canvas);
-// controls.addEventListener("change", () => {
-// console.log(camera.position);
-// console.log(camera.rotation);
-// });
 // controls.update();
 
 /**
@@ -407,10 +401,6 @@ renderer.setClearColor(0xcecece);
 const gui = new dat.GUI({
   width: 350,
 });
-gui.add(parameters, "china2USA");
-gui.add(parameters, "USA2China");
-gui.add(parameters, "china2Europe");
-gui.add(parameters, "europe2China");
 
 const getLightUpdater = (light) => (theta, phi) => {
   setObjectPositionOnSphere(light, theta, phi, 200);
@@ -423,8 +413,6 @@ const getLightUpdater = (light) => (theta, phi) => {
 const lightsFolder = gui.addFolder("lights");
 lightsFolder.add(light1, "intensity", 0, 1, 0.001).name("light 1").listen();
 lightsFolder.add(light2, "intensity", 0, 1, 0.001).name("light 2").listen();
-// lightsFolder.add(light3, "intensity", 0, 1, 0.001).name("light 3").listen();
-// lightsFolder.add(light4, "intensity", 0, 1, 0.001).name("light 4").listen();
 lightsFolder
   .add(parameters, "light1Theta", -360, 360, 1)
   .name("light 1 theta")
@@ -461,11 +449,6 @@ gui
 
 gui.close();
 
-/**
- * Animate
- */
-const clock = new THREE.Clock();
-
 const updateHTMLElements = (elements) => {
   Object.keys(elements).forEach((elementKey) => {
     const element = elements[elementKey];
@@ -495,6 +478,11 @@ const updateHTMLElements = (elements) => {
   });
 };
 
+/**
+ * Animate
+ */
+
+const clock = new THREE.Clock();
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
@@ -517,87 +505,131 @@ const tick = () => {
 
 tick();
 
-const init = () => {
+// HTML UI
+
+const setEuropeText = (button) => {
+  button.children[0].innerText = "Europe";
+  button.children[1].innerHTML = "B2B, B2C<br/>hubs";
+};
+
+const setUSAText = (button) => {
+  button.children[0].innerText = "USA";
+  button.children[1].innerHTML = "B2B, B2C<br/>hubs";
+};
+
+const setChinaText = (button) => {
+  button.children[0].innerText = "China";
+  button.children[1].innerHTML = "Airport,<br/>facilities";
+};
+
+const updateNavButtons = (state) => {
+  const rightButton = document.querySelector(".right-nav-button");
+  const leftButton = document.querySelector(".left-nav-button");
+  switch (state) {
+    case CHINA_STATE: {
+      setEuropeText(leftButton);
+      setUSAText(leftButton);
+      return;
+    }
+    case USA_STATE: {
+      setChinaText(leftButton);
+      setEuropeText(rightButton);
+      return;
+    }
+    case EUROPE_STATE: {
+      setUSAText(leftButton);
+      setChinaText(rightButton);
+      return;
+    }
+  }
+};
+
+const addUIHandlers = () => {
   const nextButton = document.querySelector(".next-button");
   const pathButtons = document.querySelector(".path-buttons");
-  nextButton.addEventListener("click", () => {
+  const rightButton = document.querySelector(".right-nav-button");
+  const leftButton = document.querySelector(".left-nav-button");
+
+  const handleNextButtonClick = () => {
     Object.keys(explosions).map((explosionKey) => {
       const explosion = explosions[explosionKey];
       explosion.element.classList.add("active");
       nextButton.style.display = "none";
       pathButtons.style.display = "flex";
     });
-  });
-  const rightButton = document.querySelector(".right-nav-button");
-  const leftButton = document.querySelector(".left-nav-button");
-  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  const hideAndRevealNav = (revealLeft, revealRight, cb) => {
+  };
+
+  const hideAndRevealNav = (cb) => {
     rightButton.classList.add("hidden");
     leftButton.classList.add("hidden");
-    wait(500).then(() => {
+    wait(ROTATION_DURATION + 100).then(() => {
       cb();
-      if (revealRight) {
-        rightButton.classList.remove("hidden");
-      }
-      if (revealLeft) {
-        leftButton.classList.remove("hidden");
-      }
+      rightButton.classList.remove("hidden");
+      leftButton.classList.remove("hidden");
     });
   };
-  rightButton.addEventListener("click", () => {
+
+  const handleRightButtonClick = () => {
     switch (currentState) {
       case CHINA_STATE: {
         china2USARotator();
-        hideAndRevealNav(true, false, () => {
-          leftButton.children[0].innerText = "China";
-          leftButton.children[1].innerHTML = "Airport,<br/>facilities";
+        hideAndRevealNav(() => {
+          updateNavButtons(USA_STATE);
         });
         currentState = USA_STATE;
         return;
       }
       case USA_STATE: {
-        return;
-      }
-      case EUROPE_STATE: {
-        europe2ChinaRotator();
-        hideAndRevealNav(true, true, () => {
-          rightButton.children[0].innerText = "USA";
-          rightButton.children[1].innerHTML = "B2B, B2C<br/>hubs";
-          leftButton.children[0].innerText = "Europe";
-          leftButton.children[1].innerHTML = "B2B, B2C<br/>hubs";
-          currentState = CHINA_STATE;
-        });
-        return;
-      }
-    }
-  });
-  leftButton.addEventListener("click", () => {
-    switch (currentState) {
-      case CHINA_STATE: {
-        china2EuropeRotator();
-        hideAndRevealNav(false, true, () => {
-          rightButton.children[0].innerText = "China";
-          rightButton.children[1].innerHTML = "Airport,<br/>facilities";
+        USA2EuropeRotator();
+        hideAndRevealNav(() => {
+          updateNavButtons(EUROPE_STATE);
         });
         currentState = EUROPE_STATE;
         return;
       }
       case EUROPE_STATE: {
-        return;
-      }
-      case USA_STATE: {
-        USA2ChinaRotator();
-        hideAndRevealNav(true, true, () => {
-          rightButton.children[0].innerText = "USA";
-          rightButton.children[1].innerHTML = "B2B, B2C<br/>hubs";
-          leftButton.children[0].innerText = "Europe";
-          leftButton.children[1].innerHTML = "B2B, B2C<br/>hubs";
+        europe2ChinaRotator();
+        hideAndRevealNav(() => {
+          updateNavButtons(CHINA_STATE);
           currentState = CHINA_STATE;
         });
         return;
       }
     }
-  });
+  };
+
+  const handleLeftButtonClick = () => {
+    switch (currentState) {
+      case CHINA_STATE: {
+        china2EuropeRotator();
+        hideAndRevealNav(() => {
+          updateNavButtons(EUROPE_STATE);
+        });
+        currentState = EUROPE_STATE;
+        return;
+      }
+      case EUROPE_STATE: {
+        europe2USARotator();
+        hideAndRevealNav(() => {
+          updateNavButtons(USA_STATE);
+        });
+        currentState = USA_STATE;
+        return;
+      }
+      case USA_STATE: {
+        USA2ChinaRotator();
+        hideAndRevealNav(() => {
+          updateNavButtons(CHINA_STATE);
+          currentState = CHINA_STATE;
+        });
+        return;
+      }
+    }
+  };
+
+  nextButton.addEventListener("click", handleNextButtonClick);
+  rightButton.addEventListener("click", handleRightButtonClick);
+  leftButton.addEventListener("click", handleLeftButtonClick);
 };
 
-init();
+addUIHandlers();
