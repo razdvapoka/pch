@@ -1,4 +1,5 @@
 import { geoDistance } from "d3-geo";
+import { uid } from "uid";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -10,6 +11,7 @@ import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import { calcCurve } from "./calcCurve";
 import { getOverlay } from "./overlay";
 import { airport, tallBuildingsGroup, lowBuildingsGroup } from "./buildings";
+import largeAirports from "./large_airports.json";
 import {
   pointsGeometry,
   pointsMaterial,
@@ -27,6 +29,17 @@ import {
   INTRO_STATE,
   B2B_STEP_1,
 } from "./data";
+
+const airportObjects = largeAirports.map((a) => {
+  const [lng, lat] = a.coordinates.split(", ");
+  return {
+    objType: "a",
+    lat,
+    lng,
+    id: uid(),
+    small: true,
+  };
+});
 
 const CANONIC_WIDTH = 1440;
 const CANONIC_GLOBE_RADIUS = 100;
@@ -223,8 +236,13 @@ const handleCustomObject = (objData) => {
       }
       return;
     }
-    case "a":
-      return airport.clone();
+    case "a": {
+      const a = airport.clone();
+      if (objData.small) {
+        a.scale.set(0.5, 0.5, 0.5);
+      }
+      return a;
+    }
     case "tb":
       return tallBuildingsGroup.clone();
     case "lb":
@@ -280,7 +298,7 @@ const globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
   .globeImageUrl(globeImage)
   .atmosphereColor("white")
   .atmosphereAltitude(0.1)
-  .customLayerData(customData)
+  .customLayerData([...customData, ...airportObjects])
   .customThreeObject(handleCustomObject)
   .customThreeObjectUpdate(handleCustomObjectUpdate)
   .arcsData(arcsData)
