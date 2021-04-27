@@ -8,6 +8,7 @@ import globeImage from "./assets/images/earth-gray.png";
 import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import { calcCurve } from "./calcCurve";
+import { getOverlay } from "./overlay";
 import { airport, tallBuildingsGroup, lowBuildingsGroup } from "./buildings";
 import {
   pointsGeometry,
@@ -84,11 +85,11 @@ let light1RotationProps = {
   phi: d2r(90),
   r: 200,
 };
-let light2RotationProps = {
-  theta: d2r(23),
-  phi: d2r(279),
-  r: 200,
-};
+// let light2RotationProps = {
+//   theta: d2r(23),
+//   phi: d2r(279),
+//   r: 200,
+// };
 let pointsMesh = null;
 
 // Camera rotation
@@ -248,8 +249,19 @@ const handleGlobeReady = () => {
   globe.scale.set(scale, scale, scale);
   isGlobeReady = true;
   const launchButton = document.querySelector(".launch-button");
-  launchButton.classList.remove("hidden");
   pointsMaterial.opacity = 1;
+  requestAnimationFrame(() =>
+    anime({
+      targets: overlay.material.uniforms.uAlpha,
+      easing: "easeInOutCubic",
+      duration: 2000,
+      value: 0,
+      complete: () => {
+        camera.remove(overlay);
+        launchButton.classList.remove("hidden");
+      },
+    })
+  );
 };
 
 // Globe
@@ -296,7 +308,7 @@ const cloudSphere = new THREE.Mesh(
 globe.add(cloudSphere);
 
 // Lights
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
 // scene.add(ambientLight);
 
 const createLight = (theta, phi, r = 200, needHelper = false) => {
@@ -448,6 +460,9 @@ const camera = new THREE.PerspectiveCamera(
 );
 setObjectPositionOnSphere(camera, INTRO_CAM_THETA, INTRO_CAM_PHI, INTRO_CAM_R);
 scene.add(camera);
+
+const overlay = getOverlay();
+camera.add(overlay);
 
 const getCameraRotator = (theta, phi, r = 0) =>
   getObjectRotator(theta, phi, r, camera, cameraRotationProps);
@@ -759,7 +774,7 @@ const addUIHandlers = () => {
     intro2ChinaRotator();
     intro2ChinaLight1Rotator();
     launchIntro2ChinaAnimation();
-    launchButton.classList.add("hidden");
+    launchButton.style.display = "none";
     nextButton.classList.remove("hidden");
     wait(600).then(() => {
       currentState = CHINA_STATE;
