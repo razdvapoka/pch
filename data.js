@@ -25,8 +25,7 @@ export const arcsData = [
     startLng: 112.47016304067684,
     endLat: 5.577642128002978,
     endLng: 102.8120616247904,
-    alt: 0.1,
-    altAutoScale: 0.5,
+    alt: 0.05,
     color: "white",
   },
   {
@@ -157,25 +156,4 @@ export const customData = [
 export const USA_STATE = "USA_STATE";
 export const EUROPE_STATE = "EUROPE_STATE";
 export const CHINA_STATE = "CHINA_STATE";
-
-const usaButton = {
-  text: "USA",
-  subText: "B2B, B2C<br/>hubs",
-  state: USA_STATE,
-};
-const europeButton = {
-  text: "Europe",
-  subText: "B2B, B2C<br/>hubs",
-  state: EUROPE_STATE,
-};
-const chinaButton = {
-  text: "China",
-  subText: "B2B, B2C<br/>hubs",
-  state: CHINA_STATE,
-};
-
-export const buttons = {
-  [CHINA_STATE]: [europeButton, usaButton],
-  [USA_STATE]: [chinaButton, europeButton],
-  [EUROPE_STATE]: [usaButton, chinaButton],
-};
+export const INTRO_STATE = "INTRO_STATE";

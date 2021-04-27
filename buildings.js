@@ -6,7 +6,6 @@ const buildingColor = new THREE.Color(
   0.39215686274509803,
   0.9803921568627451
 );
-console.log(buildingColor);
 
 const buildingMaterial = new THREE.MeshStandardMaterial({
   name: "Building Material",

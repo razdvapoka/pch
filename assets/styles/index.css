@@ -30,20 +30,32 @@ a, a:visited {
   transition: color 0.3s ease;
 }
 
-h1 {
-  font-size: 6.7rem;
-  font-weight: 300;
-  letter-spacing: -0.4rem;
+.heading {
   position: fixed;
   left: 50%;
   top: 0;
   transform: translate(-50%, 0);
 }
 
-.next-button {
+.intro-heading {
+  font-size: 4rem;
+  font-weight: 200;
+  line-height: 1.4;
+  letter-spacing: -0.15rem;
+  top: 3.3rem;
+}
+
+.today-heading {
+  font-size: 6.7rem;
+  font-weight: 300;
+  letter-spacing: -0.4rem;
+}
+
+.standard-button {
+  border-radius: 0.5rem;
+  z-index: 100;
   cursor: pointer;
   padding: 1.8rem 3.1rem;
-  border: 1px solid white;
   font-size: 2.5rem;
   line-height: 1;
   letter-spacing: 0.07em;
@@ -52,10 +64,18 @@ h1 {
   bottom: 2.2rem;
   left: 50%;
   transform: translate(-50%, 0);
+}
+
+.next-button {
+  border: 1px solid white;
   color: white;
   background: transparent;
-  border-radius: 0.5rem;
-  z-index: 100;
+}
+
+.launch-button {
+  color: white;
+  background-color: #5C63FF;
+  border: 0;
 }
 
 .path-buttons {

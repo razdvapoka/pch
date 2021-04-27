@@ -1,7 +1,7 @@
 import { geoDistance } from "d3-geo";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
 import ThreeGlobe from "three-globe";
 import globeImage from "./assets/images/earth-gray.png";
@@ -23,14 +23,18 @@ import {
   USA_STATE,
   CHINA_STATE,
   EUROPE_STATE,
+  INTRO_STATE,
 } from "./data";
 
 const CANONIC_WIDTH = 1440;
 const CANONIC_GLOBE_RADIUS = 100;
 const CENTER = new THREE.Vector3(0, 0, 0);
 const CAM_R = 220;
-const DEFAULT_CAM_THETA = Math.PI - 1.1732590418436886;
-const DEFAULT_CAM_PHI = 1.2649334407322725;
+const INTRO_CAM_R = 450;
+const INTRO_CAM_THETA = 1.2324469461144;
+const INTRO_CAM_PHI = 1.3532513064958416;
+const CHINA_CAM_THETA = Math.PI - 1.1732590418436886;
+const CHINA_CAM_PHI = 1.2649334407322725;
 const ROTATION_DURATION = 500;
 
 const setObjectPositionOnSphere = (object, theta, phi, radius) => {
@@ -69,38 +73,48 @@ const sizes = {
 const labels = {};
 const explosions = {};
 let isGlobeReady = false;
-let currentState = CHINA_STATE;
-let cameraTheta = DEFAULT_CAM_THETA;
-let cameraPhi = DEFAULT_CAM_PHI;
+let currentState = INTRO_STATE;
+let cameraRotationProps = {
+  theta: INTRO_CAM_THETA,
+  phi: INTRO_CAM_PHI,
+  r: INTRO_CAM_R,
+};
+let light1RotationProps = {
+  theta: d2r(-40),
+  phi: d2r(90),
+  r: 200,
+};
+let light2RotationProps = {
+  theta: d2r(23),
+  phi: d2r(279),
+  r: 200,
+};
 let pointsMesh = null;
 
 // Camera rotation
-
-const getCameraRotator = (theta, phi) => () => {
-  const newCameraTheta = cameraTheta + theta;
-  const newCameraPhi = cameraPhi + phi;
+//
+const getObjectRotator = (theta, phi, r, object, props) => () => {
+  const { theta: objTheta, phi: objPhi, r: objR } = props;
+  const newObjTheta = objTheta + theta;
+  const newObjPhi = objPhi + phi;
+  const newObjR = objR + r;
   anime({
     duration: ROTATION_DURATION,
     easing: "easeInOutCubic",
     update: (a) => {
       const alpha = a.progress / 100;
-      const t = cameraTheta + alpha * (newCameraTheta - cameraTheta);
-      const p = cameraPhi + alpha * (newCameraPhi - cameraPhi);
-      setObjectPositionOnSphere(camera, t, p, CAM_R);
+      const t = objTheta + alpha * (newObjTheta - objTheta);
+      const p = objPhi + alpha * (newObjPhi - objPhi);
+      const rr = objR + alpha * (newObjR - objR);
+      setObjectPositionOnSphere(object, t, p, rr);
     },
     complete: () => {
-      cameraTheta = newCameraTheta;
-      cameraPhi = newCameraPhi;
+      props.theta = newObjTheta;
+      props.phi = newObjPhi;
+      props.r = newObjR;
     },
   });
 };
-
-const china2USARotator = getCameraRotator(Math.PI * 0.8, -Math.PI * 0.08);
-const china2EuropeRotator = getCameraRotator(-Math.PI * 0.5, -Math.PI * 0.12);
-const USA2ChinaRotator = getCameraRotator(-Math.PI * 0.8, Math.PI * 0.08);
-const USA2EuropeRotator = getCameraRotator(Math.PI * 0.7, -Math.PI * 0.04);
-const europe2ChinaRotator = getCameraRotator(Math.PI * 0.5, Math.PI * 0.12);
-const europe2USARotator = getCameraRotator(-Math.PI * 0.7, Math.PI * 0.04);
 
 // GUI
 const parameters = {
@@ -112,6 +126,8 @@ const parameters = {
   light1Phi: d2r(89),
   light2Theta: d2r(23),
   light2Phi: d2r(279),
+  light1R: 400,
+  light2R: 200,
 };
 
 // Canvas
@@ -231,9 +247,9 @@ const handleGlobeReady = () => {
   const scale = sizes.width / CANONIC_WIDTH;
   globe.scale.set(scale, scale, scale);
   isGlobeReady = true;
+  const launchButton = document.querySelector(".launch-button");
+  launchButton.classList.remove("hidden");
   pointsMaterial.opacity = 1;
-  console.log("globe ready");
-  console.log(globe);
 };
 
 // Globe
@@ -263,7 +279,8 @@ globeMesh.geometry.setAttribute("uv2", new THREE.BufferAttribute(uv, 2));
 const material = globe.globeMaterial();
 material.color = new THREE.Color("#2750CC");
 material.lightMap = lightMap;
-material.lightMapIntensity = 7;
+// material.lightMapIntensity = 7;
+material.lightMapIntensity = 15;
 
 scene.add(globe);
 
@@ -273,18 +290,18 @@ const cloudSphere = new THREE.Mesh(
     color: "white",
     alphaMap: cloudsMap,
     transparent: true,
-    opacity: 0.1,
+    opacity: 0,
   })
 );
 globe.add(cloudSphere);
 
 // Lights
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-scene.add(ambientLight);
+// scene.add(ambientLight);
 
-const createLight = (theta, phi, needHelper = false) => {
+const createLight = (theta, phi, r = 200, needHelper = false) => {
   const light = new THREE.DirectionalLight(0xffffff, 0.5);
-  setObjectPositionOnSphere(light, theta, phi, 200);
+  setObjectPositionOnSphere(light, theta, phi, r);
 
   const lightTarget = new THREE.Object3D();
   setObjectPositionOnSphere(lightTarget, theta + Math.PI, phi + Math.PI, 1);
@@ -302,10 +319,59 @@ const createLight = (theta, phi, needHelper = false) => {
   return light;
 };
 
-const light1 = createLight(d2r(51), d2r(89));
-const light2 = createLight(d2r(23), d2r(279));
-light1.intensity = 0.75;
-light2.intensity = 0.25;
+// const light1 = createLight(d2r(51), d2r(89), 200);
+// const light2 = createLight(d2r(23), d2r(279), 200);
+// light1.intensity = 1;
+// light2.intensity = 0;
+
+const light1 = createLight(d2r(-40), d2r(90), 200);
+const light2 = createLight(d2r(23), d2r(279), 200);
+light1.intensity = 2;
+light2.intensity = 0;
+
+const intro2ChinaLight1Animation = {
+  targets: light1,
+  intensity: 0.75,
+};
+const intro2ChinaLight2Animation = {
+  targets: light2,
+  intensity: 0.25,
+};
+const intro2ChinaGlobeMaterialAnimation = {
+  targets: material,
+  lightMapIntensity: 7,
+};
+const intro2ChinaCloudMaterialAnimation = {
+  targets: cloudSphere.material,
+  opacity: 0.2,
+};
+
+const intro2ChinaLight1Rotator = getObjectRotator(
+  d2r(91),
+  d2r(-1),
+  200,
+  light1,
+  light1RotationProps
+);
+
+const launchIntro2ChinaAnimation = () => {
+  const timeline = anime.timeline({
+    duration: ROTATION_DURATION,
+    easing: "easeInOutCubic",
+    autoplay: false,
+    complete: () => {
+      const heading = document.querySelector("h1");
+      heading.innerText = "Today";
+      heading.classList.remove("intro-heading");
+      heading.classList.add("today-heading");
+    },
+  });
+  timeline.add(intro2ChinaLight1Animation);
+  timeline.add(intro2ChinaLight2Animation, 0);
+  timeline.add(intro2ChinaGlobeMaterialAnimation, 0);
+  timeline.add(intro2ChinaCloudMaterialAnimation, 0);
+  timeline.play();
+};
 
 const onResize = () => {
   // Update sizes
@@ -344,11 +410,15 @@ const onResize = () => {
 //   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
 //   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 // };
+//
+//
+// const Z_AXIS = new THREE.Vector3(0, 0, 1);
+// const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
 // const onClick = () => {
-//   // const tc = camera.position.angleTo(Z_AXIS);
-//   // const pc = camera.position.angleTo(Y_AXIS);
-//   // console.log(tc, pc);
+//   const tc = camera.position.angleTo(Z_AXIS);
+//   const pc = camera.position.angleTo(Y_AXIS);
+//   console.log(tc, pc);
 //   // raycaster.setFromCamera(mouse, camera);
 //   // const intersects = raycaster.intersectObjects(scene.children, true);
 //   // if (intersects.length > 0) {
@@ -376,12 +446,27 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   2500
 );
-setObjectPositionOnSphere(camera, DEFAULT_CAM_THETA, DEFAULT_CAM_PHI, CAM_R);
+setObjectPositionOnSphere(camera, INTRO_CAM_THETA, INTRO_CAM_PHI, INTRO_CAM_R);
 scene.add(camera);
 
+const getCameraRotator = (theta, phi, r = 0) =>
+  getObjectRotator(theta, phi, r, camera, cameraRotationProps);
+
+const china2USARotator = getCameraRotator(Math.PI * 0.8, -Math.PI * 0.08);
+const china2EuropeRotator = getCameraRotator(-Math.PI * 0.5, -Math.PI * 0.12);
+const USA2ChinaRotator = getCameraRotator(-Math.PI * 0.8, Math.PI * 0.08);
+const USA2EuropeRotator = getCameraRotator(Math.PI * 0.7, -Math.PI * 0.04);
+const europe2ChinaRotator = getCameraRotator(Math.PI * 0.5, Math.PI * 0.12);
+const europe2USARotator = getCameraRotator(-Math.PI * 0.7, Math.PI * 0.04);
+const intro2ChinaRotator = getCameraRotator(
+  CHINA_CAM_THETA - INTRO_CAM_THETA,
+  CHINA_CAM_PHI - INTRO_CAM_PHI,
+  CAM_R - INTRO_CAM_R
+);
+
 // Controls
-// const controls = new OrbitControls(camera, canvas);
-// controls.update();
+const controls = new OrbitControls(camera, canvas);
+controls.update();
 
 /**
  * Renderer
@@ -402,8 +487,8 @@ const gui = new dat.GUI({
   width: 350,
 });
 
-const getLightUpdater = (light) => (theta, phi) => {
-  setObjectPositionOnSphere(light, theta, phi, 200);
+const getLightUpdater = (light) => (theta, phi, r) => {
+  setObjectPositionOnSphere(light, theta, phi, r);
   setObjectPositionOnSphere(light.target, theta + Math.PI, phi + Math.PI, 1);
   if (light.__helper) {
     light.__helper.update();
@@ -418,28 +503,66 @@ lightsFolder
   .name("light 1 theta")
   .onChange(() => {
     const updater = getLightUpdater(light1);
-    updater(d2r(parameters.light1Theta), d2r(parameters.light1Phi));
+    updater(
+      d2r(parameters.light1Theta),
+      d2r(parameters.light1Phi),
+      parameters.light1R
+    );
   });
 lightsFolder
   .add(parameters, "light1Phi", -360, 360, 1)
   .name("light 1 phi")
   .onChange(() => {
     const updater = getLightUpdater(light1);
-    updater(d2r(parameters.light1Theta), d2r(parameters.light1Phi));
+    updater(
+      d2r(parameters.light1Theta),
+      d2r(parameters.light1Phi),
+      parameters.light1R
+    );
+  });
+lightsFolder
+  .add(parameters, "light1R", 200, 500, 1)
+  .name("light 1 r")
+  .onChange(() => {
+    const updater = getLightUpdater(light1);
+    updater(
+      d2r(parameters.light1Theta),
+      d2r(parameters.light1Phi),
+      parameters.light1R
+    );
   });
 lightsFolder
   .add(parameters, "light2Theta", -360, 360, 1)
   .name("light 2 theta")
   .onChange(() => {
     const updater = getLightUpdater(light2);
-    updater(d2r(parameters.light2Theta), d2r(parameters.light2Phi));
+    updater(
+      d2r(parameters.light2Theta),
+      d2r(parameters.light2Phi),
+      parameters.light2R
+    );
   });
 lightsFolder
   .add(parameters, "light2Phi", -360, 360, 1)
   .name("light 2 phi")
   .onChange(() => {
     const updater = getLightUpdater(light2);
-    updater(d2r(parameters.light2Theta), d2r(parameters.light2Phi));
+    updater(
+      d2r(parameters.light2Theta),
+      d2r(parameters.light2Phi),
+      parameters.light2R
+    );
+  });
+lightsFolder
+  .add(parameters, "light2R", 200, 500, 1)
+  .name("light 2 r")
+  .onChange(() => {
+    const updater = getLightUpdater(light2);
+    updater(
+      d2r(parameters.light2Theta),
+      d2r(parameters.light2Phi),
+      parameters.light2R
+    );
   });
 lightsFolder.open();
 
@@ -487,11 +610,14 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
   // Update controls
-  // controls.update();
+  controls.update();
 
   if (isGlobeReady) {
     updateHTMLElements(labels);
     updateHTMLElements(explosions);
+    if (cloudSphere.material.opacity === 0) {
+      cloudSphere.material.opacity = 0.5;
+    }
   }
 
   cloudSphere.rotation.y = elapsedTime / 100;
@@ -549,6 +675,7 @@ const addUIHandlers = () => {
   const pathButtons = document.querySelector(".path-buttons");
   const rightButton = document.querySelector(".right-nav-button");
   const leftButton = document.querySelector(".left-nav-button");
+  const launchButton = document.querySelector(".launch-button");
 
   const handleNextButtonClick = () => {
     Object.keys(explosions).map((explosionKey) => {
@@ -627,7 +754,22 @@ const addUIHandlers = () => {
     }
   };
 
+  const handleLaunchButtonClick = () => {
+    intro2ChinaRotator();
+    intro2ChinaLight1Rotator();
+    launchIntro2ChinaAnimation();
+    launchButton.classList.add("hidden");
+    nextButton.classList.remove("hidden");
+    wait(600).then(() => {
+      currentState = CHINA_STATE;
+      updateNavButtons(CHINA_STATE);
+      rightButton.classList.remove("hidden");
+      leftButton.classList.remove("hidden");
+    });
+  };
+
   nextButton.addEventListener("click", handleNextButtonClick);
+  launchButton.addEventListener("click", handleLaunchButtonClick);
   rightButton.addEventListener("click", handleRightButtonClick);
   leftButton.addEventListener("click", handleLeftButtonClick);
 };
