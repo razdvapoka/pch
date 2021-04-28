@@ -134,28 +134,30 @@ const getObjectRotator = (
   object,
   props,
   duration = ROTATION_DURATION
-) => () => {
-  const { theta: objTheta, phi: objPhi, r: objR } = props;
-  const newObjTheta = objTheta + theta;
-  const newObjPhi = objPhi + phi;
-  const newObjR = objR + r;
-  anime({
-    duration,
-    easing: "easeInOutCubic",
-    update: (a) => {
-      const alpha = a.progress / 100;
-      const t = objTheta + alpha * (newObjTheta - objTheta);
-      const p = objPhi + alpha * (newObjPhi - objPhi);
-      const rr = objR + alpha * (newObjR - objR);
-      setObjectPositionOnSphere(object, t, p, rr);
-    },
-    complete: () => {
-      props.theta = newObjTheta;
-      props.phi = newObjPhi;
-      props.r = newObjR;
-    },
+) => () =>
+  new Promise((resolve) => {
+    const { theta: objTheta, phi: objPhi, r: objR } = props;
+    const newObjTheta = objTheta + theta;
+    const newObjPhi = objPhi + phi;
+    const newObjR = objR + r;
+    anime({
+      duration,
+      easing: "easeInOutCubic",
+      update: (a) => {
+        const alpha = a.progress / 100;
+        const t = objTheta + alpha * (newObjTheta - objTheta);
+        const p = objPhi + alpha * (newObjPhi - objPhi);
+        const rr = objR + alpha * (newObjR - objR);
+        setObjectPositionOnSphere(object, t, p, rr);
+      },
+      complete: () => {
+        props.theta = newObjTheta;
+        props.phi = newObjPhi;
+        props.r = newObjR;
+        resolve();
+      },
+    });
   });
-};
 
 // GUI
 const parameters = {
@@ -729,20 +731,20 @@ const addUIHandlers = () => {
   const b2bButton = document.querySelector(".b2b-button");
 
   const handleB2BButtonClick = () => {
-    china2USARotator();
-    wait(ROTATION_DURATION + 100).then(() => {
-      zoomRotator();
+    china2USARotator().then(() => {
+      zoomRotator().then(() => {
+        wait(100).then(() => {
+          setServerSceneCamera(camera);
+          setScene(serversScene);
+          document.querySelector("html").style.color = "black";
+          overlay.classList.add("canvas-overlay-white-hidden");
+        });
+      });
       overlay.classList.add("canvas-overlay-white");
       pathButtons.classList.add("hidden");
       leftButton.classList.add("hidden");
       rightButton.classList.add("hidden");
       currentState = B2B_STEP_1;
-      wait(ROTATION_DURATION + 100).then(() => {
-        setServerSceneCamera(camera);
-        setScene(serversScene);
-        document.querySelector("html").style.color = "black";
-        overlay.classList.add("canvas-overlay-white-hidden");
-      });
     });
   };
 
