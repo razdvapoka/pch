@@ -148,14 +148,27 @@ a, a:visited {
 
 .explosion {
   position: absolute;
-  width: 17rem;
-  height: 17rem;
   border-radius: 9999px;
   background-color: #5C63FF;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%) scale(0.001, 0.001);
-  transition: transform 1s ease, opacity 1s ease;
+  transition: transform 1s ease-out, opacity 1s ease-out;
+}
+
+.explosion-1 {
+  width: 16rem;
+  height: 16rem;
+}
+
+.explosion-2 {
+  width: 10.5rem;
+  height: 10.5rem;
+}
+
+.explosion-3 {
+  width: 6rem;
+  height: 6rem;
 }
 
 .explosion-box.active .explosion {

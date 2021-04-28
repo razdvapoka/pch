@@ -59,6 +59,12 @@ tallBuildings.add(b1, b2, b3, b4);
 tallBuildings.rotateX(Math.PI / 2);
 tallBuildingsGroup.add(tallBuildings);
 
+const singleTallBuilding = new THREE.Group();
+const b = tallBuilding.clone();
+b.rotateX(Math.PI / 2);
+b.scale.set(2, 2, 2);
+singleTallBuilding.add(b);
+
 const LB_GAP = 1.3;
 const lowBuildingsGroup = new THREE.Group();
 const lowBuildings = new THREE.Group();
@@ -73,4 +79,4 @@ lowBuildings.rotateX(Math.PI / 2);
 lowBuildings.rotateY(Math.PI / 1.3);
 lowBuildingsGroup.add(lowBuildings);
 
-export { airport, lowBuildingsGroup, tallBuildingsGroup };
+export { airport, lowBuildingsGroup, tallBuildingsGroup, singleTallBuilding };

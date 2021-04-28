@@ -19,6 +19,29 @@ export const pathsData = [
   ],
 ];
 
+export const fulfillmentPaths = [
+  [
+    [23.700551681153613, 112.5178530352569],
+    [26.697672656009466, 111.2],
+  ],
+  [
+    [26.697672656009466, 111.2],
+    [30.788767443843554, 110.64099274823512],
+  ],
+  [
+    [26.697672656009466, 111.2],
+    [30.8541141483191, 108.18689228757488],
+  ],
+  [
+    [32.084486357469686, 109.70366047098372],
+    [34.19275246598128, 101.3431390814407],
+  ],
+  [
+    [30.906290040140114, 107.10192191858035],
+    [26.10131939282151, 100.00000001524467],
+  ],
+];
+
 export const arcsData = [
   {
     startLat: 21.59955118709118,
@@ -134,12 +157,26 @@ export const customData = [
     id: uid(),
   },
   {
-    lat: 27.905158191663908,
-    lng: 110.71756429489352,
+    lat: 26.697672656009466,
+    lng: 111.2,
     objType: "explosion",
     id: uid(),
   },
 ];
+
+export const fulfillment = {
+  lat: 26.697672656009466,
+  lng: 111.2,
+  objType: "tb-single",
+  id: uid(),
+};
+export const fulfillmentLabel = {
+  lat: 28.367832556457905,
+  lng: 119.30302357080461,
+  objType: "label",
+  label: "fulfillment",
+  id: uid(),
+};
 
 export const USA_STATE = "USA_STATE";
 export const EUROPE_STATE = "EUROPE_STATE";

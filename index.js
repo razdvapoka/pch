@@ -9,7 +9,12 @@ import globeImage from "./assets/images/earth-gray.png";
 import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import { calcCurve } from "./calcCurve";
-import { airport, tallBuildingsGroup, lowBuildingsGroup } from "./buildings";
+import {
+  airport,
+  tallBuildingsGroup,
+  lowBuildingsGroup,
+  singleTallBuilding,
+} from "./buildings";
 import largeAirports from "./large_airports_shortlist.json";
 import {
   pointsGeometry,
@@ -21,6 +26,9 @@ import {
   arcsData,
   pathsData,
   customData,
+  fulfillment,
+  fulfillmentLabel,
+  fulfillmentPaths,
   USA_STATE,
   CHINA_STATE,
   EUROPE_STATE,
@@ -230,9 +238,15 @@ const createExplosion = (objData) => {
   const element = document.createElement("div");
   element.id = objData.id;
   element.classList.add("explosion-box");
-  const explosion = document.createElement("div");
-  explosion.classList.add("explosion");
-  element.appendChild(explosion);
+  const explosion1 = document.createElement("div");
+  explosion1.classList.add("explosion", "explosion-1");
+  const explosion2 = document.createElement("div");
+  explosion2.classList.add("explosion", "explosion-2");
+  const explosion3 = document.createElement("div");
+  explosion3.classList.add("explosion", "explosion-3");
+  element.appendChild(explosion1);
+  element.appendChild(explosion2);
+  element.appendChild(explosion3);
   document.body.appendChild(element);
   const scale = sizes.width / CANONIC_WIDTH;
   return {
@@ -275,6 +289,9 @@ const handleCustomObject = (objData) => {
     }
     case "tb":
       return tallBuildingsGroup.clone();
+    case "tb-single": {
+      return singleTallBuilding.clone();
+    }
     case "lb":
       return lowBuildingsGroup.clone();
     case "arc": {
@@ -777,11 +794,22 @@ const addUIHandlers = () => {
       nextButton.style.display = "none";
       pathButtons.style.display = "flex";
       heading.innerText = "Tomorrow";
+      const postponementLabel = Object.values(labels).find(
+        (l) => l.data.label === "postponement"
+      );
+      postponementLabel.element.style.opacity = 0;
+      wait(1000).then(() => {
+        globe
+          .customLayerData([
+            ...customData,
+            ...largeAirports,
+            fulfillment,
+            fulfillmentLabel,
+          ])
+          .pathTransitionDuration(0)
+          .pathsData(fulfillmentPaths);
+      });
     });
-    const postponementLabel = Object.values(labels).find(
-      (l) => l.data.label === "postponement"
-    );
-    postponementLabel.element.innerText = "fulfillment";
   };
 
   const hideAndRevealNav = (cb) => {
