@@ -33,6 +33,13 @@ import {
   setServerSceneCamera,
 } from "./scenes/servers";
 
+// GUI
+
+const gui = new dat.GUI({
+  width: 350,
+  autoPlace: false,
+});
+
 const airportObjects = largeAirports.map((a) => {
   const [lng, lat] = a.coordinates.split(", ");
   return {
@@ -96,7 +103,10 @@ let serversModel = null;
 let serversScene = null;
 const setServersModel = (gltf) => {
   serversModel = gltf.scene.children[0];
-  serversScene = initServersScene(serversModel);
+  serversScene = initServersScene(serversModel, gui);
+  // setServerSceneCamera(camera);
+  // setScene(serversScene);
+  // document.querySelector("html").style.color = "black";
 };
 loadServersModel(setServersModel);
 
@@ -529,97 +539,90 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0xcecece);
 
-// GUI
+// const getLightUpdater = (light) => (theta, phi, r) => {
+//   setObjectPositionOnSphere(light, theta, phi, r);
+//   setObjectPositionOnSphere(light.target, theta + Math.PI, phi + Math.PI, 1);
+//   if (light.__helper) {
+//     light.__helper.update();
+//   }
+// };
 
-const gui = new dat.GUI({
-  width: 350,
-  autoPlace: false,
-});
+// const lightsFolder = gui.addFolder("lights");
+// lightsFolder.add(light1, "intensity", 0, 1, 0.001).name("light 1").listen();
+// lightsFolder.add(light2, "intensity", 0, 1, 0.001).name("light 2").listen();
+// lightsFolder
+//   .add(parameters, "light1Theta", -360, 360, 1)
+//   .name("light 1 theta")
+//   .onChange(() => {
+//     const updater = getLightUpdater(light1);
+//     updater(
+//       d2r(parameters.light1Theta),
+//       d2r(parameters.light1Phi),
+//       parameters.light1R
+//     );
+//   });
+// lightsFolder
+//   .add(parameters, "light1Phi", -360, 360, 1)
+//   .name("light 1 phi")
+//   .onChange(() => {
+//     const updater = getLightUpdater(light1);
+//     updater(
+//       d2r(parameters.light1Theta),
+//       d2r(parameters.light1Phi),
+//       parameters.light1R
+//     );
+//   });
+// lightsFolder
+//   .add(parameters, "light1R", 200, 500, 1)
+//   .name("light 1 r")
+//   .onChange(() => {
+//     const updater = getLightUpdater(light1);
+//     updater(
+//       d2r(parameters.light1Theta),
+//       d2r(parameters.light1Phi),
+//       parameters.light1R
+//     );
+//   });
+// lightsFolder
+//   .add(parameters, "light2Theta", -360, 360, 1)
+//   .name("light 2 theta")
+//   .onChange(() => {
+//     const updater = getLightUpdater(light2);
+//     updater(
+//       d2r(parameters.light2Theta),
+//       d2r(parameters.light2Phi),
+//       parameters.light2R
+//     );
+//   });
+// lightsFolder
+//   .add(parameters, "light2Phi", -360, 360, 1)
+//   .name("light 2 phi")
+//   .onChange(() => {
+//     const updater = getLightUpdater(light2);
+//     updater(
+//       d2r(parameters.light2Theta),
+//       d2r(parameters.light2Phi),
+//       parameters.light2R
+//     );
+//   });
+// lightsFolder
+//   .add(parameters, "light2R", 200, 500, 1)
+//   .name("light 2 r")
+//   .onChange(() => {
+//     const updater = getLightUpdater(light2);
+//     updater(
+//       d2r(parameters.light2Theta),
+//       d2r(parameters.light2Phi),
+//       parameters.light2R
+//     );
+//   });
+// lightsFolder.open();
 
-const getLightUpdater = (light) => (theta, phi, r) => {
-  setObjectPositionOnSphere(light, theta, phi, r);
-  setObjectPositionOnSphere(light.target, theta + Math.PI, phi + Math.PI, 1);
-  if (light.__helper) {
-    light.__helper.update();
-  }
-};
+// gui
+//   .add(cloudSphere.material, "opacity", 0, 1, 0.001)
+//   .name("cloud sphere opacity");
 
-const lightsFolder = gui.addFolder("lights");
-lightsFolder.add(light1, "intensity", 0, 1, 0.001).name("light 1").listen();
-lightsFolder.add(light2, "intensity", 0, 1, 0.001).name("light 2").listen();
-lightsFolder
-  .add(parameters, "light1Theta", -360, 360, 1)
-  .name("light 1 theta")
-  .onChange(() => {
-    const updater = getLightUpdater(light1);
-    updater(
-      d2r(parameters.light1Theta),
-      d2r(parameters.light1Phi),
-      parameters.light1R
-    );
-  });
-lightsFolder
-  .add(parameters, "light1Phi", -360, 360, 1)
-  .name("light 1 phi")
-  .onChange(() => {
-    const updater = getLightUpdater(light1);
-    updater(
-      d2r(parameters.light1Theta),
-      d2r(parameters.light1Phi),
-      parameters.light1R
-    );
-  });
-lightsFolder
-  .add(parameters, "light1R", 200, 500, 1)
-  .name("light 1 r")
-  .onChange(() => {
-    const updater = getLightUpdater(light1);
-    updater(
-      d2r(parameters.light1Theta),
-      d2r(parameters.light1Phi),
-      parameters.light1R
-    );
-  });
-lightsFolder
-  .add(parameters, "light2Theta", -360, 360, 1)
-  .name("light 2 theta")
-  .onChange(() => {
-    const updater = getLightUpdater(light2);
-    updater(
-      d2r(parameters.light2Theta),
-      d2r(parameters.light2Phi),
-      parameters.light2R
-    );
-  });
-lightsFolder
-  .add(parameters, "light2Phi", -360, 360, 1)
-  .name("light 2 phi")
-  .onChange(() => {
-    const updater = getLightUpdater(light2);
-    updater(
-      d2r(parameters.light2Theta),
-      d2r(parameters.light2Phi),
-      parameters.light2R
-    );
-  });
-lightsFolder
-  .add(parameters, "light2R", 200, 500, 1)
-  .name("light 2 r")
-  .onChange(() => {
-    const updater = getLightUpdater(light2);
-    updater(
-      d2r(parameters.light2Theta),
-      d2r(parameters.light2Phi),
-      parameters.light2R
-    );
-  });
-lightsFolder.open();
-
-gui
-  .add(cloudSphere.material, "opacity", 0, 1, 0.001)
-  .name("cloud sphere opacity");
-
-gui.close();
+// gui.close();
 
 const updateHTMLElements = (elements) => {
   Object.keys(elements).forEach((elementKey) => {
