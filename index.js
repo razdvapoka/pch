@@ -37,7 +37,7 @@ import {
 
 const gui = new dat.GUI({
   width: 350,
-  autoPlace: false,
+  // autoPlace: false,
 });
 
 const airportObjects = largeAirports.map((a) => {

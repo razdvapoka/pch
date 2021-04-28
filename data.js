@@ -139,18 +139,6 @@ export const customData = [
     objType: "explosion",
     id: uid(),
   },
-  {
-    lat: 16.868466842703327,
-    lng: 101.63054361401858,
-    objType: "explosion",
-    id: uid(),
-  },
-  {
-    lat: 16.907429921581056,
-    lng: 120.89764052671202,
-    objType: "explosion",
-    id: uid(),
-  },
 ];
 
 export const USA_STATE = "USA_STATE";

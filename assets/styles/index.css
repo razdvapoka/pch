@@ -144,7 +144,6 @@ a, a:visited {
   top: 50%;
   left: 50%;
   user-select: none;
-  transition: opacity 0.2s ease;
 }
 
 .explosion {
