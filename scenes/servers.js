@@ -30,6 +30,13 @@ export const initServersScene = (serversModel) => {
   serverScene.add(directionalLight);
   serversModel.position.y = -70;
   serverScene.add(serversModel);
+  serversModel.traverse((obj) => {
+    if (obj.type === "Mesh") {
+      console.log(obj);
+      // obj.material.emissive = new THREE.Color("white");
+      // obj.material.emissiveIntensity = 2;
+    }
+  });
 
   const bulb = new THREE.PointLight("red", 5, 10);
   bulb.position.set(7.7, 7.6, 12);

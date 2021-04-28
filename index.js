@@ -9,7 +9,6 @@ import globeImage from "./assets/images/earth-gray.png";
 import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import { calcCurve } from "./calcCurve";
-import { getOverlay } from "./overlay";
 import { airport, tallBuildingsGroup, lowBuildingsGroup } from "./buildings";
 import largeAirports from "./large_airports_shortlist.json";
 import {
@@ -56,6 +55,7 @@ const CHINA_CAM_THETA = Math.PI - 1.1732590418436886;
 const CHINA_CAM_PHI = 1.2649334407322725;
 const ROTATION_DURATION = 500;
 const heading = document.querySelector("h1");
+const overlay = document.querySelector(".canvas-overlay");
 
 const setObjectPositionOnSphere = (object, theta, phi, radius) => {
   object.position.z = radius * Math.sin(phi) * Math.cos(theta);
@@ -296,18 +296,8 @@ const handleGlobeReady = () => {
   isGlobeReady = true;
   const launchButton = document.querySelector(".launch-button");
   pointsMaterial.opacity = 1;
-  requestAnimationFrame(() =>
-    anime({
-      targets: overlay.material.uniforms.uAlpha,
-      easing: "easeInOutCubic",
-      duration: 800,
-      value: 0,
-      complete: () => {
-        camera.remove(overlay);
-        launchButton.classList.remove("hidden");
-      },
-    })
-  );
+  overlay.classList.add("canvas-overlay-black-hidden");
+  launchButton.classList.remove("hidden");
 };
 
 // Globe
@@ -504,9 +494,6 @@ const camera = new THREE.PerspectiveCamera(
 setObjectPositionOnSphere(camera, INTRO_CAM_THETA, INTRO_CAM_PHI, INTRO_CAM_R);
 scene.add(camera);
 
-const overlay = getOverlay();
-camera.add(overlay);
-
 const getCameraRotator = (theta, phi, r = 0, duration = ROTATION_DURATION) =>
   getObjectRotator(theta, phi, r, camera, cameraRotationProps, duration);
 
@@ -521,7 +508,7 @@ const intro2ChinaRotator = getCameraRotator(
   CHINA_CAM_PHI - INTRO_CAM_PHI,
   CAM_R - INTRO_CAM_R
 );
-const zoomRotator = getCameraRotator(0, 0, -100, 600);
+const zoomRotator = getCameraRotator(0, 0, -100);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
@@ -742,25 +729,20 @@ const addUIHandlers = () => {
   const b2bButton = document.querySelector(".b2b-button");
 
   const handleB2BButtonClick = () => {
-    zoomRotator();
-    camera.add(overlay);
-    overlay.material.uniforms.uColorR.value = 1;
-    overlay.material.uniforms.uColorG.value = 1;
-    overlay.material.uniforms.uColorB.value = 1;
-    pathButtons.classList.add("hidden");
-    leftButton.classList.add("hidden");
-    rightButton.classList.add("hidden");
-    currentState = B2B_STEP_1;
-    anime({
-      targets: overlay.material.uniforms.uAlpha,
-      easing: "easeInOutCubic",
-      duration: 600,
-      value: 1,
-      complete: () => {
-        setScene(serversScene);
+    china2USARotator();
+    wait(ROTATION_DURATION + 100).then(() => {
+      zoomRotator();
+      overlay.classList.add("canvas-overlay-white");
+      pathButtons.classList.add("hidden");
+      leftButton.classList.add("hidden");
+      rightButton.classList.add("hidden");
+      currentState = B2B_STEP_1;
+      wait(ROTATION_DURATION + 100).then(() => {
         setServerSceneCamera(camera);
+        setScene(serversScene);
         document.querySelector("html").style.color = "black";
-      },
+        overlay.classList.add("canvas-overlay-white-hidden");
+      });
     });
   };
 
