@@ -150,8 +150,8 @@ export const customData = [
     id: uid(),
   },
   {
-    lat: 28.367832556457905,
-    lng: 120.30302357080461,
+    lat: 33.89749680434696,
+    lng: 117.4922954485937,
     objType: "label",
     label: "postponement",
     id: uid(),

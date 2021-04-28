@@ -45,7 +45,7 @@ import {
 
 const gui = new dat.GUI({
   width: 350,
-  // autoPlace: false,
+  autoPlace: false,
 });
 
 const airportObjects = largeAirports.map((a) => {
@@ -70,6 +70,7 @@ const CHINA_CAM_THETA = Math.PI - 1.1732590418436886;
 const CHINA_CAM_PHI = 1.2649334407322725;
 const ROTATION_DURATION = 500;
 const heading = document.querySelector("h1");
+const nav = document.querySelector("nav");
 const overlay = document.querySelector(".canvas-overlay");
 
 const setObjectPositionOnSphere = (object, theta, phi, radius) => {
@@ -723,7 +724,7 @@ const updateNavButtons = (state) => {
   switch (state) {
     case CHINA_STATE: {
       setEuropeText(leftButton);
-      setUSAText(leftButton);
+      setUSAText(rightButton);
       return;
     }
     case USA_STATE: {
@@ -756,7 +757,10 @@ const addUIHandlers = () => {
         wait(100).then(() => {
           setServerSceneCamera(camera);
           setScene(serversScene);
-          document.querySelector("html").style.color = "black";
+          document.querySelector("html").style.color = "#363636";
+          document.querySelector("html").style.backgroundColor = "#EFEEEE";
+          heading.innerText = "Business-to-business";
+          nav.style.display = "block";
           overlay.classList.add("canvas-overlay-white-hidden");
         });
       });
@@ -794,10 +798,6 @@ const addUIHandlers = () => {
       nextButton.style.display = "none";
       pathButtons.style.display = "flex";
       heading.innerText = "Tomorrow";
-      const postponementLabel = Object.values(labels).find(
-        (l) => l.data.label === "postponement"
-      );
-      postponementLabel.element.style.opacity = 0;
       wait(1000).then(() => {
         globe
           .customLayerData([
