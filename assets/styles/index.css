@@ -301,7 +301,7 @@ a, a:visited {
 .canvas-overlay-white {
   background-color: white;
   opacity: 1;
-  transition: opacity 0.3s ease 0.3s;
+  transition: opacity 0.3s ease 0.7s;
 }
 
 .canvas-overlay-white-hidden {

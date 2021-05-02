@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { uid } from "uid";
-import pointTexture from "./assets/images/point-texture-2.png";
+import pointTexture from "../../assets/images/point-texture-2.png";
 import anime from "animejs/lib/anime.es.js";
 
 const POINT_VELOCITY = 0.8 / 5000;
