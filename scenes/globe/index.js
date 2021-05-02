@@ -417,20 +417,34 @@ const handleLeftButtonClick = () => {
   }
 };
 
+const getBackToChinaRotator = () => {
+  switch (currentGlobeState) {
+    case USA_STATE:
+      return USA2ChinaRotator;
+    case EUROPE_STATE:
+      return europe2ChinaRotator;
+    case CHINA_STATE:
+      return () => Promise.resolve();
+  }
+};
+
 export const addFulfillment = () => {
-  Object.keys(explosions).map((explosionKey) => {
-    const explosion = explosions[explosionKey];
-    explosion.element.classList.add("active");
-    wait(1000).then(() => {
-      globe
-        .customLayerData([
-          ...customData,
-          ...largeAirports,
-          fulfillment,
-          fulfillmentLabel,
-        ])
-        .pathTransitionDuration(0)
-        .pathsData(fulfillmentPaths);
+  const rotator = getBackToChinaRotator();
+  rotator().then(() => {
+    Object.keys(explosions).map((explosionKey) => {
+      const explosion = explosions[explosionKey];
+      explosion.element.classList.add("active");
+      wait(1000).then(() => {
+        globe
+          .customLayerData([
+            ...customData,
+            ...largeAirports,
+            fulfillment,
+            fulfillmentLabel,
+          ])
+          .pathTransitionDuration(0)
+          .pathsData(fulfillmentPaths);
+      });
     });
   });
 };
