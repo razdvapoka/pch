@@ -6,8 +6,16 @@ import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import serversModelSrc from "./assets/models/servers-draco.gltf";
 import manufacturingModelSrc from "./assets/models/manufacturing-draco.gltf";
+import postponementModelSrc from "./assets/models/postponement-draco.gltf";
+import fulfillmentModelSrc from "./assets/models/fulfillment-draco.gltf";
 
-import { GLOBE_STEP, B2B_STEP_1, B2B_STEP_2 } from "./consts";
+import {
+  GLOBE_STEP,
+  B2B_STEP_1,
+  B2B_STEP_2,
+  B2B_STEP_3,
+  B2B_STEP_4,
+} from "./consts";
 
 import { wait } from "./utils";
 
@@ -18,12 +26,22 @@ import {
   initGlobeSceneObject,
   getGlobeSceneObject,
   transitionToManufacturing,
+  transitionToPostponement,
+  transitionToFulfillment,
 } from "./scenes/globe";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
 import {
   initManufacturingSceneObject,
   launchManufacturingScene,
 } from "./scenes/manufacturing";
+import {
+  initFulfillmentSceneObject,
+  launchFulfillmentScene,
+} from "./scenes/fulfillment";
+import {
+  initPostponementSceneObject,
+  launchPostponementScene,
+} from "./scenes/postponement";
 
 import {
   canvas,
@@ -43,10 +61,14 @@ import {
   hideOverlay,
   setNavButtonActive,
   manufactureButton,
+  postponementButton,
+  fulfillmentButton,
 } from "./ui";
 
 let serversModel;
 let manufacturingModel;
+let postponementModel;
+let fulfillmentModel;
 
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
@@ -57,6 +79,12 @@ gltfLoader.load(serversModelSrc, (gltf) => {
 });
 gltfLoader.load(manufacturingModelSrc, (gltf) => {
   manufacturingModel = gltf.scene.children[0];
+});
+gltfLoader.load(postponementModelSrc, (gltf) => {
+  postponementModel = gltf.scene.children[0];
+});
+gltfLoader.load(fulfillmentModelSrc, (gltf) => {
+  fulfillmentModel = gltf.scene.children[0];
 });
 
 const textureLoader = new THREE.TextureLoader();
@@ -85,6 +113,10 @@ const stepToSceneObject = {
   [B2B_STEP_1]: () => initServersSceneObject({ sizes, canvas, serversModel }),
   [B2B_STEP_2]: () =>
     initManufacturingSceneObject({ sizes, canvas, manufacturingModel }),
+  [B2B_STEP_3]: () =>
+    initPostponementSceneObject({ sizes, canvas, postponementModel }),
+  [B2B_STEP_4]: () =>
+    initFulfillmentSceneObject({ sizes, canvas, fulfillmentModel }),
 };
 
 let currentSceneObject;
@@ -193,9 +225,16 @@ const handleNextButtonClick = () => {
   addFulfillment();
 };
 
-const handlePlacOrderButtonClick = () => {
-  setElementVisibility(placeOrderButton, false);
-  launchServerScene()
+const getGlobeTransitioner = ({
+  launchScene,
+  transition,
+  startButton,
+  nextButton,
+  nextStep,
+  navButton,
+}) => () => {
+  setElementVisibility(startButton, false);
+  return launchScene()
     .then(() => wait(1000))
     .then(() => {
       setElementVisibility(nav, false);
@@ -204,27 +243,48 @@ const handlePlacOrderButtonClick = () => {
       wait(600).then(() => {
         setCurrentSceneObject(getGlobeSceneObject());
         hideOverlay(600);
-        transitionToManufacturing();
+        transition();
         wait(1500)
           .then(() => showOverlay("white", 300))
           .then(() => wait(300))
           .then(() => {
             setElementVisibility(heading, true);
             setElementVisibility(nav, true);
-            setElementVisibility(manufactureButton, true);
-            setCurrentStep(B2B_STEP_2);
-            setNavButtonActive("manufacturing", true);
+            setElementVisibility(nextButton, true);
+            setCurrentStep(nextStep);
+            setNavButtonActive(navButton, true);
             hideOverlay(300);
           });
       });
     });
 };
 
-const handleManufactureClick = () => {
-  launchManufacturingScene().then(() => {
-    showOverlay("white", 300);
-  });
-};
+const handlePlacOrderButtonClick = getGlobeTransitioner({
+  launchScene: launchServerScene,
+  transition: transitionToManufacturing,
+  startButton: placeOrderButton,
+  nextButton: manufactureButton,
+  nextStep: B2B_STEP_2,
+  navButton: "manufacturing",
+});
+
+const handleManufactureClick = getGlobeTransitioner({
+  launchScene: launchManufacturingScene,
+  transition: transitionToPostponement,
+  startButton: manufactureButton,
+  nextButton: postponementButton,
+  nextStep: B2B_STEP_3,
+  navButton: "postponement",
+});
+
+const handlePostponementClick = getGlobeTransitioner({
+  launchScene: launchPostponementScene,
+  transition: transitionToFulfillment,
+  startButton: postponementButton,
+  nextButton: fulfillmentButton,
+  nextStep: B2B_STEP_4,
+  navButton: "fulfillment",
+});
 
 const addEventListeners = () => {
   nextButton.addEventListener("click", handleNextButtonClick);
@@ -233,6 +293,7 @@ const addEventListeners = () => {
   b2bButton.addEventListener("click", handleB2BButtonClick);
   placeOrderButton.addEventListener("click", handlePlacOrderButtonClick);
   manufactureButton.addEventListener("click", handleManufactureClick);
+  postponementButton.addEventListener("click", handlePostponementClick);
   window.addEventListener("resize", onResize);
 };
 

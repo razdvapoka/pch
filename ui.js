@@ -14,6 +14,10 @@ export const nav = document.querySelector("nav");
 export const overlay = document.querySelector(".canvas-overlay");
 export const placeOrderButton = document.querySelector(".place-order-button");
 export const manufactureButton = document.querySelector(".manufacture-button");
+export const postponementButton = document.querySelector(
+  ".postponement-button"
+);
+export const fulfillmentButton = document.querySelector(".fulfillment-button");
 
 export const setNavButtonActive = (name, isActive) => {
   const btn = document.querySelector(`.nav-button-${name}`);
