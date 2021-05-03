@@ -8,6 +8,9 @@ import serversModelSrc from "./assets/models/servers-draco.gltf";
 import manufacturingModelSrc from "./assets/models/manufacturing-draco.gltf";
 import postponementModelSrc from "./assets/models/postponement-draco.gltf";
 import fulfillmentModelSrc from "./assets/models/fulfillment-draco.gltf";
+import deliveryAModelSrc from "./assets/models/delivery-a-draco.gltf";
+import deliveryBModelSrc from "./assets/models/delivery-b-draco.gltf";
+import orderD2CModelSrc from "./assets/models/order-d2c-draco.gltf";
 
 import {
   GLOBE_STEP,
@@ -15,6 +18,8 @@ import {
   B2B_STEP_2,
   B2B_STEP_3,
   B2B_STEP_4,
+  B2B_STEP_5,
+  B2B_STEP_6,
 } from "./consts";
 
 import { wait } from "./utils";
@@ -42,6 +47,8 @@ import {
   initPostponementSceneObject,
   launchPostponementScene,
 } from "./scenes/postponement";
+import { initDeliveryASceneObject } from "./scenes/delivery-a";
+import { initDeliveryBSceneObject } from "./scenes/delivery-b";
 
 import {
   canvas,
@@ -63,12 +70,16 @@ import {
   manufactureButton,
   postponementButton,
   fulfillmentButton,
+  deliveryButton,
 } from "./ui";
 
 let serversModel;
 let manufacturingModel;
 let postponementModel;
 let fulfillmentModel;
+let deliveryAModel;
+let deliveryBModel;
+let orderD2CModel;
 
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
@@ -85,6 +96,15 @@ gltfLoader.load(postponementModelSrc, (gltf) => {
 });
 gltfLoader.load(fulfillmentModelSrc, (gltf) => {
   fulfillmentModel = gltf.scene.children[0];
+});
+gltfLoader.load(deliveryAModelSrc, (gltf) => {
+  deliveryAModel = gltf.scene.children[0];
+});
+gltfLoader.load(deliveryBModelSrc, (gltf) => {
+  deliveryBModel = gltf.scene.children[0];
+});
+gltfLoader.load(orderD2CModelSrc, (gltf) => {
+  orderD2CModel = gltf.scene.children[0];
 });
 
 const textureLoader = new THREE.TextureLoader();
@@ -117,6 +137,10 @@ const stepToSceneObject = {
     initPostponementSceneObject({ sizes, canvas, postponementModel }),
   [B2B_STEP_4]: () =>
     initFulfillmentSceneObject({ sizes, canvas, fulfillmentModel }),
+  [B2B_STEP_5]: () =>
+    initDeliveryASceneObject({ sizes, canvas, deliveryAModel }),
+  [B2B_STEP_6]: () =>
+    initDeliveryBSceneObject({ sizes, canvas, deliveryBModel }),
 };
 
 let currentSceneObject;
@@ -286,6 +310,17 @@ const handlePostponementClick = getGlobeTransitioner({
   navButton: "fulfillment",
 });
 
+const handleFulfillmentClick = () => {
+  setElementVisibility(fulfillmentButton, false);
+  setElementVisibility(deliveryButton, true);
+  setCurrentStep(B2B_STEP_5);
+  setNavButtonActive("delivery", true);
+};
+const handleDeliveryButtonClick = () => {
+  setElementVisibility(deliveryButton, false);
+  setCurrentStep(B2B_STEP_6);
+};
+
 const addEventListeners = () => {
   nextButton.addEventListener("click", handleNextButtonClick);
   launchButton.addEventListener("click", handleLaunchButtonClick);
@@ -294,6 +329,8 @@ const addEventListeners = () => {
   placeOrderButton.addEventListener("click", handlePlacOrderButtonClick);
   manufactureButton.addEventListener("click", handleManufactureClick);
   postponementButton.addEventListener("click", handlePostponementClick);
+  fulfillmentButton.addEventListener("click", handleFulfillmentClick);
+  deliveryButton.addEventListener("click", handleDeliveryButtonClick);
   window.addEventListener("resize", onResize);
 };
 

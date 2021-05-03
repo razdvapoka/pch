@@ -19,22 +19,14 @@ let purpleMaterial;
 let parts = {};
 // let transformControls;
 
-export const launchFulfillmentScene = () =>
+export const launchDeliveryAScene = () =>
   new Promise((resolve) => {
-    const timeline = anime.timeline({
-      autoplay: false,
-      easing: "easeInOutSine",
-      complete: resolve,
-    });
-    timeline.play();
+    resolve();
   });
 
-export const initFulfillmentSceneObject = ({
-  fulfillmentModel,
-  sizes,
-  canvas,
-}) => {
-  model = fulfillmentModel;
+export const initDeliveryASceneObject = ({ deliveryAModel, sizes, canvas }) => {
+  model = deliveryAModel;
+  model.scale.set(0.05, 0.05, 0.05);
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#ffffff");
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
@@ -52,19 +44,17 @@ export const initFulfillmentSceneObject = ({
       obj.material.emissiveIntensity = 0.3;
       obj.material.color = whiteColor;
       obj.material.emissive = whiteColor;
-      /*
-      if (obj.material.name === "Plain Violet") {
-        obj.material.color = purpleColor;
-        obj.material.emissive = purpleColor;
-        if (!purpleMaterial) {
-          purpleMaterial = obj.material;
-          purpleMaterial.__color = WHITE;
-        }
-      } else {
-        obj.material.color = whiteColor;
-        obj.material.emissive = whiteColor;
-      }
-      */
+      // if (obj.material.name === "Plain Violet") {
+      //   obj.material.color = purpleColor;
+      //   obj.material.emissive = purpleColor;
+      //   if (!purpleMaterial) {
+      //     purpleMaterial = obj.material;
+      //     purpleMaterial.__color = WHITE;
+      //   }
+      // } else {
+      //   obj.material.color = whiteColor;
+      //   obj.material.emissive = whiteColor;
+      // }
     }
   });
 
@@ -78,11 +68,11 @@ export const initFulfillmentSceneObject = ({
     2500
   );
   camera.position.copy({
-    x: 257,
-    y: 306,
-    z: 494,
+    x: 0.0014579586008573895,
+    y: 1457.894736841371,
+    z: -0.0000016541668697174197,
   });
-  const cameraTarget = new THREE.Vector3(0, 50, 0);
+  const cameraTarget = new THREE.Vector3(0, 0, 0);
   const controls = new OrbitControls(camera, canvas);
   controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
@@ -115,10 +105,6 @@ export const initFulfillmentSceneObject = ({
   // });
   // gui.add(directionalLight.position, "z", -100, 100, 1).onChange(() => {
   //   helper.update();
-  // });
-
-  // window.addEventListener("click", () => {
-  //   console.log(camera.position);
   // });
 
   return { scene, camera, onResize };

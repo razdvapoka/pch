@@ -18,6 +18,7 @@ export const postponementButton = document.querySelector(
   ".postponement-button"
 );
 export const fulfillmentButton = document.querySelector(".fulfillment-button");
+export const deliveryButton = document.querySelector(".delivery-button");
 
 export const setNavButtonActive = (name, isActive) => {
   const btn = document.querySelector(`.nav-button-${name}`);

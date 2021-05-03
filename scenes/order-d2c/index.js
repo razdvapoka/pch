@@ -19,22 +19,78 @@ let purpleMaterial;
 let parts = {};
 // let transformControls;
 
-export const launchFulfillmentScene = () =>
+export const launchManufacturingScene = () =>
   new Promise((resolve) => {
+    const innerBase = parts["inner_base"];
+    const chips = parts["chips"];
+    const cam = parts["cam"];
+    const glass = parts["glass"];
+    const phone = parts["phone"];
+
+    const offset = "-=200";
     const timeline = anime.timeline({
       autoplay: false,
       easing: "easeInOutSine",
       complete: resolve,
     });
+    timeline
+      .add({
+        duration: COLOR_TRANSITION_DURATION,
+        targets: purpleMaterial,
+        emissiveIntensity: 0.2,
+        easing: "easeInOutSine",
+        __color: PURPLE,
+        update: () => {
+          purpleMaterial.color.set(purpleMaterial.__color);
+        },
+      })
+      .add(
+        {
+          duration: 600,
+          targets: innerBase.position,
+          z: -0.025,
+        },
+        offset
+      )
+      .add(
+        {
+          duration: 500,
+          targets: chips.position,
+          z: 0.01,
+        },
+        offset
+      )
+      .add(
+        {
+          duration: 400,
+          targets: cam.position,
+          z: 0.009,
+        },
+        offset
+      )
+      .add(
+        {
+          duration: 300,
+          targets: glass.position,
+          z: -0.0874,
+        },
+        offset
+      )
+      .add({
+        duration: 1000,
+        targets: phone.position,
+        easing: "linear",
+        x: -100,
+      });
     timeline.play();
   });
 
-export const initFulfillmentSceneObject = ({
-  fulfillmentModel,
+export const initManufacturingSceneObject = ({
+  manufacturingModel,
   sizes,
   canvas,
 }) => {
-  model = fulfillmentModel;
+  model = manufacturingModel;
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#ffffff");
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
@@ -50,9 +106,6 @@ export const initFulfillmentSceneObject = ({
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
       obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
-      /*
       if (obj.material.name === "Plain Violet") {
         obj.material.color = purpleColor;
         obj.material.emissive = purpleColor;
@@ -64,7 +117,6 @@ export const initFulfillmentSceneObject = ({
         obj.material.color = whiteColor;
         obj.material.emissive = whiteColor;
       }
-      */
     }
   });
 
@@ -77,12 +129,8 @@ export const initFulfillmentSceneObject = ({
     0.1,
     2500
   );
-  camera.position.copy({
-    x: 257,
-    y: 306,
-    z: 494,
-  });
-  const cameraTarget = new THREE.Vector3(0, 50, 0);
+  camera.position.set(57.6, 58.4, 50.2);
+  const cameraTarget = new THREE.Vector3(0, 0, 0);
   const controls = new OrbitControls(camera, canvas);
   controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
@@ -115,10 +163,6 @@ export const initFulfillmentSceneObject = ({
   // });
   // gui.add(directionalLight.position, "z", -100, 100, 1).onChange(() => {
   //   helper.update();
-  // });
-
-  // window.addEventListener("click", () => {
-  //   console.log(camera.position);
   // });
 
   return { scene, camera, onResize };
