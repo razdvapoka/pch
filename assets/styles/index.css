@@ -72,6 +72,12 @@ a, a:visited {
   background: transparent;
 }
 
+.place-order-button {
+  background: black;
+  color: white;
+  border: 0;
+}
+
 .launch-button {
   color: white;
   background-color: #5C63FF;

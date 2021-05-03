@@ -14,7 +14,7 @@ import {
   globeToB2B,
   initGlobeSceneObject,
 } from "./scenes/globe";
-import { initServersSceneObject } from "./scenes/servers";
+import { initServersSceneObject, launchServerScene } from "./scenes/servers";
 
 import {
   canvas,
@@ -29,6 +29,8 @@ import {
   uploadLogoInput,
   nextButton,
   b2bButton,
+  placeOrderButton,
+  setElementVisibility,
 } from "./ui";
 
 let serversModel;
@@ -38,6 +40,7 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load(serversModelSrc, (gltf) => {
   serversModel = gltf.scene.children[0];
+  // setCurrentStep(B2B_STEP_1);
 });
 
 const textureLoader = new THREE.TextureLoader();
@@ -46,7 +49,7 @@ const cloudsMap = textureLoader.load(cloudsTexture);
 
 const handleGlobeReady = () => {
   overlay.classList.add("canvas-overlay-black-hidden");
-  launchButton.classList.remove("hidden");
+  setElementVisibility(launchButton, true);
 };
 
 const sizes = {
@@ -112,17 +115,30 @@ const tick = () => {
   window.requestAnimationFrame(tick);
 };
 
+const setLightTheme = () => {
+  html.style.color = "#363636";
+  html.style.backgroundColor = "#EFEEEE";
+};
+
+const setNavVisibility = (visible) => {
+  nav.style.display = visible ? "block" : "none";
+};
+
+const setHeadingText = (text) => {
+  heading.innerText = text;
+};
+
 const handleB2BButtonClick = () => {
   globeToB2B().then(() => {
     setCurrentStep(B2B_STEP_1);
-    html.style.color = "#363636";
-    html.style.backgroundColor = "#EFEEEE";
-    heading.innerText = "Business-to-business";
-    nav.style.display = "block";
+    setLightTheme();
+    setNavVisibility(true);
+    setElementVisibility(placeOrderButton, true);
+    setHeadingText("Business-to-business");
     overlay.classList.add("canvas-overlay-white-hidden");
   });
   overlay.classList.add("canvas-overlay-white");
-  pathButtons.classList.add("hidden");
+  setElementVisibility(pathButtons, false);
 };
 
 const handleLogoUpload = (e) => {
@@ -145,18 +161,23 @@ const handleLogoUpload = (e) => {
 const handleLaunchButtonClick = () => {
   launchButton.style.display = "none";
   launchGlobeScene().then(() => {
-    heading.innerText = "Today";
+    setHeadingText("Today");
     heading.classList.remove("intro-heading");
     heading.classList.add("today-heading");
-    nextButton.classList.remove("hidden");
+    setElementVisibility(nextButton, true);
   });
 };
 
 const handleNextButtonClick = () => {
   nextButton.style.display = "none";
   pathButtons.style.display = "flex";
-  heading.innerText = "Tomorrow";
+  setHeadingText("Tomorrow");
   addFulfillment();
+};
+
+const handlePlacOrderButtonClick = () => {
+  setElementVisibility(placeOrderButton, false);
+  launchServerScene();
 };
 
 const addEventListeners = () => {
@@ -164,6 +185,7 @@ const addEventListeners = () => {
   launchButton.addEventListener("click", handleLaunchButtonClick);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
+  placeOrderButton.addEventListener("click", handlePlacOrderButtonClick);
   window.addEventListener("resize", onResize);
 };
 

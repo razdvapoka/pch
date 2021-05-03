@@ -12,3 +12,12 @@ export const html = document.querySelector("html");
 export const heading = document.querySelector("h1");
 export const nav = document.querySelector("nav");
 export const overlay = document.querySelector(".canvas-overlay");
+export const placeOrderButton = document.querySelector(".place-order-button");
+
+export const setElementVisibility = (element, visible) => {
+  if (visible) {
+    element.classList.remove("hidden");
+  } else {
+    element.classList.add("hidden");
+  }
+};
