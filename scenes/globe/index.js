@@ -53,6 +53,8 @@ import {
   CANONIC_GLOBE_RADIUS,
   ROTATION_DURATION,
   CAM_R,
+  // Z_AXIS,
+  // Y_AXIS,
 } from "../../consts";
 
 import { leftButton, rightButton } from "../../ui";
@@ -68,13 +70,26 @@ const airportObjects = largeAirports.map((a) => {
   };
 });
 
+// const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
+
+// const onMouseMove = (event) => {
+//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+//   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+// };
+
+// const onClick = () => {
+//   const tc = camera.position.angleTo(Z_AXIS);
+//   const pc = camera.position.angleTo(Y_AXIS);
+//   console.log(tc, pc);
+// };
 
 // State
 
 const labels = {};
 const explosions = {};
 let isGlobeReady = false;
+let htmlElementsHidden = false;
 let currentGlobeState = INTRO_STATE;
 
 const setCurrentGlobeState = (s) => {
@@ -84,6 +99,8 @@ const setCurrentGlobeState = (s) => {
 let pointsMesh = null;
 let scene = null;
 let camera = null;
+let tick = null;
+let onResize = null;
 let globe = null;
 let globeMesh = null;
 let light1 = null;
@@ -95,10 +112,12 @@ let intro2ChinaRotator;
 let china2USARotator;
 let china2EuropeRotator;
 let USA2ChinaRotator;
+let USA2ManufacturingRotator;
 let USA2EuropeRotator;
 let europe2ChinaRotator;
 let europe2USARotator;
 let zoomRotator;
+let zoomOutRotator;
 let cameraRotationProps = {
   theta: INTRO_CAM_THETA,
   phi: INTRO_CAM_PHI,
@@ -108,6 +127,12 @@ let light1RotationProps = {
   theta: d2r(-40),
   phi: d2r(90),
   r: 200,
+};
+
+const USAZoomedCamera = {
+  theta: CHINA_CAM_THETA + Math.PI * 0.8,
+  phi: CHINA_CAM_PHI - Math.PI * 0.08,
+  r: 100,
 };
 
 const getCameraRotator = (theta, phi, r = 0, duration = ROTATION_DURATION) =>
@@ -290,7 +315,7 @@ const launchIntro2ChinaAnimation = () => {
 const updateGlobeHTMLElements = (elements, sizes) => {
   Object.keys(elements).forEach((elementKey) => {
     const element = elements[elementKey];
-    if (currentGlobeState === CHINA_STATE) {
+    if (currentGlobeState === CHINA_STATE && !htmlElementsHidden) {
       const screenPosition = element.position.clone();
       screenPosition.project(camera);
       raycaster.setFromCamera(screenPosition, camera);
@@ -493,10 +518,40 @@ const initRotators = () => {
   china2USARotator = getCameraRotator(Math.PI * 0.8, -Math.PI * 0.08);
   china2EuropeRotator = getCameraRotator(-Math.PI * 0.5, -Math.PI * 0.12);
   USA2ChinaRotator = getCameraRotator(-Math.PI * 0.8, Math.PI * 0.08);
+  USA2ManufacturingRotator = getCameraRotator(
+    -USAZoomedCamera.theta + 1.6935725424213968,
+    -USAZoomedCamera.phi + 1.1314157529547064,
+    0
+  );
   USA2EuropeRotator = getCameraRotator(Math.PI * 0.7, -Math.PI * 0.04);
   europe2ChinaRotator = getCameraRotator(Math.PI * 0.5, Math.PI * 0.12);
   europe2USARotator = getCameraRotator(-Math.PI * 0.7, Math.PI * 0.04);
   zoomRotator = getCameraRotator(0, 0, -100);
+  zoomOutRotator = getCameraRotator(0, 0, 100);
+};
+
+export const transitionToManufacturing = () => {
+  setObjectPositionOnSphere(
+    camera,
+    USAZoomedCamera.theta,
+    USAZoomedCamera.phi,
+    USAZoomedCamera.r
+  );
+  return zoomOutRotator()
+    .then(() => USA2ManufacturingRotator())
+    .then(() => {
+      htmlElementsHidden = true;
+      zoomRotator();
+    });
+};
+
+export const getGlobeSceneObject = () => {
+  return {
+    scene,
+    camera,
+    tick,
+    onResize,
+  };
 };
 
 export const initGlobeSceneObject = ({
@@ -577,7 +632,7 @@ export const initGlobeSceneObject = ({
   rightButton.addEventListener("click", handleRightButtonClick);
   leftButton.addEventListener("click", handleLeftButtonClick);
 
-  const tick = (elapsedTime, sizes) => {
+  tick = (elapsedTime, sizes) => {
     if (isGlobeReady) {
       updateGlobeHTMLElements(labels, sizes);
       updateGlobeHTMLElements(explosions, sizes);
@@ -592,7 +647,7 @@ export const initGlobeSceneObject = ({
   const controls = new OrbitControls(camera, canvas);
   controls.update();
 
-  const onResize = (sizes) => {
+  onResize = (sizes) => {
     camera.aspect = sizes.width / sizes.height;
     camera.updateProjectionMatrix();
 
@@ -613,6 +668,9 @@ export const initGlobeSceneObject = ({
       );
     });
   };
+
+  // window.addEventListener("mousemove", onMouseMove);
+  // window.addEventListener("click", onClick);
 
   return { scene, camera, tick, onResize };
 };

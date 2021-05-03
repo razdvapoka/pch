@@ -5,16 +5,25 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
 import serversModelSrc from "./assets/models/servers-draco.gltf";
+import manufacturingModelSrc from "./assets/models/manufacturing-draco.gltf";
 
-import { GLOBE_STEP, B2B_STEP_1 } from "./consts";
+import { GLOBE_STEP, B2B_STEP_1, B2B_STEP_2 } from "./consts";
+
+import { wait } from "./utils";
 
 import {
   addFulfillment,
   launchGlobeScene,
   globeToB2B,
   initGlobeSceneObject,
+  getGlobeSceneObject,
+  transitionToManufacturing,
 } from "./scenes/globe";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
+import {
+  initManufacturingSceneObject,
+  launchManufacturingScene,
+} from "./scenes/manufacturing";
 
 import {
   canvas,
@@ -32,16 +41,22 @@ import {
   setElementVisibility,
   showOverlay,
   hideOverlay,
+  setNavButtonActive,
+  manufactureButton,
 } from "./ui";
 
 let serversModel;
+let manufacturingModel;
+
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
 const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load(serversModelSrc, (gltf) => {
   serversModel = gltf.scene.children[0];
-  // setCurrentStep(B2B_STEP_1);
+});
+gltfLoader.load(manufacturingModelSrc, (gltf) => {
+  manufacturingModel = gltf.scene.children[0];
 });
 
 const textureLoader = new THREE.TextureLoader();
@@ -68,6 +83,8 @@ const stepToSceneObject = {
       canvas,
     }),
   [B2B_STEP_1]: () => initServersSceneObject({ sizes, canvas, serversModel }),
+  [B2B_STEP_2]: () =>
+    initManufacturingSceneObject({ sizes, canvas, manufacturingModel }),
 };
 
 let currentSceneObject;
@@ -178,7 +195,35 @@ const handleNextButtonClick = () => {
 
 const handlePlacOrderButtonClick = () => {
   setElementVisibility(placeOrderButton, false);
-  launchServerScene();
+  launchServerScene()
+    .then(() => wait(1000))
+    .then(() => {
+      setElementVisibility(nav, false);
+      setElementVisibility(heading, false);
+      showOverlay("white", 600);
+      wait(600).then(() => {
+        setCurrentSceneObject(getGlobeSceneObject());
+        hideOverlay(600);
+        transitionToManufacturing();
+        wait(1500)
+          .then(() => showOverlay("white", 300))
+          .then(() => wait(300))
+          .then(() => {
+            setElementVisibility(heading, true);
+            setElementVisibility(nav, true);
+            setElementVisibility(manufactureButton, true);
+            setCurrentStep(B2B_STEP_2);
+            setNavButtonActive("manufacturing", true);
+            hideOverlay(300);
+          });
+      });
+    });
+};
+
+const handleManufactureClick = () => {
+  launchManufacturingScene().then(() => {
+    showOverlay("white", 300);
+  });
 };
 
 const addEventListeners = () => {
@@ -187,6 +232,7 @@ const addEventListeners = () => {
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
   placeOrderButton.addEventListener("click", handlePlacOrderButtonClick);
+  manufactureButton.addEventListener("click", handleManufactureClick);
   window.addEventListener("resize", onResize);
 };
 

@@ -13,6 +13,16 @@ export const heading = document.querySelector("h1");
 export const nav = document.querySelector("nav");
 export const overlay = document.querySelector(".canvas-overlay");
 export const placeOrderButton = document.querySelector(".place-order-button");
+export const manufactureButton = document.querySelector(".manufacture-button");
+
+export const setNavButtonActive = (name, isActive) => {
+  const btn = document.querySelector(`.nav-button-${name}`);
+  if (isActive) {
+    btn.classList.add("active");
+  } else {
+    btn.classList.remove("active");
+  }
+};
 
 export const setElementVisibility = (element, visible) => {
   if (visible) {
@@ -24,7 +34,7 @@ export const setElementVisibility = (element, visible) => {
 
 export const showOverlay = (color, duration, delay = 0) => {
   const transitionProps = `${duration}ms ease ${delay}ms`;
-  overlay.style.transition = `opacity ${transitionProps}, color ${transitionProps}`;
+  overlay.style.transition = `opacity ${transitionProps}, background-color ${transitionProps}`;
   overlay.style.backgroundColor = color;
   overlay.style.opacity = 1;
 };

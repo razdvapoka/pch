@@ -23,3 +23,4 @@ export const INTRO_STATE = "INTRO_STATE";
 // presentation steps
 export const GLOBE_STEP = "GLOBE_STEP";
 export const B2B_STEP_1 = "B2B_STEP_1";
+export const B2B_STEP_2 = "B2B_STEP_2";

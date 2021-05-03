@@ -25,7 +25,7 @@ export const launchServerScene = () => {
       purpleServer.material.color.set(purpleServer.material.__color);
     },
   });
-  wait(COLOR_TRANSITION_DURATION).then(() => {
+  return wait(COLOR_TRANSITION_DURATION).then(() => {
     anime({
       duration: BLINK_DURATION,
       targets: bulb,
@@ -69,14 +69,6 @@ export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
   bulbSphere.position.set(7.7, 77.6, 9);
   scene.add(bulb);
   scene.add(bulbSphere);
-
-  // anime({
-  //   targets: bulb,
-  //   intensity: 0,
-  //   direction: "alternate",
-  //   loop: true,
-  //   easing: "easeInOutSine",
-  // });
 
   camera = new THREE.PerspectiveCamera(
     40,
