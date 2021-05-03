@@ -20,6 +20,7 @@ import {
   B2B_STEP_4,
   B2B_STEP_5,
   B2B_STEP_6,
+  D2C_STEP_1,
 } from "./consts";
 
 import { wait } from "./utils";
@@ -49,6 +50,10 @@ import {
 } from "./scenes/postponement";
 import { initDeliveryASceneObject } from "./scenes/delivery-a";
 import { initDeliveryBSceneObject } from "./scenes/delivery-b";
+import {
+  initOrderD2CSceneObject,
+  launchOrderD2CScene,
+} from "./scenes/order-d2c";
 
 import {
   canvas,
@@ -62,7 +67,9 @@ import {
   uploadLogoInput,
   nextButton,
   b2bButton,
+  d2cButton,
   placeOrderButton,
+  placeOrderD2CButton,
   setElementVisibility,
   showOverlay,
   hideOverlay,
@@ -141,6 +148,7 @@ const stepToSceneObject = {
     initDeliveryASceneObject({ sizes, canvas, deliveryAModel }),
   [B2B_STEP_6]: () =>
     initDeliveryBSceneObject({ sizes, canvas, deliveryBModel }),
+  [D2C_STEP_1]: () => initOrderD2CSceneObject({ sizes, canvas, orderD2CModel }),
 };
 
 let currentSceneObject;
@@ -215,6 +223,19 @@ const handleB2BButtonClick = () => {
   setElementVisibility(pathButtons, false);
 };
 
+const handleD2CButtonClick = () => {
+  globeToB2B().then(() => {
+    setCurrentStep(D2C_STEP_1);
+    setLightTheme();
+    setNavVisibility(true);
+    setElementVisibility(placeOrderD2CButton, true);
+    setHeadingText("Direct-to-consumer");
+    hideOverlay(600);
+  });
+  showOverlay("white", 300, 700);
+  setElementVisibility(pathButtons, false);
+};
+
 const handleLogoUpload = (e) => {
   const files = e.target.files;
   if (files.length > 0) {
@@ -283,7 +304,16 @@ const getGlobeTransitioner = ({
     });
 };
 
-const handlePlacOrderButtonClick = getGlobeTransitioner({
+const handlePlaceOrderD2CButtonClick = getGlobeTransitioner({
+  launchScene: launchOrderD2CScene,
+  transition: transitionToManufacturing,
+  startButton: placeOrderD2CButton,
+  nextButton: manufactureButton,
+  nextStep: B2B_STEP_2,
+  navButton: "manufacturing",
+});
+
+const handlePlaceOrderButtonClick = getGlobeTransitioner({
   launchScene: launchServerScene,
   transition: transitionToManufacturing,
   startButton: placeOrderButton,
@@ -326,7 +356,9 @@ const addEventListeners = () => {
   launchButton.addEventListener("click", handleLaunchButtonClick);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
-  placeOrderButton.addEventListener("click", handlePlacOrderButtonClick);
+  d2cButton.addEventListener("click", handleD2CButtonClick);
+  placeOrderD2CButton.addEventListener("click", handlePlaceOrderD2CButtonClick);
+  placeOrderButton.addEventListener("click", handlePlaceOrderButtonClick);
   manufactureButton.addEventListener("click", handleManufactureClick);
   postponementButton.addEventListener("click", handlePostponementClick);
   fulfillmentButton.addEventListener("click", handleFulfillmentClick);

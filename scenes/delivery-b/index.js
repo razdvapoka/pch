@@ -106,9 +106,9 @@ export const initDeliveryBSceneObject = ({ deliveryBModel, sizes, canvas }) => {
   // gui.add(directionalLight.position, "z", -100, 100, 1).onChange(() => {
   //   helper.update();
   // });
-  window.addEventListener("click", () => {
-    console.log(camera.position);
-  });
+  // window.addEventListener("click", () => {
+  //   console.log(camera.position);
+  // });
 
   return { scene, camera, onResize };
 };

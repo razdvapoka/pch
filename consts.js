@@ -28,3 +28,4 @@ export const B2B_STEP_3 = "B2B_STEP_3";
 export const B2B_STEP_4 = "B2B_STEP_4";
 export const B2B_STEP_5 = "B2B_STEP_5";
 export const B2B_STEP_6 = "B2B_STEP_6";
+export const D2C_STEP_1 = "D2C_STEP_1";

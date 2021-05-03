@@ -8,11 +8,15 @@ export const leftButton = document.querySelector(".left-nav-button");
 export const clientLogo = document.querySelector(".client-logo");
 export const uploadLogoLabel = document.querySelector(".upload-logo");
 export const b2bButton = document.querySelector(".b2b-button");
+export const d2cButton = document.querySelector(".d2c-button");
 export const html = document.querySelector("html");
 export const heading = document.querySelector("h1");
 export const nav = document.querySelector("nav");
 export const overlay = document.querySelector(".canvas-overlay");
 export const placeOrderButton = document.querySelector(".place-order-button");
+export const placeOrderD2CButton = document.querySelector(
+  ".place-order-d2c-button"
+);
 export const manufactureButton = document.querySelector(".manufacture-button");
 export const postponementButton = document.querySelector(
   ".postponement-button"
