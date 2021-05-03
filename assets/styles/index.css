@@ -298,24 +298,6 @@ a, a:visited {
   background-color: black;
 }
 
-.canvas-overlay-black-hidden {
-  opacity: 0;
-  transition: opacity 0.8s ease;
-  pointer-events:none;
-}
-
-.canvas-overlay-white {
-  background-color: white;
-  opacity: 1;
-  transition: opacity 0.3s ease 0.7s;
-}
-
-.canvas-overlay-white-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-}
-
 nav {
   position: fixed;
   top: 10.3rem;

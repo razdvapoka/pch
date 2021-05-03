@@ -18,7 +18,6 @@ import { initServersSceneObject, launchServerScene } from "./scenes/servers";
 
 import {
   canvas,
-  overlay,
   launchButton,
   html,
   heading,
@@ -31,6 +30,8 @@ import {
   b2bButton,
   placeOrderButton,
   setElementVisibility,
+  showOverlay,
+  hideOverlay,
 } from "./ui";
 
 let serversModel;
@@ -48,7 +49,7 @@ const lightMap = textureLoader.load(lightMapTexture);
 const cloudsMap = textureLoader.load(cloudsTexture);
 
 const handleGlobeReady = () => {
-  overlay.classList.add("canvas-overlay-black-hidden");
+  hideOverlay(800);
   setElementVisibility(launchButton, true);
 };
 
@@ -135,9 +136,9 @@ const handleB2BButtonClick = () => {
     setNavVisibility(true);
     setElementVisibility(placeOrderButton, true);
     setHeadingText("Business-to-business");
-    overlay.classList.add("canvas-overlay-white-hidden");
+    hideOverlay(600);
   });
-  overlay.classList.add("canvas-overlay-white");
+  showOverlay("white", 300, 700);
   setElementVisibility(pathButtons, false);
 };
 

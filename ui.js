@@ -21,3 +21,16 @@ export const setElementVisibility = (element, visible) => {
     element.classList.add("hidden");
   }
 };
+
+export const showOverlay = (color, duration, delay = 0) => {
+  const transitionProps = `${duration}ms ease ${delay}ms`;
+  overlay.style.transition = `opacity ${transitionProps}, color ${transitionProps}`;
+  overlay.style.backgroundColor = color;
+  overlay.style.opacity = 1;
+};
+
+export const hideOverlay = (duration, delay = 0) => {
+  overlay.style.transition = `opacity ${duration}ms ease ${delay}ms`;
+  overlay.style.opacity = 0;
+  overlay.style.pointerEvents = "none";
+};
