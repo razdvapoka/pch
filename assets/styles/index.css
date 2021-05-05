@@ -164,18 +164,18 @@ a, a:visited {
 }
 
 .explosion-1 {
-  width: 16rem;
-  height: 16rem;
+  width: 64rem;
+  height: 64rem;
 }
 
 .explosion-2 {
-  width: 10.5rem;
-  height: 10.5rem;
+  width: 32rem;
+  height: 32rem;
 }
 
 .explosion-3 {
-  width: 6rem;
-  height: 6rem;
+  width: 16rem;
+  height: 16rem;
 }
 
 .explosion-box.active .explosion {
