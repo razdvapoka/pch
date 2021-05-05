@@ -1,10 +1,10 @@
 import * as THREE from "three";
 
-export const CANONIC_WIDTH = 1440;
+export const CANONIC_WIDTH = 1920;
 export const CANONIC_GLOBE_RADIUS = 100;
 export const CENTER = new THREE.Vector3(0, 0, 0);
-export const CAM_R = 220;
-export const INTRO_CAM_R = 450;
+export const CAM_R = 280;
+export const INTRO_CAM_R = 850;
 export const INTRO_CAM_THETA = 1.2324469461144;
 export const INTRO_CAM_PHI = 1.3532513064958416;
 export const CHINA_CAM_THETA = Math.PI - 1.1732590418436886;

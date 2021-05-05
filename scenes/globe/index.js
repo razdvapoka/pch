@@ -70,6 +70,10 @@ const airportObjects = largeAirports.map((a) => {
   };
 });
 
+// export const getAspect = () => {
+//   return aspect;
+// };
+
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
 
@@ -96,6 +100,9 @@ const setCurrentGlobeState = (s) => {
   currentGlobeState = s;
 };
 
+let fov = 60;
+let scaleFactor = 1.05;
+let aspect = null;
 let pointsMesh = null;
 let scene = null;
 let camera = null;
@@ -271,7 +278,9 @@ const handleCustomObjectUpdate = (obj, d) => {
 };
 
 const handleGlobeReady = (sizes) => {
-  const scale = sizes.width / CANONIC_WIDTH;
+  // const scale = sizes.width / CANONIC_WIDTH;
+  let scale = CANONIC_WIDTH / sizes.width;
+  scale = scale + (1 - scale) * scaleFactor;
   globe.scale.set(scale, scale, scale);
   isGlobeReady = true;
   pointsMaterial.opacity = 1;
@@ -670,9 +679,11 @@ export const initGlobeSceneObject = ({
   );
   globe.add(cloudSphere);
 
+  aspect = sizes.width / sizes.height;
+
   camera = new THREE.PerspectiveCamera(
-    40,
-    sizes.width / sizes.height,
+    fov / aspect,
+    aspect,
     0.1,
     2500
   );
@@ -680,7 +691,8 @@ export const initGlobeSceneObject = ({
     camera,
     INTRO_CAM_THETA,
     INTRO_CAM_PHI,
-    INTRO_CAM_R
+    INTRO_CAM_R,
+    aspect
   );
 
   light1 = createLight(d2r(-40), d2r(90), 200);
@@ -710,24 +722,40 @@ export const initGlobeSceneObject = ({
 
   onResize = (sizes) => {
     camera.aspect = sizes.width / sizes.height;
+    aspect = sizes.width / sizes.height;
+    camera.fov = fov / aspect;
     camera.updateProjectionMatrix();
+    
 
     controls.update();
 
-    const scale = sizes.width / CANONIC_WIDTH;
+    // Width-based scaling
+    const scale = CANONIC_WIDTH / sizes.width;
+    // globe.scale.set(scale, scale, scale);
+
+    // Вот здесь надо уменьшать вместо увеличения, 
+    // так как fov / aspect реверсирует механику ресайза
+    scale = CANONIC_WIDTH / sizes.width;
+
+    // scaleFactor нужен, чтобы компенсировать увеличение экрана:
+    // 1920x1080 — все работает идеально
+    // 3840x2160 — размера начинает съезжать немного, не знаю за счет чего
+    // Вот этим scaleFactor и компенсирую
+    scale = scale + (1 - scale) * scaleFactor;
+
     globe.scale.set(scale, scale, scale);
 
-    Object.keys(labels).map((labelKey) => {
-      const label = labels[labelKey];
-      label.position = new THREE.Vector3().copy(
-        polar2Cartesian(
-          label.coords.lat,
-          label.coords.lng,
-          0.01,
-          CANONIC_GLOBE_RADIUS * scale
-        )
-      );
-    });
+    // Object.keys(labels).map((labelKey) => {
+    //   const label = labels[labelKey];
+    //   label.position = new THREE.Vector3().copy(
+    //     polar2Cartesian(
+    //       label.coords.lat,
+    //       label.coords.lng,
+    //       0.01,
+    //       CANONIC_GLOBE_RADIUS * scale
+    //     )
+    //   );
+    // });
   };
 
   window.addEventListener("mousemove", onMouseMove);

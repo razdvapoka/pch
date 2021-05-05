@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { CENTER, ROTATION_DURATION } from "./consts";
 import anime from "animejs/lib/anime.es.js";
 
-export const setObjectPositionOnSphere = (object, theta, phi, radius) => {
+export const setObjectPositionOnSphere = (object, theta, phi, radius, aspect = 0) => {
   object.position.z = radius * Math.sin(phi) * Math.cos(theta);
   object.position.x = radius * Math.sin(phi) * Math.sin(theta);
   object.position.y = radius * Math.cos(phi);
