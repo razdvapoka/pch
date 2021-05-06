@@ -49,12 +49,11 @@ import {
   CHINA_STATE,
   EUROPE_STATE,
   INTRO_STATE,
-  CANONIC_WIDTH,
   CANONIC_GLOBE_RADIUS,
   ROTATION_DURATION,
   CAM_R,
-  Z_AXIS,
-  Y_AXIS,
+  // Z_AXIS,
+  // Y_AXIS,
 } from "../../consts";
 
 import { leftButton, rightButton } from "../../ui";
@@ -70,39 +69,33 @@ const airportObjects = largeAirports.map((a) => {
   };
 });
 
-// export const getAspect = () => {
-//   return aspect;
-// };
-
-const mouse = new THREE.Vector2();
+// const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
 
-const onMouseMove = (event) => {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-};
+// const onMouseMove = (event) => {
+//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+//   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+// };
 
-const onClick = () => {
-  const tc = camera.position.angleTo(Z_AXIS);
-  const pc = camera.position.angleTo(Y_AXIS);
-  console.log(tc, pc);
-};
+// const onClick = () => {
+//   const tc = camera.position.angleTo(Z_AXIS);
+//   const pc = camera.position.angleTo(Y_AXIS);
+//   console.log(tc, pc);
+// };
 
 // State
 
 const labels = {};
 const explosions = {};
 let isGlobeReady = false;
-let htmlElementsHidden = false;
+let htmlElementsHidden = true;
 let currentGlobeState = INTRO_STATE;
 
 const setCurrentGlobeState = (s) => {
   currentGlobeState = s;
 };
 
-let fov = 60;
-let scaleFactor = 1.05;
-let aspect = null;
+const FOV = 60;
 let pointsMesh = null;
 let scene = null;
 let camera = null;
@@ -159,7 +152,7 @@ const postponementZoomedCamera = {
 const getCameraRotator = (theta, phi, r = 0, duration = ROTATION_DURATION) =>
   getObjectRotator(theta, phi, r, camera, cameraRotationProps, duration);
 
-const createLabel = (objData, sizes) => {
+const createLabel = (objData) => {
   const element = document.createElement("div");
   element.id = objData.id;
   element.classList.add("label");
@@ -173,16 +166,9 @@ const createLabel = (objData, sizes) => {
     element.appendChild(subTextElement);
   }
   document.body.appendChild(element);
-  // const scale = sizes.width / CANONIC_WIDTH;
-  const scale = 1;
   return {
     position: new THREE.Vector3().copy(
-      polar2Cartesian(
-        objData.lat,
-        objData.lng,
-        0.01,
-        CANONIC_GLOBE_RADIUS * scale
-      )
+      polar2Cartesian(objData.lat, objData.lng, 0.01, CANONIC_GLOBE_RADIUS)
     ),
     element,
     coords: {
@@ -193,7 +179,7 @@ const createLabel = (objData, sizes) => {
   };
 };
 
-const createExplosion = (objData, sizes) => {
+const createExplosion = (objData) => {
   const element = document.createElement("div");
   element.id = objData.id;
   element.classList.add("explosion-box");
@@ -207,15 +193,9 @@ const createExplosion = (objData, sizes) => {
   element.appendChild(explosion2);
   element.appendChild(explosion3);
   document.body.appendChild(element);
-  const scale = sizes.width / CANONIC_WIDTH;
   return {
     position: new THREE.Vector3().copy(
-      polar2Cartesian(
-        objData.lat,
-        objData.lng,
-        0.01,
-        CANONIC_GLOBE_RADIUS * scale
-      )
+      polar2Cartesian(objData.lat, objData.lng, 0.01, CANONIC_GLOBE_RADIUS)
     ),
     element,
     coords: {
@@ -225,17 +205,17 @@ const createExplosion = (objData, sizes) => {
   };
 };
 
-const handleCustomObject = (objData, sizes) => {
+const handleCustomObject = (objData) => {
   switch (objData.objType) {
     case "label": {
       if (!labels[objData.id]) {
-        labels[objData.id] = createLabel(objData, sizes);
+        labels[objData.id] = createLabel(objData);
       }
       return;
     }
     case "explosion": {
       if (!explosions[objData.id]) {
-        explosions[objData.id] = createExplosion(objData, sizes);
+        explosions[objData.id] = createExplosion(objData);
       }
       return;
     }
@@ -278,11 +258,7 @@ const handleCustomObjectUpdate = (obj, d) => {
   }
 };
 
-const handleGlobeReady = (sizes) => {
-  // const scale = sizes.width / CANONIC_WIDTH;
-  let scale = CANONIC_WIDTH / sizes.width;
-  scale = scale + (1 - scale) * scaleFactor;
-  globe.scale.set(scale, scale, scale);
+const handleGlobeReady = () => {
   isGlobeReady = true;
   pointsMaterial.opacity = 1;
 };
@@ -328,6 +304,9 @@ const launchIntro2ChinaAnimation = () => {
     duration: ROTATION_DURATION,
     easing: "easeInOutCubic",
     autoplay: false,
+    complete: () => {
+      htmlElementsHidden = false;
+    },
   });
   timeline.add(intro2ChinaLight1Animation);
   timeline.add(intro2ChinaLight2Animation, 0);
@@ -339,7 +318,7 @@ const launchIntro2ChinaAnimation = () => {
 const updateGlobeHTMLElements = (elements, sizes) => {
   Object.keys(elements).forEach((elementKey) => {
     const element = elements[elementKey];
-    if (currentGlobeState === CHINA_STATE && !htmlElementsHidden) {
+    if (!htmlElementsHidden) {
       const screenPosition = element.position.clone();
       screenPosition.project(camera);
       raycaster.setFromCamera(screenPosition, camera);
@@ -409,11 +388,13 @@ const hideAndRevealNav = (cb) => {
 };
 
 const handleRightButtonClick = () => {
+  htmlElementsHidden = true;
   switch (currentGlobeState) {
     case CHINA_STATE: {
       china2USARotator();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(USA_STATE);
+        htmlElementsHidden = false;
       });
       setCurrentGlobeState(USA_STATE);
       return;
@@ -422,6 +403,7 @@ const handleRightButtonClick = () => {
       USA2EuropeRotator();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(EUROPE_STATE);
+        htmlElementsHidden = false;
       });
       setCurrentGlobeState(EUROPE_STATE);
       return;
@@ -431,6 +413,7 @@ const handleRightButtonClick = () => {
       hideAndRevealNav(() => {
         updateGlobeNavButtons(CHINA_STATE);
         setCurrentGlobeState(CHINA_STATE);
+        htmlElementsHidden = false;
       });
       return;
     }
@@ -438,11 +421,13 @@ const handleRightButtonClick = () => {
 };
 
 const handleLeftButtonClick = () => {
+  htmlElementsHidden = true;
   switch (currentGlobeState) {
     case CHINA_STATE: {
       china2EuropeRotator();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(EUROPE_STATE);
+        htmlElementsHidden = false;
       });
       setCurrentGlobeState(EUROPE_STATE);
       return;
@@ -451,6 +436,7 @@ const handleLeftButtonClick = () => {
       europe2USARotator();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(USA_STATE);
+        htmlElementsHidden = false;
       });
       setCurrentGlobeState(USA_STATE);
       return;
@@ -460,6 +446,7 @@ const handleLeftButtonClick = () => {
       hideAndRevealNav(() => {
         updateGlobeNavButtons(CHINA_STATE);
         setCurrentGlobeState(CHINA_STATE);
+        htmlElementsHidden = false;
       });
       return;
     }
@@ -478,8 +465,10 @@ const getBackToChinaRotator = () => {
 };
 
 export const addFulfillment = () => {
+  htmlElementsHidden = true;
   const rotator = getBackToChinaRotator();
   rotator().then(() => {
+    htmlElementsHidden = false;
     Object.keys(explosions).map((explosionKey) => {
       const explosion = explosions[explosionKey];
       explosion.element.classList.add("active");
@@ -642,7 +631,7 @@ export const initGlobeSceneObject = ({
     .atmosphereColor("white")
     .atmosphereAltitude(0.1)
     .customLayerData([...customData, ...airportObjects])
-    .customThreeObject((objData) => handleCustomObject(objData, sizes))
+    .customThreeObject((objData) => handleCustomObject(objData))
     .customThreeObjectUpdate(handleCustomObjectUpdate)
     .arcsData(arcsData)
     .arcColor("color")
@@ -652,7 +641,7 @@ export const initGlobeSceneObject = ({
     .pathPointAlt(0.01)
     .pathColor(() => "rgb(90, 100, 250)")
     .onGlobeReady(() => {
-      handleGlobeReady(sizes);
+      handleGlobeReady();
       onReady();
     });
 
@@ -680,14 +669,9 @@ export const initGlobeSceneObject = ({
   );
   globe.add(cloudSphere);
 
-  aspect = sizes.width / sizes.height;
+  const aspect = sizes.width / sizes.height;
 
-  camera = new THREE.PerspectiveCamera(
-    fov / aspect,
-    aspect,
-    0.1,
-    2500
-  );
+  camera = new THREE.PerspectiveCamera(FOV / aspect, aspect, 0.1, 2500);
   setObjectPositionOnSphere(
     camera,
     INTRO_CAM_THETA,
@@ -722,45 +706,15 @@ export const initGlobeSceneObject = ({
   controls.update();
 
   onResize = (sizes) => {
-    camera.aspect = sizes.width / sizes.height;
-    aspect = sizes.width / sizes.height;
-    camera.fov = fov / aspect;
+    const aspect = sizes.width / sizes.height;
+    camera.aspect = aspect;
+    camera.fov = FOV / aspect;
     camera.updateProjectionMatrix();
-    
-
     controls.update();
-
-    // Width-based scaling
-    const scale = CANONIC_WIDTH / sizes.width;
-    // globe.scale.set(scale, scale, scale);
-
-    // Вот здесь надо уменьшать вместо увеличения, 
-    // так как fov / aspect реверсирует механику ресайза
-    scale = CANONIC_WIDTH / sizes.width;
-
-    // scaleFactor нужен, чтобы компенсировать увеличение экрана:
-    // 1920x1080 — все работает идеально
-    // 3840x2160 — размера начинает съезжать немного, не знаю за счет чего
-    // Вот этим scaleFactor и компенсирую
-    scale = scale + (1 - scale) * scaleFactor;
-
-    globe.scale.set(scale, scale, scale);
-
-    // Object.keys(labels).map((labelKey) => {
-    //   const label = labels[labelKey];
-    //   label.position = new THREE.Vector3().copy(
-    //     polar2Cartesian(
-    //       label.coords.lat,
-    //       label.coords.lng,
-    //       0.01,
-    //       CANONIC_GLOBE_RADIUS * scale
-    //     )
-    //   );
-    // });
   };
 
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("click", onClick);
+  // window.addEventListener("mousemove", onMouseMove);
+  // window.addEventListener("click", onClick);
 
   return { scene, camera, tick, onResize };
 };

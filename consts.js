@@ -1,6 +1,5 @@
 import * as THREE from "three";
 
-export const CANONIC_WIDTH = 1920;
 export const CANONIC_GLOBE_RADIUS = 100;
 export const CENTER = new THREE.Vector3(0, 0, 0);
 export const CAM_R = 280;
