@@ -173,7 +173,8 @@ const createLabel = (objData, sizes) => {
     element.appendChild(subTextElement);
   }
   document.body.appendChild(element);
-  const scale = sizes.width / CANONIC_WIDTH;
+  // const scale = sizes.width / CANONIC_WIDTH;
+  const scale = 1;
   return {
     position: new THREE.Vector3().copy(
       polar2Cartesian(

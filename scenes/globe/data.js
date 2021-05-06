@@ -134,6 +134,36 @@ export const customData = [
     objType: "tb",
     id: uid(),
   },
+
+  // Europe objects
+  {
+    lat: 46.879624090684273, 
+    lng: 19.9032797724225021,
+    objType: "tb",
+    id: uid(),
+  },
+  {
+    lat: 49.879624090684273, 
+    lng: 21.9032797724225021,
+    objType: "tb",
+    id: uid(),
+  },
+
+  // USA Objects
+  {
+    lat: 40.879624090684273, 
+    lng: 258.9032797724225021,
+    objType: "tb",
+    id: uid(),
+  },
+  {
+    lat: 43.879624090684273, 
+    lng: 265.9032797724225021,
+    objType: "tb",
+    id: uid(),
+  },
+
+
   {
     lat: 20.413554687037546,
     lng: 113.5993578911301,
@@ -156,6 +186,22 @@ export const customData = [
     label: "postponement",
     id: uid(),
   },
+  // Europe labels
+  {
+    lat: 46.879624090684273, 
+    lng: 19.9032797724225021,
+    objType: "label",
+    label: "B2B Hubs",
+    id: uid(),
+  },
+  {
+    lat: 48.879624090684273, 
+    lng: 20.9032797724225021,
+    objType: "label",
+    label: "B2С Hubs",
+    id: uid(),
+  },
+
   {
     lat: 26.697672656009466,
     lng: 111.2,

@@ -39,7 +39,7 @@ export const getObjectRotator = (
     const newObjR = objR + r;
     anime({
       duration,
-      easing: "easeInOutCubic",
+      easing: "cubicBezier(.08,.98,.8,.98)",
       update: (a) => {
         const alpha = a.progress / 100;
         const t = objTheta + alpha * (newObjTheta - objTheta);
