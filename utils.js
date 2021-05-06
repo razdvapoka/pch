@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { CENTER, ROTATION_DURATION } from "./consts";
 import anime from "animejs/lib/anime.es.js";
 
-export const setObjectPositionOnSphere = (object, theta, phi, radius, aspect = 0) => {
+export const setObjectPositionOnSphere = (object, theta, phi, radius) => {
   object.position.z = radius * Math.sin(phi) * Math.cos(theta);
   object.position.x = radius * Math.sin(phi) * Math.sin(theta);
   object.position.y = radius * Math.cos(phi);
@@ -37,11 +37,16 @@ export const getObjectRotator = (
     const newObjTheta = objTheta + theta;
     const newObjPhi = objPhi + phi;
     const newObjR = objR + r;
+    const animated = {
+      alpha: 0,
+    };
     anime({
       duration,
+      targets: animated,
+      alpha: 1,
       easing: "cubicBezier(.08,.98,.8,.98)",
-      update: (a) => {
-        const alpha = a.progress / 100;
+      update: () => {
+        const { alpha } = animated;
         const t = objTheta + alpha * (newObjTheta - objTheta);
         const p = objPhi + alpha * (newObjPhi - objPhi);
         const rr = objR + alpha * (newObjR - objR);
