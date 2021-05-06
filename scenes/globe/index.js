@@ -212,6 +212,7 @@ const createExplosion = (objData) => {
       lat: objData.lat,
       lng: objData.lng,
     },
+    data: objData,
   };
 };
 
@@ -328,7 +329,10 @@ const launchIntro2ChinaAnimation = () => {
 const updateGlobeHTMLElements = (elements, sizes) => {
   Object.keys(elements).forEach((elementKey) => {
     const element = elements[elementKey];
-    if (!htmlElementsHidden) {
+    if (
+      !htmlElementsHidden &&
+      (!element.data.state || element.data.state === currentGlobeState)
+    ) {
       const screenPosition = element.position.clone();
       screenPosition.project(camera);
       raycaster.setFromCamera(screenPosition, camera);
