@@ -59,6 +59,9 @@ import {
 
 import { leftButton, rightButton } from "../../ui";
 
+const CANONIC_HEIGHT = 1080;
+const CANONIC_ZOOM = 0.5;
+
 const airportObjects = largeAirports.map((a) => {
   const [lng, lat] = a.coordinates.split(", ");
   return {
@@ -705,11 +708,15 @@ export const initGlobeSceneObject = ({
     cloudSphere.rotation.y = elapsedTime / 100;
   };
 
+  camera.zoom = (CANONIC_HEIGHT / sizes.height) * CANONIC_ZOOM;
+  camera.updateProjectionMatrix();
+
   const controls = new OrbitControls(camera, canvas);
   controls.update();
 
   onResize = (sizes) => {
     camera.aspect = sizes.width / sizes.height;
+    camera.zoom = (CANONIC_HEIGHT / sizes.height) * CANONIC_ZOOM;
     camera.updateProjectionMatrix();
 
     controls.update();
