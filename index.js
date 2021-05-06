@@ -34,6 +34,7 @@ import {
   transitionToManufacturing,
   transitionToPostponement,
   transitionToFulfillment,
+  transitionToDelivery,
 } from "./scenes/globe";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
 import {
@@ -103,6 +104,7 @@ gltfLoader.load(postponementModelSrc, (gltf) => {
 });
 gltfLoader.load(fulfillmentModelSrc, (gltf) => {
   fulfillmentModel = gltf.scene.children[0];
+  // setCurrentStep(B2B_STEP_4);
 });
 gltfLoader.load(deliveryAModelSrc, (gltf) => {
   deliveryAModel = gltf.scene.children[0];
@@ -277,6 +279,7 @@ const getGlobeTransitioner = ({
   nextButton,
   nextStep,
   navButton,
+  waitBeforeOverlay = 1500,
 }) => () => {
   setElementVisibility(startButton, false);
   return launchScene()
@@ -289,7 +292,7 @@ const getGlobeTransitioner = ({
         setCurrentSceneObject(getGlobeSceneObject());
         hideOverlay(600);
         transition();
-        wait(1500)
+        wait(waitBeforeOverlay)
           .then(() => showOverlay("white", 300))
           .then(() => wait(300))
           .then(() => {
@@ -340,12 +343,16 @@ const handlePostponementClick = getGlobeTransitioner({
   navButton: "fulfillment",
 });
 
-const handleFulfillmentClick = () => {
-  setElementVisibility(fulfillmentButton, false);
-  setElementVisibility(deliveryButton, true);
-  setCurrentStep(B2B_STEP_5);
-  setNavButtonActive("delivery", true);
-};
+const handleFulfillmentClick = getGlobeTransitioner({
+  launchScene: launchFulfillmentScene,
+  transition: transitionToDelivery,
+  startButton: fulfillmentButton,
+  nextButton: deliveryButton,
+  nextStep: B2B_STEP_5,
+  navButton: "delivery",
+  waitBeforeOverlay: 2500,
+});
+
 const handleDeliveryButtonClick = () => {
   setElementVisibility(deliveryButton, false);
   setCurrentStep(B2B_STEP_6);

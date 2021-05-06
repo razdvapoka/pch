@@ -19,8 +19,8 @@ let purpleMaterial;
 let parts = {};
 // let transformControls;
 
-export const launchManufacturingScene = () =>
-  new Promise((resolve) => {
+export const launchManufacturingScene = () => {
+  return new Promise((resolve) => {
     const innerBase = parts["inner_base"];
     const chips = parts["chips"];
     const cam = parts["cam"];
@@ -84,6 +84,7 @@ export const launchManufacturingScene = () =>
       });
     timeline.play();
   });
+};
 
 export const initManufacturingSceneObject = ({
   manufacturingModel,
