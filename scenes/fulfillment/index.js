@@ -277,7 +277,6 @@ export const initFulfillmentSceneObject = ({
   boxA = parts["main_box_a"];
   boxB = parts["main_box_b"];
   paletteA = parts["pallete_activation_a"];
-  paletteB = parts["pallete_activation_b"];
   cube133 = parts["Cube133_1"];
   cube131 = parts["Cube131_1"];
   containerA = parts["container_a"];
