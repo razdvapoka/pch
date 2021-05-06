@@ -19,8 +19,8 @@ let purpleMaterial;
 let parts = {};
 // let transformControls;
 
-export const launchPostponementScene = () =>
-  new Promise((resolve) => {
+export const launchPostponementScene = () => {
+  return new Promise((resolve) => {
     const phone = parts["phone"];
     const boxTop = parts["box_top"];
     const boxHolder = parts["box_holder"];
@@ -45,6 +45,7 @@ export const launchPostponementScene = () =>
       });
     timeline.play();
   });
+};
 
 export const initPostponementSceneObject = ({
   postponementModel,

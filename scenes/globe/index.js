@@ -118,6 +118,7 @@ let USA2ChinaRotator;
 let USA2ManufacturingRotator;
 let manufacturing2PostponementRotator;
 let postponementToFulfillmentRotator;
+let fulfillmentToDeliveryRotator;
 let USA2EuropeRotator;
 let europe2ChinaRotator;
 let europe2USARotator;
@@ -149,6 +150,12 @@ const manufactureZoomedCamera = {
 const postponementZoomedCamera = {
   theta: 1.9406723835181216,
   phi: 1.0162240223230787,
+  r: 100,
+};
+
+const fulfillmentZoomedCamera = {
+  theta: 1.95827946696545,
+  phi: 1.02801727397001,
   r: 100,
 };
 
@@ -545,12 +552,12 @@ const initRotators = () => {
     -manufactureZoomedCamera.phi + 1.0162240223230787,
     0
   );
-  //1.9036574695043624 1.1380471009664879
   postponementToFulfillmentRotator = getCameraRotator(
     -postponementZoomedCamera.theta + 1.9036574695043624,
     -postponementZoomedCamera.phi + 1.1380471009664879,
     0
   );
+  fulfillmentToDeliveryRotator = getCameraRotator(2.8, -0.3, 0, 1500);
   USA2EuropeRotator = getCameraRotator(Math.PI * 0.7, -Math.PI * 0.04);
   europe2ChinaRotator = getCameraRotator(Math.PI * 0.5, Math.PI * 0.12);
   europe2USARotator = getCameraRotator(-Math.PI * 0.7, Math.PI * 0.04);
@@ -602,6 +609,24 @@ export const transitionToFulfillment = () => {
     .then(() => {
       htmlElementsHidden = false;
       return postponementToFulfillmentRotator();
+    })
+    .then(() => {
+      htmlElementsHidden = true;
+      zoomRotator();
+    });
+};
+
+export const transitionToDelivery = () => {
+  setObjectPositionOnSphere(
+    camera,
+    fulfillmentZoomedCamera.theta,
+    fulfillmentZoomedCamera.phi,
+    fulfillmentZoomedCamera.r
+  );
+  return zoomOutRotator()
+    .then(() => {
+      htmlElementsHidden = false;
+      return fulfillmentToDeliveryRotator();
     })
     .then(() => {
       htmlElementsHidden = true;
