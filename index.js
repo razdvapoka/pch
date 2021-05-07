@@ -84,6 +84,7 @@ import {
   fulfillmentButton,
   deliveryButton,
   progressBar,
+  globeButton,
 } from "./ui";
 
 let serversModel;
@@ -253,6 +254,7 @@ const handleB2BButtonClick = () => {
     setLightTheme();
     setNavVisibility(true);
     setElementVisibility(placeOrderButton, true);
+    setElementVisibility(globeButton, true);
     setHeadingText("Business-to-business");
     hideOverlay(600);
   });
@@ -323,6 +325,7 @@ const getGlobeTransitioner = ({
     .then(() => {
       setElementVisibility(nav, false);
       setElementVisibility(heading, false);
+      setElementVisibility(globeButton, false);
       showOverlay("white", 600);
       wait(600).then(() => {
         setCurrentSceneObject(getGlobeSceneObject());
@@ -334,6 +337,7 @@ const getGlobeTransitioner = ({
           .then(() => {
             setElementVisibility(heading, true);
             setElementVisibility(nav, true);
+            setElementVisibility(globeButton, true);
             setElementVisibility(nextButton, true);
             setCurrentStep(nextStep);
             setNavButtonActive(navButton, true);

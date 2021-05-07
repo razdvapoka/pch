@@ -343,3 +343,21 @@ nav > ul > li > button.active {
   transform: scaleX(0);
   pointer-events: none;
 }
+
+.globe-button {
+  transition: opacity 0.2s ease;
+  width: 6.8rem;
+  height: 6.8rem;
+  background-image: url(../svg/globe.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+
+  border: 0;
+  padding: 0;
+  background-color: transparent;
+
+  position: fixed;
+  left: 2rem;
+  bottom: 2.2rem;
+}
