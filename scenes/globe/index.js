@@ -1,5 +1,5 @@
 import { geoDistance } from "d3-geo";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { uid } from "uid";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
@@ -759,15 +759,15 @@ export const initGlobeSceneObject = ({
   camera.zoom = (CANONIC_HEIGHT / sizes.height) * CANONIC_ZOOM;
   camera.updateProjectionMatrix();
 
-  const controls = new OrbitControls(camera, canvas);
-  controls.update();
+  // const controls = new OrbitControls(camera, canvas);
+  // controls.update();
 
   onResize = (sizes) => {
     const aspect = sizes.width / sizes.height;
     camera.aspect = aspect;
     camera.fov = FOV / aspect;
     camera.updateProjectionMatrix();
-    controls.update();
+    // controls.update();
   };
 
   // window.addEventListener("mousemove", onMouseMove);
