@@ -23,6 +23,7 @@ export const postponementButton = document.querySelector(
 );
 export const fulfillmentButton = document.querySelector(".fulfillment-button");
 export const deliveryButton = document.querySelector(".delivery-button");
+export const progressBar = document.querySelector(".progress-bar");
 
 export const setNavButtonActive = (name, isActive) => {
   const btn = document.querySelector(`.nav-button-${name}`);

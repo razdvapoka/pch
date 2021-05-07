@@ -79,6 +79,7 @@ import {
   postponementButton,
   fulfillmentButton,
   deliveryButton,
+  progressBar,
 } from "./ui";
 
 let serversModel;
@@ -89,9 +90,23 @@ let deliveryAModel;
 let deliveryBModel;
 let orderD2CModel;
 
+const manager = new THREE.LoadingManager();
+manager.onProgress = (_, itemsLoaded, itemsTotal) => {
+  progressBar.style.transform = `scaleX(${itemsLoaded / itemsTotal})`;
+};
+manager.onLoad = () => {
+  progressBar.style.transform = `scale(0.1640625, 3.05) translateY(-2.04rem)`;
+  progressBar.style.borderRadius = `0.5rem`;
+  wait(200).then(() => {
+    setElementVisibility(launchButton, true);
+    progressBar.style.opacity = 0;
+    hideOverlay(800);
+  });
+};
+
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
-const gltfLoader = new GLTFLoader();
+const gltfLoader = new GLTFLoader(manager);
 gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load(serversModelSrc, (gltf) => {
   serversModel = gltf.scene.children[0];
@@ -116,14 +131,11 @@ gltfLoader.load(orderD2CModelSrc, (gltf) => {
   orderD2CModel = gltf.scene.children[0];
 });
 
-const textureLoader = new THREE.TextureLoader();
+const textureLoader = new THREE.TextureLoader(manager);
 const lightMap = textureLoader.load(lightMapTexture);
 const cloudsMap = textureLoader.load(cloudsTexture);
 
-const handleGlobeReady = () => {
-  hideOverlay(800);
-  setElementVisibility(launchButton, true);
-};
+const handleGlobeReady = () => {};
 
 const sizes = {
   width: window.innerWidth,

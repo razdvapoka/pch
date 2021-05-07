@@ -330,3 +330,16 @@ nav > ul > li > button.active {
   opacity: 1;
   pointer-events: none;
 }
+
+.progress-bar {
+  background-color: #5C63FF;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 2rem;
+  transition: transform 0.2s ease, border-radius 0.2s ease, opacity 0s linear 0.2s;
+  transform-origin: center top;
+  transform: scaleX(0);
+  pointer-events: none;
+}

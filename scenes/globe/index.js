@@ -240,7 +240,16 @@ const handleCustomObject = (objData) => {
     case "tb":
       return tallBuildingsGroup.clone();
     case "tb-single": {
-      return singleTallBuilding.clone();
+      const building = singleTallBuilding.clone();
+      anime({
+        targets: building.children[0].scale,
+        x: 3,
+        y: 2,
+        z: 3,
+        easing: "easeInOutCubic",
+        duration: 600,
+      });
+      return building;
     }
     case "lb":
       return lowBuildingsGroup.clone();

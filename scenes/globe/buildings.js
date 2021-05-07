@@ -62,7 +62,7 @@ tallBuildingsGroup.add(tallBuildings);
 const singleTallBuilding = new THREE.Group();
 const b = tallBuilding.clone();
 b.rotateX(Math.PI / 2);
-b.scale.set(2, 2, 2);
+b.scale.set(0, 0, 0);
 singleTallBuilding.add(b);
 
 const LB_GAP = 1.3;
