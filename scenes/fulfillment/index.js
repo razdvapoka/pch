@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 // import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import anime from "animejs/lib/anime.es.js";
+import { showOverlay, hideOverlay } from "../../ui";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
 
@@ -31,11 +32,13 @@ const whiteColor = new THREE.Color(WHITE);
 //   }
 // };
 
+let sceneObject;
 let camera;
 let cameraTarget;
 let controls;
 let scene;
 let model;
+let deliveryModel;
 let parts = {};
 let transformControls;
 let usa;
@@ -57,13 +60,44 @@ let containerA;
 let containerAMaterial;
 let containerAGroup = new THREE.Group();
 let truckMaterial;
+let plane;
+let planeMaterial;
+
+const launchDeliveryScene = (resolve) => {
+  showOverlay("white", 600).then(() => {
+    initDeliveryScene();
+    hideOverlay(600).then(() => {
+      const timeline = anime.timeline({
+        autoplay: false,
+        easing: "easeInOutSine",
+        complete: resolve,
+      });
+      timeline
+        .add({
+          duration: COLOR_TRANSITION_DURATION,
+          targets: planeMaterial,
+          emissiveIntensity: 0.2,
+          __color: PURPLE,
+          update: () => {
+            planeMaterial.color.set(planeMaterial.__color);
+          },
+        })
+        .add({
+          duration: 2000,
+          targets: plane.position,
+          y: 15000,
+          z: 30000,
+        });
+      timeline.play();
+    });
+  });
+};
 
 export const launchFulfillmentScene = () =>
   new Promise((resolve) => {
     const timeline = anime.timeline({
       autoplay: false,
       easing: "easeInOutSine",
-      complete: resolve,
     });
     timeline
       .add({
@@ -221,17 +255,66 @@ export const launchFulfillmentScene = () =>
         easing: "easeOutSine",
         duration: 1000,
         z: "+=2500",
+        complete: () => {
+          launchDeliveryScene(resolve);
+        },
       });
     timeline.play();
   });
 
+const initDeliveryScene = () => {
+  const deliveryScene = new THREE.Scene();
+  deliveryScene.background = new THREE.Color("#ffffff");
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  directionalLight.position.set(100, 75, 45);
+  deliveryScene.add(ambientLight, directionalLight);
+  // scene.add(transformControls);
+  deliveryModel.traverse((obj) => {
+    parts[obj.name] = obj;
+    if (obj.type === "Mesh") {
+      obj.material.emissiveIntensity = 0.3;
+      obj.material.color = whiteColor;
+      obj.material.emissive = whiteColor;
+    }
+  });
+
+  plane = parts["plane_update"];
+  planeMaterial = boxA.material.clone();
+  planeMaterial.color = whiteColor.clone();
+  planeMaterial.__color = WHITE;
+  plane.traverse((obj) => {
+    if (obj.type === "Mesh") {
+      obj.material = planeMaterial;
+    }
+  });
+
+  deliveryScene.add(deliveryModel);
+
+  camera.position.copy({
+    x: 0.0014579586008573895,
+    y: 1457.894736841371,
+    z: -0.0000016541668697174197,
+  });
+  const cameraTarget = new THREE.Vector3(0, 0, 0);
+  controls.target = cameraTarget;
+  camera.lookAt(cameraTarget);
+  controls.update();
+  sceneObject.scene = deliveryScene;
+};
+
 export const initFulfillmentSceneObject = ({
   fulfillmentModel,
+  deliveryAModel,
   sizes,
   canvas,
 }) => {
   model = fulfillmentModel;
+  deliveryModel = deliveryAModel;
+  deliveryAModel.scale.set(0.05, 0.05, 0.05);
+
   scene = new THREE.Scene();
+
   scene.background = new THREE.Color("#ffffff");
   scene.fog = new THREE.Fog("white", 1900, 2500);
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
@@ -356,5 +439,6 @@ export const initFulfillmentSceneObject = ({
   // window.addEventListener("mousemove", onMouseMove);
   // window.addEventListener("click", onClick);
 
-  return { scene, camera, onResize };
+  sceneObject = { scene, camera, onResize };
+  return sceneObject;
 };

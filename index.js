@@ -11,6 +11,8 @@ import fulfillmentModelSrc from "./assets/models/fulfillment-draco.gltf";
 import deliveryAModelSrc from "./assets/models/delivery-a-draco.gltf";
 import deliveryBModelSrc from "./assets/models/delivery-b-draco.gltf";
 import orderD2CModelSrc from "./assets/models/order-d2c-draco.gltf";
+import deliveryC_B2B_ModelSrc from "./assets/models/delivery-c-b2b-draco.gltf";
+import deliveryC_D2C_ModelSrc from "./assets/models/delivery-c-d2c-draco.gltf";
 
 import {
   GLOBE_STEP,
@@ -19,7 +21,6 @@ import {
   B2B_STEP_3,
   B2B_STEP_4,
   B2B_STEP_5,
-  B2B_STEP_6,
   D2C_STEP_1,
 } from "./consts";
 
@@ -35,6 +36,7 @@ import {
   transitionToPostponement,
   transitionToFulfillment,
   transitionToDelivery,
+  transitionFromDeliveryToFulfillment,
 } from "./scenes/globe";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
 import {
@@ -49,8 +51,10 @@ import {
   initPostponementSceneObject,
   launchPostponementScene,
 } from "./scenes/postponement";
-import { initDeliveryASceneObject } from "./scenes/delivery-a";
-import { initDeliveryBSceneObject } from "./scenes/delivery-b";
+import {
+  initDeliveryBSceneObject,
+  launchDeliveryBScene,
+} from "./scenes/delivery-b";
 import {
   initOrderD2CSceneObject,
   launchOrderD2CScene,
@@ -89,6 +93,13 @@ let fulfillmentModel;
 let deliveryAModel;
 let deliveryBModel;
 let orderD2CModel;
+let deliveryC_B2B_Model;
+let deliveryC_D2C_Model;
+let isD2C = false;
+
+const checkIfD2C = () => {
+  return isD2C;
+};
 
 const manager = new THREE.LoadingManager();
 manager.onProgress = (_, itemsLoaded, itemsTotal) => {
@@ -119,13 +130,18 @@ gltfLoader.load(postponementModelSrc, (gltf) => {
 });
 gltfLoader.load(fulfillmentModelSrc, (gltf) => {
   fulfillmentModel = gltf.scene.children[0];
-  // setCurrentStep(B2B_STEP_4);
 });
 gltfLoader.load(deliveryAModelSrc, (gltf) => {
   deliveryAModel = gltf.scene.children[0];
 });
 gltfLoader.load(deliveryBModelSrc, (gltf) => {
   deliveryBModel = gltf.scene.children[0];
+});
+gltfLoader.load(deliveryC_B2B_ModelSrc, (gltf) => {
+  deliveryC_B2B_Model = gltf.scene.children[0];
+});
+gltfLoader.load(deliveryC_D2C_ModelSrc, (gltf) => {
+  deliveryC_D2C_Model = gltf.scene.children[0];
 });
 gltfLoader.load(orderD2CModelSrc, (gltf) => {
   orderD2CModel = gltf.scene.children[0];
@@ -134,8 +150,6 @@ gltfLoader.load(orderD2CModelSrc, (gltf) => {
 const textureLoader = new THREE.TextureLoader(manager);
 const lightMap = textureLoader.load(lightMapTexture);
 const cloudsMap = textureLoader.load(cloudsTexture);
-
-const handleGlobeReady = () => {};
 
 const sizes = {
   width: window.innerWidth,
@@ -148,7 +162,6 @@ const stepToSceneObject = {
       lightMap,
       cloudsMap,
       sizes,
-      onReady: handleGlobeReady,
       canvas,
     }),
   [B2B_STEP_1]: () => initServersSceneObject({ sizes, canvas, serversModel }),
@@ -157,11 +170,21 @@ const stepToSceneObject = {
   [B2B_STEP_3]: () =>
     initPostponementSceneObject({ sizes, canvas, postponementModel }),
   [B2B_STEP_4]: () =>
-    initFulfillmentSceneObject({ sizes, canvas, fulfillmentModel }),
+    initFulfillmentSceneObject({
+      sizes,
+      canvas,
+      fulfillmentModel,
+      deliveryAModel,
+    }),
   [B2B_STEP_5]: () =>
-    initDeliveryASceneObject({ sizes, canvas, deliveryAModel }),
-  [B2B_STEP_6]: () =>
-    initDeliveryBSceneObject({ sizes, canvas, deliveryBModel }),
+    initDeliveryBSceneObject({
+      sizes,
+      canvas,
+      deliveryBModel,
+      deliveryC_B2B_Model,
+      deliveryC_D2C_Model,
+      checkIfD2C,
+    }),
   [D2C_STEP_1]: () => initOrderD2CSceneObject({ sizes, canvas, orderD2CModel }),
 };
 
@@ -239,6 +262,7 @@ const handleB2BButtonClick = () => {
 
 const handleD2CButtonClick = () => {
   globeToB2B().then(() => {
+    isD2C = true;
     setCurrentStep(D2C_STEP_1);
     setLightTheme();
     setNavVisibility(true);
@@ -367,7 +391,15 @@ const handleFulfillmentClick = getGlobeTransitioner({
 
 const handleDeliveryButtonClick = () => {
   setElementVisibility(deliveryButton, false);
-  setCurrentStep(B2B_STEP_6);
+  return launchDeliveryBScene().then(() => {
+    setElementVisibility(nav, false);
+    setElementVisibility(heading, false);
+    showOverlay("white", 600).then(() => {
+      setCurrentSceneObject(getGlobeSceneObject());
+      hideOverlay(600);
+      transitionFromDeliveryToFulfillment();
+    });
+  });
 };
 
 const addEventListeners = () => {

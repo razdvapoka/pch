@@ -119,6 +119,7 @@ let USA2ManufacturingRotator;
 let manufacturing2PostponementRotator;
 let postponementToFulfillmentRotator;
 let fulfillmentToDeliveryRotator;
+let deliveryToFulfillmentRotator;
 let USA2EuropeRotator;
 let europe2ChinaRotator;
 let europe2USARotator;
@@ -570,6 +571,7 @@ const initRotators = () => {
     0
   );
   fulfillmentToDeliveryRotator = getCameraRotator(2.8, -0.3, 0, 1500);
+  deliveryToFulfillmentRotator = getCameraRotator(-2.8, 0.3, 0, 1500);
   USA2EuropeRotator = getCameraRotator(Math.PI * 0.7, -Math.PI * 0.04);
   europe2ChinaRotator = getCameraRotator(Math.PI * 0.5, Math.PI * 0.12);
   europe2USARotator = getCameraRotator(-Math.PI * 0.7, Math.PI * 0.04);
@@ -646,6 +648,19 @@ export const transitionToDelivery = () => {
     });
 };
 
+export const transitionFromDeliveryToFulfillment = () => {
+  setObjectPositionOnSphere(
+    camera,
+    fulfillmentZoomedCamera.theta + 2.8,
+    fulfillmentZoomedCamera.phi - 0.3,
+    fulfillmentZoomedCamera.r
+  );
+  return zoomOutRotator().then(() => {
+    htmlElementsHidden = false;
+    return deliveryToFulfillmentRotator();
+  });
+};
+
 export const getGlobeSceneObject = () => {
   return {
     scene,
@@ -659,7 +674,6 @@ export const initGlobeSceneObject = ({
   lightMap,
   cloudsMap,
   sizes,
-  onReady,
   canvas,
 }) => {
   scene = new THREE.Scene();
@@ -683,7 +697,6 @@ export const initGlobeSceneObject = ({
     .pathColor(() => "rgb(90, 100, 250)")
     .onGlobeReady(() => {
       handleGlobeReady();
-      onReady();
     });
 
   // Globe mesh

@@ -1,3 +1,5 @@
+import { wait } from "./utils";
+
 export const canvas = document.querySelector("#canvas");
 export const launchButton = document.querySelector(".launch-button");
 export const uploadLogoInput = document.querySelector(".upload-logo-input");
@@ -47,10 +49,12 @@ export const showOverlay = (color, duration, delay = 0) => {
   overlay.style.transition = `opacity ${transitionProps}, background-color ${transitionProps}`;
   overlay.style.backgroundColor = color;
   overlay.style.opacity = 1;
+  return wait(duration + delay);
 };
 
 export const hideOverlay = (duration, delay = 0) => {
   overlay.style.transition = `opacity ${duration}ms ease ${delay}ms`;
   overlay.style.opacity = 0;
   overlay.style.pointerEvents = "none";
+  return wait(duration + delay);
 };

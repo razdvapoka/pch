@@ -106,9 +106,9 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   //   helper.update();
   // });
 
-  window.addEventListener("click", () => {
-    console.log(camera.position);
-  });
+  // window.addEventListener("click", () => {
+  //   console.log(camera.position);
+  // });
 
   return { scene, camera, onResize };
 };
