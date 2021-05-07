@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 // import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
@@ -54,13 +54,16 @@ export const initPostponementSceneObject = ({
 }) => {
   model = postponementModel;
   scene = new THREE.Scene();
+  scene.translateY(-20);
   scene.background = new THREE.Color("#ffffff");
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
   scene.add(ambientLight);
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
   directionalLight.position.set(-100, 79, -61);
+  directionalLight.translateY(20);
   // const helper = new THREE.DirectionalLightHelper(directionalLight, 10, "red");
   // scene.add(helper);
+
   scene.add(ambientLight);
   scene.add(directionalLight);
   scene.add(model);
@@ -86,22 +89,35 @@ export const initPostponementSceneObject = ({
   // const axesHelper = new THREE.AxesHelper(1000);
   // scene.add(axesHelper);
 
-  camera = new THREE.PerspectiveCamera(
-    40,
-    sizes.width / sizes.height,
-    0.1,
-    2500
+  // camera = new THREE.PerspectiveCamera(
+  //   40,
+  //   sizes.width / sizes.height,
+  //   0.1,
+  //   2500
+  // );
+  camera = new THREE.OrthographicCamera(
+    sizes.width / -2,
+    sizes.width / 2,
+    sizes.height / 2,
+    sizes.height / -2,
+    1,
+    1000
   );
   camera.position.copy({
-    x: -87.41448417556582,
-    y: 121.3323743476947,
-    z: -96.49258619456741,
+    x: -95.14147177159829,
+    y: 115.95072054418478,
+    z: -95.79763594924385,
   });
+  camera.zoom = 13;
+  camera.updateProjectionMatrix();
   const cameraTarget = new THREE.Vector3(0, 0, 0);
-  const controls = new OrbitControls(camera, canvas);
-  controls.target = cameraTarget;
+  // const controls = new OrbitControls(camera, canvas);
+  // controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
-  controls.update();
+  // controls.update();
+  // controls.addEventListener("change", () => {
+  //   console.log(camera);
+  // });
 
   parts["boxes"].position.z = 50; //-46.20795933635105 //
   parts["phone"].position.x = -150; // 15.82770824432373 // y -8.5
@@ -172,7 +188,7 @@ export const initPostponementSceneObject = ({
     camera.aspect = sizes.width / sizes.height;
     camera.updateProjectionMatrix();
 
-    controls.update();
+    // controls.update();
   };
 
   // const gui = new dat.GUI();

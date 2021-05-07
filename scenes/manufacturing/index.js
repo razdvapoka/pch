@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 // import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
@@ -80,7 +80,7 @@ export const launchManufacturingScene = () => {
         duration: 1000,
         targets: phone.position,
         easing: "linear",
-        x: -100,
+        x: -120,
       });
     timeline.play();
   });
@@ -124,18 +124,31 @@ export const initManufacturingSceneObject = ({
   // const axesHelper = new THREE.AxesHelper(1000);
   // scene.add(axesHelper);
 
-  camera = new THREE.PerspectiveCamera(
-    40,
-    sizes.width / sizes.height,
-    0.1,
-    2500
+  // camera = new THREE.PerspectiveCamera(
+  //   40,
+  //   sizes.width / sizes.height,
+  //   0.1,
+  //   2500
+  // );
+  camera = new THREE.OrthographicCamera(
+    sizes.width / -2,
+    sizes.width / 2,
+    sizes.height / 2,
+    sizes.height / -2,
+    1,
+    1000
   );
   camera.position.set(57.6, 58.4, 50.2);
+  camera.zoom = 14;
+  camera.updateProjectionMatrix();
   const cameraTarget = new THREE.Vector3(0, 0, 0);
-  const controls = new OrbitControls(camera, canvas);
-  controls.target = cameraTarget;
+  // const controls = new OrbitControls(camera, canvas);
+  // controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
-  controls.update();
+  // controls.update();
+  // controls.addEventListener("change", () => {
+  //   console.log(camera);
+  // });
 
   // transformControls = new TransformControls(camera, canvas);
   // transformControls.attach(parts["glass"]);
@@ -152,7 +165,7 @@ export const initManufacturingSceneObject = ({
     camera.aspect = sizes.width / sizes.height;
     camera.updateProjectionMatrix();
 
-    controls.update();
+    // controls.update();
   };
 
   // const gui = new dat.GUI();
