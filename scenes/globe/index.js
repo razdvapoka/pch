@@ -1,5 +1,5 @@
 import { geoDistance } from "d3-geo";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { uid } from "uid";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
@@ -52,8 +52,8 @@ import {
   CANONIC_GLOBE_RADIUS,
   ROTATION_DURATION,
   CAM_R,
-  // Z_AXIS,
-  // Y_AXIS,
+  Z_AXIS,
+  Y_AXIS,
 } from "../../consts";
 
 import { leftButton, rightButton } from "../../ui";
@@ -72,19 +72,19 @@ const airportObjects = largeAirports.map((a) => {
   };
 });
 
-// const mouse = new THREE.Vector2();
+const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
 
-// const onMouseMove = (event) => {
-//   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-//   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-// };
+const onMouseMove = (event) => {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+};
 
-// const onClick = () => {
-//   const tc = camera.position.angleTo(Z_AXIS);
-//   const pc = camera.position.angleTo(Y_AXIS);
-//   console.log(tc, pc);
-// };
+const onClick = () => {
+  const tc = camera.position.angleTo(Z_AXIS);
+  const pc = camera.position.angleTo(Y_AXIS);
+  console.log(tc, pc);
+};
 
 // State
 
@@ -116,6 +116,7 @@ let china2USARotator;
 let china2EuropeRotator;
 let USA2ChinaRotator;
 let USA2ManufacturingRotator;
+let europe2ManufacturingRotator;
 let manufacturing2PostponementRotator;
 let postponementToFulfillmentRotator;
 let fulfillmentToDeliveryRotator;
@@ -139,6 +140,13 @@ let light1RotationProps = {
 const USAZoomedCamera = {
   theta: CHINA_CAM_THETA + Math.PI * 0.8,
   phi: CHINA_CAM_PHI - Math.PI * 0.08,
+  r: 100,
+};
+
+//china2EuropeRotator = getCameraRotator(-Math.PI * 0.5, -Math.PI * 0.12);
+const europeZoomedCamera = {
+  theta: CHINA_CAM_THETA - Math.PI * 0.5,
+  phi: CHINA_CAM_PHI - Math.PI * 0.12,
   r: 100,
 };
 
@@ -539,6 +547,13 @@ export const globeToB2B = () => {
     .then(() => wait(100));
 };
 
+export const globeToD2C = () => {
+  hideNavButtons();
+  return china2EuropeRotator()
+    .then(() => zoomRotator())
+    .then(() => wait(100));
+};
+
 const initRotators = () => {
   intro2ChinaLight1Rotator = getObjectRotator(
     d2r(91),
@@ -560,6 +575,11 @@ const initRotators = () => {
     -USAZoomedCamera.phi + 1.1314157529547064,
     0
   );
+  europe2ManufacturingRotator = getCameraRotator(
+    -europeZoomedCamera.theta + 1.6935725424213968,
+    -europeZoomedCamera.phi + 1.1314157529547064,
+    0
+  );
   manufacturing2PostponementRotator = getCameraRotator(
     -manufactureZoomedCamera.theta + 1.9406723835181216,
     -manufactureZoomedCamera.phi + 1.0162240223230787,
@@ -579,7 +599,22 @@ const initRotators = () => {
   zoomOutRotator = getCameraRotator(0, 0, 100);
 };
 
-export const transitionToManufacturing = () => {
+export const transitionD2CToManufacturing = () => {
+  setObjectPositionOnSphere(
+    camera,
+    europeZoomedCamera.theta,
+    europeZoomedCamera.phi,
+    europeZoomedCamera.r
+  );
+  return zoomOutRotator()
+    .then(() => europe2ManufacturingRotator())
+    .then(() => {
+      htmlElementsHidden = true;
+      zoomRotator();
+    });
+};
+
+export const transitionB2BToManufacturing = () => {
   setObjectPositionOnSphere(
     camera,
     USAZoomedCamera.theta,

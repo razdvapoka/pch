@@ -30,9 +30,11 @@ import {
   addFulfillment,
   launchGlobeScene,
   globeToB2B,
+  globeToD2C,
   initGlobeSceneObject,
   getGlobeSceneObject,
-  transitionToManufacturing,
+  transitionB2BToManufacturing,
+  transitionD2CToManufacturing,
   transitionToPostponement,
   transitionToFulfillment,
   transitionToDelivery,
@@ -263,7 +265,7 @@ const handleB2BButtonClick = () => {
 };
 
 const handleD2CButtonClick = () => {
-  globeToB2B().then(() => {
+  globeToD2C().then(() => {
     isD2C = true;
     setCurrentStep(D2C_STEP_1);
     setLightTheme();
@@ -348,7 +350,7 @@ const getGlobeTransitioner = ({
 
 const handlePlaceOrderD2CButtonClick = getGlobeTransitioner({
   launchScene: launchOrderD2CScene,
-  transition: transitionToManufacturing,
+  transition: transitionD2CToManufacturing,
   startButton: placeOrderD2CButton,
   nextButton: manufactureButton,
   nextStep: B2B_STEP_2,
@@ -357,7 +359,7 @@ const handlePlaceOrderD2CButtonClick = getGlobeTransitioner({
 
 const handlePlaceOrderButtonClick = getGlobeTransitioner({
   launchScene: launchServerScene,
-  transition: transitionToManufacturing,
+  transition: transitionB2BToManufacturing,
   startButton: placeOrderButton,
   nextButton: manufactureButton,
   nextStep: B2B_STEP_2,
