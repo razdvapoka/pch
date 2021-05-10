@@ -162,7 +162,10 @@ export const initManufacturingSceneObject = ({
   // scene.add(transformControls);
 
   const onResize = (sizes) => {
-    camera.aspect = sizes.width / sizes.height;
+    camera.left = sizes.width / -2;
+    camera.right = sizes.width / 2;
+    camera.top = sizes.height / 2;
+    camera.bottom = sizes.height / -2;
     camera.updateProjectionMatrix();
 
     // controls.update();
