@@ -282,14 +282,13 @@ const handleLogoUpload = (e) => {
     const file = files[0];
     const fileReader = new FileReader();
     fileReader.onload = (d) => {
-      const svgString = d.target.result;
-      const url =
-        `url('data:image/svg+xml;utf8,` + encodeURIComponent(svgString) + `')`;
+      const fileString = d.target.result;
+      const url = `url(${fileString.replace(/(\r\n|\n|\r)/gm, "")})`;
       clientLogo.style.backgroundImage = url;
       clientLogo.style.display = "block";
       uploadLogoLabel.style.display = "none";
     };
-    fileReader.readAsText(file);
+    fileReader.readAsDataURL(file);
   }
 };
 
