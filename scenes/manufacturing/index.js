@@ -4,6 +4,7 @@ import * as THREE from "three";
 import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
+import { SKIP } from "../../consts";
 
 const WHITE = "#b7b7b7";
 const PURPLE = "#5964fa";
@@ -19,79 +20,76 @@ let purpleMaterial;
 let parts = {};
 // let transformControls;
 
-export const launchManufacturingScene = () => {
-  return new Promise((resolve) => {
-    const innerBase = parts["inner_base"];
-    const chips = parts["chips"];
-    const cam = parts["cam"];
-    const glass = parts["glass"];
-    const phone = parts["phone"];
+export const launchManufacturingScene = () =>
+  SKIP
+    ? Promise.resolve()
+    : new Promise((resolve) => {
+        const innerBase = parts["inner_base"];
+        const chips = parts["chips"];
+        const cam = parts["cam"];
+        const glass = parts["glass"];
+        const phone = parts["phone"];
 
-    const offset = "-=200";
-    const timeline = anime.timeline({
-      autoplay: false,
-      easing: "easeInOutSine",
-      complete: resolve,
-    });
-    timeline
-      .add({
-        duration: COLOR_TRANSITION_DURATION,
-        targets: purpleMaterial,
-        emissiveIntensity: 0.2,
-        easing: "easeInOutSine",
-        __color: PURPLE,
-        update: () => {
-          purpleMaterial.color.set(purpleMaterial.__color);
-        },
-      })
-      .add(
-        {
-          duration: 600,
-          targets: innerBase.position,
-          z: -0.025,
-        },
-        offset
-      )
-      .add(
-        {
-          duration: 500,
-          targets: chips.position,
-          z: 0.01,
-        },
-        offset
-      )
-      .add(
-        {
-          duration: 400,
-          targets: cam.position,
-          z: 0.009,
-        },
-        offset
-      )
-      .add(
-        {
-          duration: 300,
-          targets: glass.position,
-          z: -0.0874,
-        },
-        offset
-      )
-      .add({
-        duration: 1000,
-        targets: phone.position,
-        easing: "linear",
-        x: -120,
+        const offset = "-=200";
+        const timeline = anime.timeline({
+          autoplay: false,
+          easing: "easeInOutSine",
+          complete: resolve,
+        });
+        timeline
+          .add({
+            duration: COLOR_TRANSITION_DURATION,
+            targets: purpleMaterial,
+            emissiveIntensity: 0.2,
+            easing: "easeInOutSine",
+            __color: PURPLE,
+            update: () => {
+              purpleMaterial.color.set(purpleMaterial.__color);
+            },
+          })
+          .add(
+            {
+              duration: 600,
+              targets: innerBase.position,
+              z: -0.025,
+            },
+            offset
+          )
+          .add(
+            {
+              duration: 500,
+              targets: chips.position,
+              z: 0.01,
+            },
+            offset
+          )
+          .add(
+            {
+              duration: 400,
+              targets: cam.position,
+              z: 0.009,
+            },
+            offset
+          )
+          .add(
+            {
+              duration: 300,
+              targets: glass.position,
+              z: -0.0874,
+            },
+            offset
+          )
+          .add({
+            duration: 1000,
+            targets: phone.position,
+            easing: "linear",
+            x: -120,
+          });
+        timeline.play();
       });
-    timeline.play();
-  });
-};
 
-export const initManufacturingSceneObject = ({
-  manufacturingModel,
-  sizes,
-  canvas,
-}) => {
-  model = manufacturingModel;
+export const initManufacturingSceneObject = ({ manufacturingModel, sizes }) => {
+  model = manufacturingModel.clone();
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#ffffff");
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
@@ -103,6 +101,7 @@ export const initManufacturingSceneObject = ({
   scene.add(ambientLight);
   scene.add(directionalLight);
   scene.add(model);
+  parts = {};
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {

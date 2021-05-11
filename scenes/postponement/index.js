@@ -4,6 +4,7 @@ import * as THREE from "three";
 import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
+import { SKIP } from "../../consts";
 
 const WHITE = "#b7b7b7";
 const PURPLE = "#5964fa";
@@ -19,40 +20,37 @@ let purpleMaterial;
 let parts = {};
 // let transformControls;
 
-export const launchPostponementScene = () => {
-  return new Promise((resolve) => {
-    const phone = parts["phone"];
-    const boxTop = parts["box_top"];
-    const boxHolder = parts["box_holder"];
-    const timeline = anime
-      .timeline({
-        autoplay: false,
-        easing: "easeOutExpo",
-        duration: 400,
-        complete: resolve,
-      })
-      .add({
-        targets: boxHolder.position,
-        y: -9.6,
-      })
-      .add({
-        targets: phone.position,
-        y: -8.5,
-      })
-      .add({
-        targets: boxTop.position,
-        y: -28.6,
+export const launchPostponementScene = () =>
+  SKIP
+    ? Promise.resolve()
+    : new Promise((resolve) => {
+        const phone = parts["phone"];
+        const boxTop = parts["box_top"];
+        const boxHolder = parts["box_holder"];
+        const timeline = anime
+          .timeline({
+            autoplay: false,
+            easing: "easeOutExpo",
+            duration: 400,
+            complete: resolve,
+          })
+          .add({
+            targets: boxHolder.position,
+            y: -9.6,
+          })
+          .add({
+            targets: phone.position,
+            y: -8.5,
+          })
+          .add({
+            targets: boxTop.position,
+            y: -28.6,
+          });
+        timeline.play();
       });
-    timeline.play();
-  });
-};
 
-export const initPostponementSceneObject = ({
-  postponementModel,
-  sizes,
-  canvas,
-}) => {
-  model = postponementModel;
+export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
+  model = postponementModel.clone();
   scene = new THREE.Scene();
   scene.translateY(-20);
   scene.background = new THREE.Color("#ffffff");
@@ -67,6 +65,7 @@ export const initPostponementSceneObject = ({
   scene.add(ambientLight);
   scene.add(directionalLight);
   scene.add(model);
+  parts = {};
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {

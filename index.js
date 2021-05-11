@@ -22,6 +22,7 @@ import {
   B2B_STEP_4,
   B2B_STEP_5,
   D2C_STEP_1,
+  RESET_STEP,
 } from "./consts";
 
 import { wait } from "./utils";
@@ -39,6 +40,7 @@ import {
   transitionToFulfillment,
   transitionToDelivery,
   transitionFromDeliveryToFulfillment,
+  resetGlobeScene,
 } from "./scenes/globe";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
 import {
@@ -87,6 +89,8 @@ import {
   deliveryButton,
   progressBar,
   globeButton,
+  restartScene,
+  restartButton,
 } from "./ui";
 
 let serversModel;
@@ -189,6 +193,17 @@ const stepToSceneObject = {
       checkIfD2C,
     }),
   [D2C_STEP_1]: () => initOrderD2CSceneObject({ sizes, canvas, orderD2CModel }),
+  [RESET_STEP]: () => {
+    const scene = new THREE.Scene();
+    scene.background = null;
+    const onResize = () => {};
+    const camera = new THREE.Camera();
+    return {
+      scene,
+      onResize,
+      camera,
+    };
+  },
 };
 
 let currentSceneObject;
@@ -223,7 +238,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0xcecece);
+renderer.setClearColor(0xffffff, 0);
 
 const clock = new THREE.Clock();
 const tick = () => {
@@ -242,8 +257,13 @@ const setLightTheme = () => {
   html.style.backgroundColor = "#EFEEEE";
 };
 
+const setDarkTheme = () => {
+  html.style.color = "white";
+  html.style.backgroundColor = "black";
+};
+
 const setNavVisibility = (visible) => {
-  nav.style.display = visible ? "block" : "none";
+  setElementVisibility(nav, visible);
 };
 
 const setHeadingText = (text) => {
@@ -295,7 +315,7 @@ const handleLogoUpload = (e) => {
 };
 
 const handleLaunchButtonClick = () => {
-  launchButton.style.display = "none";
+  setElementVisibility(launchButton, false);
   launchGlobeScene().then(() => {
     setHeadingText("Today");
     heading.classList.remove("intro-heading");
@@ -305,8 +325,8 @@ const handleLaunchButtonClick = () => {
 };
 
 const handleNextButtonClick = () => {
-  nextButton.style.display = "none";
-  pathButtons.style.display = "flex";
+  setElementVisibility(nextButton, false);
+  setElementVisibility(pathButtons, true);
   setHeadingText("Tomorrow");
   addFulfillment();
 };
@@ -327,8 +347,7 @@ const getGlobeTransitioner = ({
       setElementVisibility(nav, false);
       setElementVisibility(heading, false);
       setElementVisibility(globeButton, false);
-      showOverlay("white", 600);
-      wait(600).then(() => {
+      showOverlay("white", 600).then(() => {
         setCurrentSceneObject(getGlobeSceneObject());
         hideOverlay(600);
         transition();
@@ -394,16 +413,48 @@ const handleFulfillmentClick = getGlobeTransitioner({
   waitBeforeOverlay: 2500,
 });
 
+const showRestartScene = () => {
+  setHeadingText("Our solution in China");
+  setElementVisibility(restartButton, true);
+  setElementVisibility(restartScene, true);
+};
+
 const handleDeliveryButtonClick = () => {
   setElementVisibility(deliveryButton, false);
   return launchDeliveryBScene().then(() => {
     setElementVisibility(nav, false);
     setElementVisibility(heading, false);
-    showOverlay("white", 600).then(() => {
-      setCurrentSceneObject(getGlobeSceneObject());
+    showOverlay("black", 600).then(() => {
+      setCurrentStep(RESET_STEP);
+      const explosionBox = document.querySelector(".explosion-box");
+      explosionBox.classList.remove("active");
+      const navMenuButtons = document.querySelectorAll(
+        ".nav-menu-button:not(.nav-button-order)"
+      );
+      navMenuButtons.forEach((button) => button.classList.remove("active"));
+      setDarkTheme();
+      showRestartScene();
       hideOverlay(600);
-      transitionFromDeliveryToFulfillment();
     });
+  });
+};
+
+const handleRestartButtonClick = () => {
+  setElementVisibility(restartButton, false);
+  setElementVisibility(nav, false);
+  setElementVisibility(heading, false);
+  setElementVisibility(restartScene, false);
+  showOverlay("black", 600).then(() => {
+    setCurrentSceneObject(getGlobeSceneObject());
+    currentStep = GLOBE_STEP;
+    resetGlobeScene();
+    setElementVisibility(heading, true);
+    setElementVisibility(launchButton, true);
+    setHeadingText("Single solution to end supply chain");
+    heading.classList.remove("today-heading");
+    heading.classList.add("intro-heading");
+    isD2C = false;
+    hideOverlay(600);
   });
 };
 
@@ -419,6 +470,7 @@ const addEventListeners = () => {
   postponementButton.addEventListener("click", handlePostponementClick);
   fulfillmentButton.addEventListener("click", handleFulfillmentClick);
   deliveryButton.addEventListener("click", handleDeliveryButtonClick);
+  restartButton.addEventListener("click", handleRestartButtonClick);
   window.addEventListener("resize", onResize);
 };
 

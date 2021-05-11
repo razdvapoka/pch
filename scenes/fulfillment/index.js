@@ -5,6 +5,7 @@ import anime from "animejs/lib/anime.es.js";
 import { showOverlay, hideOverlay } from "../../ui";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
+import { SKIP } from "../../consts";
 
 const WHITE = "#b7b7b7";
 const PURPLE = "#5964fa";
@@ -97,172 +98,174 @@ const launchDeliveryScene = (resolve) => {
 };
 
 export const launchFulfillmentScene = () =>
-  new Promise((resolve) => {
-    const timeline = anime.timeline({
-      autoplay: false,
-      easing: "easeInOutSine",
-    });
-    timeline
-      .add({
-        duration: COLOR_TRANSITION_DURATION,
-        targets: boxesMaterial,
-        emissiveIntensity: 0.2,
-        __color: PURPLE,
-        update: () => {
-          boxesMaterial.color.set(boxesMaterial.__color);
-        },
-      })
-      .add({
-        targets: [
-          camera.position,
-          cameraTarget,
-          boxAGroup.position,
-          boxBGroup.position,
-        ],
-        z: (_, i) =>
-          i === 0 || i === 1 ? `+=${1542 * scaleFactor}` : `+=${1402}`,
-        duration: 1500,
-      })
-      .add(
-        {
-          duration: 1500,
-          targets: camera,
-          zoom: 2,
-          update: () => {
-            camera.updateProjectionMatrix();
-          },
-        },
-        "-=1500"
-      )
-      .add({
-        duration: COLOR_TRANSITION_DURATION,
-        targets: paletteAMaterial,
-        emissiveIntensity: 0.2,
-        __color: PURPLE,
-        update: () => {
-          paletteAMaterial.color.set(paletteAMaterial.__color);
-        },
-        complete: () => {
-          paletteAGroup.add(paletteA, boxBGroup);
-          scene.add(paletteAGroup);
-        },
-      })
-      .add({
-        targets: [paletteAGroup.position, camera.position, cameraTarget],
-        z: (_, i) => `+=${273 * (i === 0 ? 1 : scaleFactor)}`,
-        duration: 500,
-      })
-      .add({
-        targets: [paletteAGroup.position, camera.position, cameraTarget],
-        x: (_, i) => `+=${95.7 * (i === 0 ? 1 : scaleFactor)}`,
-        z: (_, i) => `+=${352 * (i === 0 ? 1 : scaleFactor)}`,
-        duration: 500,
-      })
-      .add({
-        targets: paletteAGroup.position,
-        z: "+=1835",
-        x: "+=14",
-        duration: 1500,
-      })
-      .add(
-        {
-          targets: [camera.position, cameraTarget],
-          z: (_, i) => (i === 0 ? "+=47.38" : "+=52.43"),
-          x: (_, i) => (i === 0 ? "+=2.644" : "+=0.4"),
-          y: (_, i) => (i === 0 ? "+=2.32" : "+=0"),
-          duration: 1500,
-          update: () => {
-            camera.lookAt(cameraTarget);
-          },
-        },
-        "-=1500"
-      )
-      .add(
-        {
-          duration: 1500,
-          targets: camera,
-          zoom: 0.6,
-          update: () => {
-            camera.updateProjectionMatrix();
-          },
-        },
-        "-=1500"
-      )
-      .add({
-        duration: COLOR_TRANSITION_DURATION,
-        targets: containerAMaterial,
-        emissiveIntensity: 0.2,
-        easing: "easeInOutSine",
-        __color: PURPLE,
-        update: () => {
-          containerAMaterial.color.set(containerAMaterial.__color);
-        },
-      })
-      .add({
-        targets: containerA.position,
-        easing: "easeInOutSine",
-        y: "-=202",
-        duration: 500,
-        complete: () => {
-          containerAGroup.add(containerA, paletteAGroup);
-          scene.add(containerAGroup);
-        },
-      })
-      .add({
-        duration: COLOR_TRANSITION_DURATION,
-        targets: truckMaterial,
-        emissiveIntensity: 0.2,
-        easing: "easeInOutSine",
-        __color: PURPLE,
-        update: () => {
-          truckMaterial.color.set(truckMaterial.__color);
-        },
-      })
-      .add({
-        targets: [leftDoor.rotation, rightDoor.rotation],
-        duration: 500,
-        z: (_, i) => `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
-      })
-      .add({
-        targets: [containerAGroup.position],
-        duration: 500,
-        y: "+=202",
-      })
-      .add({
-        targets: [containerAGroup.position],
-        duration: 1000,
-        z: "+=1200",
-      })
-      .add(
-        {
-          targets: camera,
-          duration: 1000,
-          zoom: 0.4,
-          update: () => {
-            camera.updateProjectionMatrix();
-          },
-        },
-        "-=1000"
-      )
-      .add({
-        targets: [leftDoor.rotation, rightDoor.rotation],
-        duration: 500,
-        z: (_, i) => `-=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
-        complete: () => {
-          truck.add(containerAGroup);
-        },
-      })
-      .add({
-        targets: truck.position,
-        easing: "easeOutSine",
-        duration: 1000,
-        z: "+=2500",
-        complete: () => {
-          launchDeliveryScene(resolve);
-        },
+  SKIP
+    ? Promise.resolve()
+    : new Promise((resolve) => {
+        const timeline = anime.timeline({
+          autoplay: false,
+          easing: "easeInOutSine",
+        });
+        timeline
+          .add({
+            duration: COLOR_TRANSITION_DURATION,
+            targets: boxesMaterial,
+            emissiveIntensity: 0.2,
+            __color: PURPLE,
+            update: () => {
+              boxesMaterial.color.set(boxesMaterial.__color);
+            },
+          })
+          .add({
+            targets: [
+              camera.position,
+              cameraTarget,
+              boxAGroup.position,
+              boxBGroup.position,
+            ],
+            z: (_, i) =>
+              i === 0 || i === 1 ? `+=${1542 * scaleFactor}` : `+=${1402}`,
+            duration: 1500,
+          })
+          .add(
+            {
+              duration: 1500,
+              targets: camera,
+              zoom: 2,
+              update: () => {
+                camera.updateProjectionMatrix();
+              },
+            },
+            "-=1500"
+          )
+          .add({
+            duration: COLOR_TRANSITION_DURATION,
+            targets: paletteAMaterial,
+            emissiveIntensity: 0.2,
+            __color: PURPLE,
+            update: () => {
+              paletteAMaterial.color.set(paletteAMaterial.__color);
+            },
+            complete: () => {
+              paletteAGroup.add(paletteA, boxBGroup);
+              scene.add(paletteAGroup);
+            },
+          })
+          .add({
+            targets: [paletteAGroup.position, camera.position, cameraTarget],
+            z: (_, i) => `+=${273 * (i === 0 ? 1 : scaleFactor)}`,
+            duration: 500,
+          })
+          .add({
+            targets: [paletteAGroup.position, camera.position, cameraTarget],
+            x: (_, i) => `+=${95.7 * (i === 0 ? 1 : scaleFactor)}`,
+            z: (_, i) => `+=${352 * (i === 0 ? 1 : scaleFactor)}`,
+            duration: 500,
+          })
+          .add({
+            targets: paletteAGroup.position,
+            z: "+=1835",
+            x: "+=14",
+            duration: 1500,
+          })
+          .add(
+            {
+              targets: [camera.position, cameraTarget],
+              z: (_, i) => (i === 0 ? "+=47.38" : "+=52.43"),
+              x: (_, i) => (i === 0 ? "+=2.644" : "+=0.4"),
+              y: (_, i) => (i === 0 ? "+=2.32" : "+=0"),
+              duration: 1500,
+              update: () => {
+                camera.lookAt(cameraTarget);
+              },
+            },
+            "-=1500"
+          )
+          .add(
+            {
+              duration: 1500,
+              targets: camera,
+              zoom: 0.6,
+              update: () => {
+                camera.updateProjectionMatrix();
+              },
+            },
+            "-=1500"
+          )
+          .add({
+            duration: COLOR_TRANSITION_DURATION,
+            targets: containerAMaterial,
+            emissiveIntensity: 0.2,
+            easing: "easeInOutSine",
+            __color: PURPLE,
+            update: () => {
+              containerAMaterial.color.set(containerAMaterial.__color);
+            },
+          })
+          .add({
+            targets: containerA.position,
+            easing: "easeInOutSine",
+            y: "-=202",
+            duration: 500,
+            complete: () => {
+              containerAGroup.add(containerA, paletteAGroup);
+              scene.add(containerAGroup);
+            },
+          })
+          .add({
+            duration: COLOR_TRANSITION_DURATION,
+            targets: truckMaterial,
+            emissiveIntensity: 0.2,
+            easing: "easeInOutSine",
+            __color: PURPLE,
+            update: () => {
+              truckMaterial.color.set(truckMaterial.__color);
+            },
+          })
+          .add({
+            targets: [leftDoor.rotation, rightDoor.rotation],
+            duration: 500,
+            z: (_, i) => `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
+          })
+          .add({
+            targets: [containerAGroup.position],
+            duration: 500,
+            y: "+=202",
+          })
+          .add({
+            targets: [containerAGroup.position],
+            duration: 1000,
+            z: "+=1200",
+          })
+          .add(
+            {
+              targets: camera,
+              duration: 1000,
+              zoom: 0.4,
+              update: () => {
+                camera.updateProjectionMatrix();
+              },
+            },
+            "-=1000"
+          )
+          .add({
+            targets: [leftDoor.rotation, rightDoor.rotation],
+            duration: 500,
+            z: (_, i) => `-=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
+            complete: () => {
+              truck.add(containerAGroup);
+            },
+          })
+          .add({
+            targets: truck.position,
+            easing: "easeOutSine",
+            duration: 1000,
+            z: "+=2500",
+            complete: () => {
+              launchDeliveryScene(resolve);
+            },
+          });
+        timeline.play();
       });
-    timeline.play();
-  });
 
 const initDeliveryScene = () => {
   const deliveryScene = new THREE.Scene();
@@ -320,12 +323,15 @@ export const initFulfillmentSceneObject = ({
   fulfillmentModel,
   deliveryAModel,
   sizes,
-  canvas,
 }) => {
   s = sizes;
-  model = fulfillmentModel;
-  deliveryModel = deliveryAModel;
-  deliveryAModel.scale.set(0.05, 0.05, 0.05);
+  boxAGroup = new THREE.Group();
+  boxBGroup = new THREE.Group();
+  paletteAGroup = new THREE.Group();
+  containerAGroup = new THREE.Group();
+  model = fulfillmentModel.clone();
+  deliveryModel = deliveryAModel.clone();
+  deliveryModel.scale.set(0.05, 0.05, 0.05);
 
   scene = new THREE.Scene();
   scene.scale.set(scaleFactor, scaleFactor, scaleFactor);
@@ -345,6 +351,7 @@ export const initFulfillmentSceneObject = ({
   scene.add(ambientLight);
   scene.add(directionalLight);
   scene.add(model);
+  parts = {};
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {

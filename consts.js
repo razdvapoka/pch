@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 export const CANONIC_GLOBE_RADIUS = 100;
 export const CENTER = new THREE.Vector3(0, 0, 0);
-export const CAM_R = 250;
+export const CAM_R = 260;
 export const INTRO_CAM_R = 750;
 export const INTRO_CAM_THETA = 1.2324469461144;
 export const INTRO_CAM_PHI = 1.3532513064958416;
@@ -28,3 +28,6 @@ export const B2B_STEP_4 = "B2B_STEP_4";
 export const B2B_STEP_5 = "B2B_STEP_5";
 export const B2B_STEP_6 = "B2B_STEP_6";
 export const D2C_STEP_1 = "D2C_STEP_1";
+export const RESET_STEP = "RESET_STEP";
+
+export const SKIP = false;

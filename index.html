@@ -25,6 +25,7 @@
     <div class="client-logo"></div>
     <button class="standard-button next-button hidden">Explore your future with PCH</button>
     <button class="standard-button launch-button hidden">start experience</button>
+    <button class="standard-button restart-button hidden">start again</button>
     <button class="standard-button action-button place-order-button hidden">Place order</button>
     <button class="standard-button action-button place-order-d2c-button hidden">Place order</button>
     <button class="standard-button action-button manufacture-button hidden">Manufacture</button>
@@ -32,7 +33,7 @@
     <button class="standard-button action-button fulfillment-button hidden">Fulfill order</button>
     <button class="standard-button action-button delivery-button hidden">Deliver</button>
     <div class="progress-bar"></div>
-    <div class="path-buttons">
+    <div class="path-buttons hidden">
       <button class="path-button d2c-button">Direct-to-consumer</button>
       <button class="path-button b2b-button">Business-to-business</button>
     </div>
@@ -44,25 +45,48 @@
       <span>USA</span>
       <span class="nav-button-subtext">B2B, B2C<br/>hubs</span>
     </button>
-    <nav>
+    <nav class="hidden">
       <ul>
         <li>
-          <button class="nav-button-order active">Order&nbsp;</button>
+          <button class="nav-menu-button nav-button-order active">Order&nbsp;</button>
         </li>
         <li>
-          <button class="nav-button-manufacturing"><span >→</span>&nbsp;Manufacturers&nbsp;</button>
+          <button class="nav-menu-button nav-button-manufacturing"><span >→</span>&nbsp;Manufacturers&nbsp;</button>
         </li>
         <li>
-          <button class="nav-button-postponement"><span >→</span>&nbsp;Postponement&nbsp;</button>
+          <button class="nav-menu-button nav-button-postponement"><span >→</span>&nbsp;Postponement&nbsp;</button>
         </li>
         <li>
-          <button class="nav-button-fulfillment"><span >→</span>&nbsp;Fulfillment&nbsp;</button>
+          <button class="nav-menu-button nav-button-fulfillment"><span >→</span>&nbsp;Fulfillment&nbsp;</button>
         </li>
         <li>
-          <button class="nav-button-delivery"><span >→</span>&nbsp;Delivery</button>
+          <button class="nav-menu-button nav-button-delivery"><span >→</span>&nbsp;Delivery</button>
         </li>
       </ul>
     </nav>
+    <div class="restart hidden">
+      <div class="restart-images">
+        <div class="restart-img restart-img-1"></div>
+        <div class="restart-img restart-img-2"></div>
+        <div class="restart-img restart-img-3"></div>
+      </div>
+      <div class="restart-line-box">
+        <div class="restart-line"></div>
+        <div class="restart-particle restart-particle-big restart-particle-big-1"></div>
+        <div class="restart-particle restart-particle-big restart-particle-big-2"></div>
+        <div class="restart-particle restart-particle-big restart-particle-big-3"></div>
+        <div class="restart-particle restart-particle-small restart-particle-small-1"></div>
+        <div class="restart-particle restart-particle-small restart-particle-small-2"></div>
+        <div class="restart-particle restart-particle-small restart-particle-small-3"></div>
+        <div class="restart-particle restart-particle-small restart-particle-small-4"></div>
+        <div class="restart-particle restart-particle-small restart-particle-small-5"></div>
+      </div>
+      <div class="restart-captions">
+        <div class="restart-caption-1">manufacturing</div>
+        <div class="restart-caption-2">postponement</div>
+        <div class="restart-caption-3">fulfillment</div>
+      </div>
+    </div>
     <script src="./index.js"></script>
   </body>
 </html>

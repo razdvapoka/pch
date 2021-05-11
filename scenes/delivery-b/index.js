@@ -5,6 +5,7 @@
 import * as THREE from "three";
 import anime from "animejs/lib/anime.es.js";
 import { showOverlay, hideOverlay } from "../../ui";
+import { SKIP } from "../../consts";
 
 const WHITE = "#b7b7b7";
 const PURPLE = "#5964fa";
@@ -229,197 +230,200 @@ const launchDeliveryB2BScene = (resolve) => {
 };
 
 export const launchDeliveryBScene = () =>
-  new Promise((resolve) => {
-    const timeline = anime.timeline({
-      autoplay: false,
-      easing: "easeInOutSine",
-      complete: () => {
-        if (checkIfD2CFunction()) {
-          launchDeliveryD2CScene(resolve);
-        } else {
-          launchDeliveryB2BScene(resolve);
-        }
-      },
-    });
-    timeline
-      .add({
-        targets: containerB.position,
-        x: -1021.9810791015625,
-        y: 116.2855224609375,
-        duration: 600,
-      })
-      .add({
-        duration: COLOR_TRANSITION_DURATION,
-        targets: cartMaterial,
-        emissiveIntensity: 0.2,
-        __color: PURPLE,
-        update: () => {
-          cartMaterial.color.set(cartMaterial.__color);
-        },
-      })
-      .add({
-        targets: [
-          cartGroup.position,
-          containerB.position,
-          camera.position,
-          // controls.target,
-        ],
-        z: (_, i) => (i === 0 ? "+=25451" : "+=0"),
-        x: (_, i) =>
-          i === 1 ? "-=5110" : i === 2 || i === 3 ? "-=170" : "+=0",
-        duration: 1000,
-      })
-      .add({
-        targets: golfCart.rotation,
-        z: `+=${Math.PI / 2}`,
-        duration: 500,
-      })
-      .add({
-        targets: golfCart.position,
-        x: "+=30000",
-        duration: 800,
-        complete: () => {
-          golfCart.visible = false;
-        },
-      })
-      .add({
-        targets: containerB.position,
-        y: 354,
-        duration: 300,
-      })
-      .add({
-        targets: [
-          containerB.position,
-          camera.position,
-          // controls.target
-        ],
-        x: (_, i) => (i === 0 ? -7140 : "-=30"),
-        y: (_, i) => (i === 1 ? "+=50" : "+=0"),
-        duration: 500,
-      })
-      .add({
-        targets: [containerB.position],
-        y: 120,
-        duration: 300,
-      })
-      .add({
-        targets: [
-          containerB.position,
-          camera.position,
-          //controls.target
-        ],
-        x: (_, i) => (i === 0 ? -11450 : "-=135"),
-        duration: 1000,
-      })
-      .add({
-        duration: COLOR_TRANSITION_DURATION,
-        targets: truckMaterial,
-        emissiveIntensity: 0.2,
-        __color: PURPLE,
-        update: () => {
-          truckMaterial.color.set(truckMaterial.__color);
-        },
-      })
-      .add({
-        targets: [leftDoor.rotation, rightDoor.rotation],
-        duration: 500,
-        z: (_, i) => `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
-      })
-      .add({
-        targets: [
-          containerB.position,
-          camera.position,
-          // controls.target
-        ],
-        y: (_, i) => (i === 0 ? "+=110" : "+=0"),
-        x: (_, i) => (i === 0 ? "-=1030" : "-=40"),
-        duration: 1000,
-      })
-      .add({
-        targets: [leftDoor.rotation, rightDoor.rotation],
-        duration: 500,
-        z: (_, i) => `-=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
-      })
-      .add({
-        targets: [
-          truck.position,
-          containerB.position,
-          camera.position,
-          // controls.target,
-        ],
-        duration: 1500,
-        x: (_, i) => (i === 0 || i === 1 ? "-=15160" : i === 2 ? -810 : -811),
-      })
-      .add({
-        targets: [
-          camera.position,
-          // controls.target
-        ],
-        duration: 1000,
-        keyframes: [{ x: -490 }, { z: -250 }], //, { z: -50 }, { x: -810 }],
-      })
-      .add({
-        duration: COLOR_TRANSITION_DURATION,
-        targets: vanMaterial,
-        emissiveIntensity: 0.2,
-        __color: PURPLE,
-        update: () => {
-          vanMaterial.color.set(vanMaterial.__color);
-        },
-      })
-      .add({
-        targets: [
-          van.position,
-          camera.position,
-          // controls.target
-        ],
-        duration: 500,
-        z: (_, i) => (i === 0 ? -1750 : -50),
-      })
-      .add({
-        targets: [van.rotation],
-        duration: 500,
-        y: `-=${Math.PI / 2}`,
-      })
-      .add({
-        targets: [
-          van.position,
-          camera.position,
-          //controls.target
-        ],
-        duration: 2000,
-        x: (_, i) => (i === 0 ? -26760 : -810),
-      })
-      .add({
-        targets: [leftDoor.rotation, rightDoor.rotation, van.rotation],
-        duration: 500,
-        z: (_, i) =>
-          i === 2 ? "+=0" : `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
-        y: (_, i) => (i === 2 ? `-=${Math.PI / 2}` : "+=0"),
-      })
-      .add({
-        targets: containerB.position,
-        duration: 400,
-        x: -26626,
-        y: 163,
-      })
-      .add({
-        targets: containerB.position,
-        duration: 400,
-        z: -1494,
-      })
-      .add({
-        targets: [leftDoor.rotation, rightDoor.rotation],
-        duration: 500,
-        z: (_, i) => `-=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
-      })
-      .add({
-        targets: [van.position, containerB.position],
-        duration: 2000,
-        z: (_, i) => (i === 0 ? -13550 : -13310),
+  SKIP
+    ? Promise.resolve()
+    : new Promise((resolve) => {
+        const timeline = anime.timeline({
+          autoplay: false,
+          easing: "easeInOutSine",
+          complete: () => {
+            if (checkIfD2CFunction()) {
+              launchDeliveryD2CScene(resolve);
+            } else {
+              launchDeliveryB2BScene(resolve);
+            }
+          },
+        });
+        timeline
+          .add({
+            targets: containerB.position,
+            x: -1021.9810791015625,
+            y: 116.2855224609375,
+            duration: 600,
+          })
+          .add({
+            duration: COLOR_TRANSITION_DURATION,
+            targets: cartMaterial,
+            emissiveIntensity: 0.2,
+            __color: PURPLE,
+            update: () => {
+              cartMaterial.color.set(cartMaterial.__color);
+            },
+          })
+          .add({
+            targets: [
+              cartGroup.position,
+              containerB.position,
+              camera.position,
+              // controls.target,
+            ],
+            z: (_, i) => (i === 0 ? "+=25451" : "+=0"),
+            x: (_, i) =>
+              i === 1 ? "-=5110" : i === 2 || i === 3 ? "-=170" : "+=0",
+            duration: 1000,
+          })
+          .add({
+            targets: golfCart.rotation,
+            z: `+=${Math.PI / 2}`,
+            duration: 500,
+          })
+          .add({
+            targets: golfCart.position,
+            x: "+=30000",
+            duration: 800,
+            complete: () => {
+              golfCart.visible = false;
+            },
+          })
+          .add({
+            targets: containerB.position,
+            y: 354,
+            duration: 300,
+          })
+          .add({
+            targets: [
+              containerB.position,
+              camera.position,
+              // controls.target
+            ],
+            x: (_, i) => (i === 0 ? -7140 : "-=30"),
+            y: (_, i) => (i === 1 ? "+=50" : "+=0"),
+            duration: 500,
+          })
+          .add({
+            targets: [containerB.position],
+            y: 120,
+            duration: 300,
+          })
+          .add({
+            targets: [
+              containerB.position,
+              camera.position,
+              //controls.target
+            ],
+            x: (_, i) => (i === 0 ? -11450 : "-=135"),
+            duration: 1000,
+          })
+          .add({
+            duration: COLOR_TRANSITION_DURATION,
+            targets: truckMaterial,
+            emissiveIntensity: 0.2,
+            __color: PURPLE,
+            update: () => {
+              truckMaterial.color.set(truckMaterial.__color);
+            },
+          })
+          .add({
+            targets: [leftDoor.rotation, rightDoor.rotation],
+            duration: 500,
+            z: (_, i) => `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
+          })
+          .add({
+            targets: [
+              containerB.position,
+              camera.position,
+              // controls.target
+            ],
+            y: (_, i) => (i === 0 ? "+=110" : "+=0"),
+            x: (_, i) => (i === 0 ? "-=1030" : "-=40"),
+            duration: 1000,
+          })
+          .add({
+            targets: [leftDoor.rotation, rightDoor.rotation],
+            duration: 500,
+            z: (_, i) => `-=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
+          })
+          .add({
+            targets: [
+              truck.position,
+              containerB.position,
+              camera.position,
+              // controls.target,
+            ],
+            duration: 1500,
+            x: (_, i) =>
+              i === 0 || i === 1 ? "-=15160" : i === 2 ? -810 : -811,
+          })
+          .add({
+            targets: [
+              camera.position,
+              // controls.target
+            ],
+            duration: 1000,
+            keyframes: [{ x: -490 }, { z: -250 }], //, { z: -50 }, { x: -810 }],
+          })
+          .add({
+            duration: COLOR_TRANSITION_DURATION,
+            targets: vanMaterial,
+            emissiveIntensity: 0.2,
+            __color: PURPLE,
+            update: () => {
+              vanMaterial.color.set(vanMaterial.__color);
+            },
+          })
+          .add({
+            targets: [
+              van.position,
+              camera.position,
+              // controls.target
+            ],
+            duration: 500,
+            z: (_, i) => (i === 0 ? -1750 : -50),
+          })
+          .add({
+            targets: [van.rotation],
+            duration: 500,
+            y: `-=${Math.PI / 2}`,
+          })
+          .add({
+            targets: [
+              van.position,
+              camera.position,
+              //controls.target
+            ],
+            duration: 2000,
+            x: (_, i) => (i === 0 ? -26760 : -810),
+          })
+          .add({
+            targets: [leftDoor.rotation, rightDoor.rotation, van.rotation],
+            duration: 500,
+            z: (_, i) =>
+              i === 2 ? "+=0" : `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
+            y: (_, i) => (i === 2 ? `-=${Math.PI / 2}` : "+=0"),
+          })
+          .add({
+            targets: containerB.position,
+            duration: 400,
+            x: -26626,
+            y: 163,
+          })
+          .add({
+            targets: containerB.position,
+            duration: 400,
+            z: -1494,
+          })
+          .add({
+            targets: [leftDoor.rotation, rightDoor.rotation],
+            duration: 500,
+            z: (_, i) => `-=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
+          })
+          .add({
+            targets: [van.position, containerB.position],
+            duration: 2000,
+            z: (_, i) => (i === 0 ? -13550 : -13310),
+          });
+        timeline.play();
       });
-    timeline.play();
-  });
 
 export const initDeliveryBSceneObject = ({
   deliveryBModel,
@@ -430,10 +434,11 @@ export const initDeliveryBSceneObject = ({
   //canvas
 }) => {
   checkIfD2CFunction = checkIfD2C;
-  b2bModel = deliveryC_B2B_Model;
-  d2cModel = deliveryC_D2C_Model;
+  cartGroup = new THREE.Group();
+  b2bModel = deliveryC_B2B_Model.clone();
+  d2cModel = deliveryC_D2C_Model.clone();
 
-  model = deliveryBModel;
+  model = deliveryBModel.clone();
   model.scale.set(0.03, 0.03, 0.03);
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#ffffff");
@@ -446,6 +451,7 @@ export const initDeliveryBSceneObject = ({
   scene.add(ambientLight);
   scene.add(directionalLight);
   scene.add(model);
+  parts = {};
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {

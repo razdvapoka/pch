@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import anime from "animejs/lib/anime.es.js";
 import { wait } from "../../utils";
+import { SKIP } from "../../consts";
 
 const WHITE = "#b7b7b7";
 const PURPLE = "#5964fa";
@@ -38,7 +39,7 @@ export const launchServerScene = () => {
 };
 
 export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
-  model = serversModel;
+  model = serversModel.clone();
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#ffffff");
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);

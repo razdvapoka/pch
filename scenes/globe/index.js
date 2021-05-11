@@ -500,6 +500,7 @@ export const addFulfillment = () => {
   htmlElementsHidden = true;
   const rotator = getBackToChinaRotator();
   rotator().then(() => {
+    setCurrentGlobeState(CHINA_STATE);
     htmlElementsHidden = false;
     Object.keys(explosions).map((explosionKey) => {
       const explosion = explosions[explosionKey];
@@ -705,12 +706,7 @@ export const getGlobeSceneObject = () => {
   };
 };
 
-export const initGlobeSceneObject = ({
-  lightMap,
-  cloudsMap,
-  sizes,
-  canvas,
-}) => {
+export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#000000");
 
@@ -773,6 +769,8 @@ export const initGlobeSceneObject = ({
   light1.intensity = 2;
   light2.intensity = 0;
 
+  scene.lights = { light1, light2 };
+
   initRotators();
 
   rightButton.addEventListener("click", handleRightButtonClick);
@@ -808,4 +806,42 @@ export const initGlobeSceneObject = ({
   // window.addEventListener("click", onClick);
 
   return { scene, camera, tick, onResize };
+};
+
+export const resetGlobeScene = () => {
+  setObjectPositionOnSphere(
+    camera,
+    INTRO_CAM_THETA,
+    INTRO_CAM_PHI,
+    INTRO_CAM_R
+  );
+  cameraRotationProps.theta = INTRO_CAM_THETA;
+  cameraRotationProps.phi = INTRO_CAM_PHI;
+  cameraRotationProps.r = INTRO_CAM_R;
+
+  setObjectPositionOnSphere(scene.lights.light1, d2r(-40), d2r(90), 200);
+  setObjectPositionOnSphere(scene.lights.light2, d2r(23), d2r(279), 200);
+  setObjectPositionOnSphere(
+    scene.lights.light1.target,
+    d2r(-40) + Math.PI,
+    d2r(90) + Math.PI,
+    1
+  );
+  setObjectPositionOnSphere(
+    scene.lights.light2.target,
+    d2r(23) + Math.PI,
+    d2r(279) + Math.PI,
+    1
+  );
+  scene.lights.light1.intensity = 2;
+  scene.lights.light2.intensity = 0;
+  light1RotationProps.theta = d2r(-40);
+  light1RotationProps.phi = d2r(90);
+  light1RotationProps.r = 200;
+
+  globe
+    .customLayerData([...customData, ...airportObjects])
+    .pathsData(pathsData);
+
+  currentGlobeState = INTRO_STATE;
 };
