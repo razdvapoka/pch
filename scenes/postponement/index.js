@@ -88,12 +88,6 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
   // const axesHelper = new THREE.AxesHelper(1000);
   // scene.add(axesHelper);
 
-  // camera = new THREE.PerspectiveCamera(
-  //   40,
-  //   sizes.width / sizes.height,
-  //   0.1,
-  //   2500
-  // );
   camera = new THREE.OrthographicCamera(
     sizes.width / -2,
     sizes.width / 2,

@@ -415,6 +415,8 @@ const handleFulfillmentClick = getGlobeTransitioner({
 });
 
 const showRestartScene = () => {
+  heading.classList.remove("today-heading");
+  heading.classList.add("intro-heading");
   setHeadingText("Our solution in China");
   setElementVisibility(heading, true);
   setElementVisibility(restartButton, true);
@@ -453,8 +455,6 @@ const handleRestartButtonClick = () => {
     setElementVisibility(heading, true);
     setElementVisibility(launchButton, true);
     setHeadingText("Single solution to end supply chain");
-    heading.classList.remove("today-heading");
-    heading.classList.add("intro-heading");
     isD2C = false;
     setMaxPointTimeout(DEFAULT_POINT_TIMEOUT);
     hideOverlay(600);

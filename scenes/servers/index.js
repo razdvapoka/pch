@@ -1,13 +1,14 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import anime from "animejs/lib/anime.es.js";
 import { wait } from "../../utils";
-import { SKIP } from "../../consts";
+// import { SKIP } from "../../consts";
 
-const WHITE = "#bebebe";
+// const WHITE = "#bebebe";
 const PURPLE = "#5964fa";
 const COLOR_TRANSITION_DURATION = 700;
 const BLINK_DURATION = 600;
+const FOV = 60;
 
 let camera;
 let scene;
@@ -42,7 +43,7 @@ export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
   model = serversModel.clone();
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#EBEBEB");
-  const ambientLight = new THREE.AmbientLight(0xEBEBEB, 0.3);
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.3);
   scene.add(ambientLight);
   const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.5);
   directionalLight.position.set(0, 75, 75);
@@ -59,10 +60,9 @@ export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
         obj.material.color = new THREE.Color("#6F83FF");
         obj.material.emissive = new THREE.Color(PURPLE);
         obj.material.emissiveIntensity = 0.6;
-    
       }
     }
-  });;
+  });
 
   bulb = new THREE.PointLight("red", 0, 10);
   bulb.position.set(7.7, 77.6, 12);
@@ -74,24 +74,22 @@ export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
   scene.add(bulb);
   scene.add(bulbSphere);
 
-  camera = new THREE.PerspectiveCamera(
-    40,
-    sizes.width / sizes.height,
-    0.1,
-    2500
-  );
+  const aspect = sizes.width / sizes.height;
+  camera = new THREE.PerspectiveCamera(FOV / aspect, aspect, 0.1, 2500);
   camera.position.set(0, 50, 250);
   const cameraTarget = new THREE.Vector3(0, 50, 0);
-  const controls = new OrbitControls(camera, canvas);
-  controls.target = cameraTarget;
+  // const controls = new OrbitControls(camera, canvas);
+  // controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
-  controls.update();
+  // controls.update();
 
   const onResize = (sizes) => {
-    camera.aspect = sizes.width / sizes.height;
+    const aspect = sizes.width / sizes.height;
+    camera.aspect = aspect;
+    camera.fov = FOV / aspect;
     camera.updateProjectionMatrix();
 
-    controls.update();
+    // controls.update();
   };
 
   return { scene, camera, onResize };

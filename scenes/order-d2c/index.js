@@ -9,6 +9,7 @@ import { SKIP } from "../../consts";
 const WHITE = "#b7b7b7";
 const PURPLE = "#5964fa";
 const COLOR_TRANSITION_DURATION = 700;
+const FOV = 60;
 
 const whiteColor = new THREE.Color(WHITE);
 
@@ -94,12 +95,8 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   // const axesHelper = new THREE.AxesHelper(1000);
   // scene.add(axesHelper);
 
-  camera = new THREE.PerspectiveCamera(
-    40,
-    sizes.width / sizes.height,
-    0.1,
-    2500
-  );
+  const aspect = sizes.width / sizes.height;
+  camera = new THREE.PerspectiveCamera(FOV / aspect, aspect, 0.1, 2500);
   camera.position.copy({
     x: -0.6639131743538825,
     y: 51.77881705665486,
@@ -124,7 +121,9 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   //
 
   const onResize = (sizes) => {
-    camera.aspect = sizes.width / sizes.height;
+    const aspect = sizes.width / sizes.height;
+    camera.aspect = aspect;
+    camera.fov = FOV / aspect;
     camera.updateProjectionMatrix();
 
     controls.update();
