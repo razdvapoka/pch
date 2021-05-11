@@ -28,7 +28,7 @@ export const initDeliveryASceneObject = ({ deliveryAModel, sizes, canvas }) => {
   model = deliveryAModel;
   model.scale.set(0.05, 0.05, 0.05);
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#ffffff");
+  scene.background = new THREE.Color("#EBEBEB");
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
   scene.add(ambientLight);
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);

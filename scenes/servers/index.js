@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import anime from "animejs/lib/anime.es.js";
 import { wait } from "../../utils";
 
-const WHITE = "#b7b7b7";
+const WHITE = "#bebebe";
 const PURPLE = "#5964fa";
 const COLOR_TRANSITION_DURATION = 700;
 const BLINK_DURATION = 600;
@@ -40,30 +40,33 @@ export const launchServerScene = () => {
 export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
   model = serversModel;
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
+  scene.background = new THREE.Color("#EBEBEB");
+  const ambientLight = new THREE.AmbientLight(0xEBEBEB, 0.3);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(100, 100, 50);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.5);
+  directionalLight.position.set(0, 75, 75);
   scene.add(ambientLight);
   scene.add(directionalLight);
   scene.add(serversModel);
   model.traverse((obj) => {
     if (obj.type === "Mesh") {
-      obj.material.color = new THREE.Color(WHITE);
-      obj.material.emissive = new THREE.Color(WHITE);
-      obj.material.emissiveIntensity = 0.53;
+      obj.material.color = new THREE.Color("#686868");
+      obj.material.emissive = new THREE.Color("#a1a1a1");
+      obj.material.emissiveIntensity = 1;
       if (obj.material.name === "Plain Violet") {
         purpleServer = obj;
-        purpleServer.material.__color = WHITE;
+        obj.material.color = new THREE.Color("#6F83FF");
+        obj.material.emissive = new THREE.Color(PURPLE);
+        obj.material.emissiveIntensity = 0.6;
+    
       }
     }
-  });
+  });;
 
   bulb = new THREE.PointLight("red", 0, 10);
   bulb.position.set(7.7, 77.6, 12);
   const bulbSphere = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(1, 32, 32),
+    new THREE.SphereBufferGeometry(0.5, 32, 32),
     new THREE.MeshBasicMaterial({ color: "red" })
   );
   bulbSphere.position.set(7.7, 77.6, 9);
@@ -76,8 +79,8 @@ export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
     0.1,
     2500
   );
-  camera.position.set(0, 70, 250);
-  const cameraTarget = new THREE.Vector3(0, 70, 0);
+  camera.position.set(0, 50, 250);
+  const cameraTarget = new THREE.Vector3(0, 50, 0);
   const controls = new OrbitControls(camera, canvas);
   controls.target = cameraTarget;
   camera.lookAt(cameraTarget);

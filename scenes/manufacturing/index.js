@@ -138,10 +138,10 @@ export const initManufacturingSceneObject = ({
     1,
     1000
   );
-  camera.position.set(57.6, 58.4, 50.2);
-  camera.zoom = 14;
+  camera.position.set(52.6, 60, 50.2);
+  camera.zoom = 22;
   camera.updateProjectionMatrix();
-  const cameraTarget = new THREE.Vector3(0, 0, 0);
+  const cameraTarget = new THREE.Vector3(-5, 7, 0);
   // const controls = new OrbitControls(camera, canvas);
   // controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
