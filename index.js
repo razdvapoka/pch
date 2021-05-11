@@ -115,7 +115,6 @@ manager.onLoad = () => {
     setElementVisibility(launchButton, true);
     progressBar.style.opacity = 0;
     hideOverlay(800);
-    setCurrentStep(B2B_STEP_1);
   });
 };
 
