@@ -1,5 +1,5 @@
 import { uid } from "uid";
-import { CHINA_STATE, EUROPE_STATE } from "../../consts";
+import { CHINA_STATE, EUROPE_STATE, USA_STATE } from "../../consts";
 
 export const pathsData = [
   [
@@ -136,35 +136,113 @@ export const customData = [
     id: uid(),
   },
 
-  // Europe objects
+  // Europe B2B Hubs
   {
-    lat: 46.879624090684273,
-    lng: 19.9032797724225021,
+    lat: 52.879624090684273,
+    lng: 18.9032797724225021,
     objType: "tb",
     id: uid(),
   },
   {
-    lat: 49.879624090684273,
-    lng: 21.9032797724225021,
+    lat: 55.879624090684273,
+    lng: 22.9032797724225021,
     objType: "tb",
     id: uid(),
+  },
+  {
+    lat: 53.479624090684273,
+    lng: 28.9032797724225021,
+    objType: "label",
+    label: "B2B Hubs",
+    id: uid(),
+    state: EUROPE_STATE,
   },
 
-  // USA Objects
+
+  // Europe B2C Hubs
   {
-    lat: 40.879624090684273,
-    lng: 258.9032797724225021,
+    lat: 43.879624090684273,
+    lng: 0.9032797724225021,
     objType: "tb",
     id: uid(),
   },
   {
-    lat: 43.879624090684273,
+    lat: 46.879624090684273,
+    lng: 4.4032797724225021,
+    objType: "tb",
+    id: uid(),
+  },
+  {
+    lat: 44.879624090684273,
+    lng: 10.4032797724225021,
+    objType: "label",
+    label: "B2C Hubs",
+    id: uid(),
+    state: EUROPE_STATE,
+  },
+
+  // Europe labels
+  // {
+  //   lat: 46.879624090684273,
+  //   lng: 19.9032797724225021,
+  //   objType: "label",
+  //   label: "B2B Hubs",
+  //   id: uid(),
+  //   state: EUROPE_STATE,
+  // },
+  // {
+  //   lat: 48.879624090684273,
+  //   lng: 20.9032797724225021,
+  //   objType: "label",
+  //   label: "B2С Hubs",
+  //   id: uid(),
+  //   state: EUROPE_STATE,
+  // },
+
+  // USA B2B Hubs
+  {
+    lat: 35.879624090684273,
+    lng: 253.9032797724225021,
+    objType: "tb",
+    id: uid(),
+  },
+  {
+    lat: 39.179624090684273,
+    lng: 253.9032797724225021,
+    objType: "tb",
+    id: uid(),
+  },
+  {
+    lat: 32.179624090684273,
+    lng: 253.9032797724225021,
+    objType: "label",
+    label: "B2B Hubs",
+    id: uid(),
+    state: USA_STATE,
+  },
+
+  // USA B2C Hubs
+  {
+    lat: 39.879624090684273,
     lng: 265.9032797724225021,
     objType: "tb",
     id: uid(),
   },
+  {
+    lat: 43.179624090684273,
+    lng: 265.9032797724225021,
+    objType: "tb",
+    id: uid(),
+  },
+  {
+    lat: 37.179624090684273,
+    lng: 265.9032797724225021,
+    objType: "label",
+    label: "B2С Hubs",
+    id: uid(),
+    state: USA_STATE,
+  },
 
-  // Labels
 
   // China
   {
@@ -191,24 +269,6 @@ export const customData = [
     label: "postponement",
     id: uid(),
     state: CHINA_STATE,
-  },
-
-  // Europe
-  {
-    lat: 46.879624090684273,
-    lng: 19.9032797724225021,
-    objType: "label",
-    label: "B2B Hubs",
-    id: uid(),
-    state: EUROPE_STATE,
-  },
-  {
-    lat: 48.879624090684273,
-    lng: 20.9032797724225021,
-    objType: "label",
-    label: "B2С Hubs",
-    id: uid(),
-    state: EUROPE_STATE,
   },
 
   // Other stuff
