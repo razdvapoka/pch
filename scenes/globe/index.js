@@ -765,8 +765,7 @@ export const initGlobeSceneObject = ({
     camera,
     INTRO_CAM_THETA,
     INTRO_CAM_PHI,
-    INTRO_CAM_R,
-    aspect
+    INTRO_CAM_R
   );
 
   light1 = createLight(d2r(-40), d2r(90), 200);
@@ -791,7 +790,7 @@ export const initGlobeSceneObject = ({
     cloudSphere.rotation.y = elapsedTime / 100;
   };
 
-  camera.zoom = (CANONIC_HEIGHT / sizes.height) * CANONIC_ZOOM;
+  // camera.zoom = (CANONIC_HEIGHT / sizes.height) * CANONIC_ZOOM;
   camera.updateProjectionMatrix();
 
   // const controls = new OrbitControls(camera, canvas);
