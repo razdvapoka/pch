@@ -1,5 +1,17 @@
 import { uid } from "uid";
 import { CHINA_STATE, EUROPE_STATE, USA_STATE } from "../../consts";
+import largeAirports from "./largeAirports.json";
+
+const airportObjects = largeAirports.map((a) => {
+  const [lng, lat] = a.coordinates.split(", ");
+  return {
+    objType: "a",
+    lat,
+    lng,
+    id: uid(),
+    small: true,
+  };
+});
 
 export const pathsData = [
   [
@@ -43,58 +55,17 @@ export const fulfillmentPaths = [
   ],
 ];
 
-export const arcsData = [
-  {
-    startLat: 21.59955118709118,
-    startLng: 112.47016304067684,
-    endLat: 5.577642128002978,
-    endLng: 102.8120616247904,
-    alt: 0.05,
-    color: "white",
-  },
-  {
-    startLat: 21.57184377214739,
-    startLng: 112.84623106938115,
-    endLat: 40.319220941044875,
-    endLng: 14.73033314499672,
-    alt: 0.12,
-    color: "white",
-  },
-  {
-    startLat: 21.57184377214739,
-    startLng: 112.84623106938115,
-    endLat: 36.90781940113789,
-    endLng: 14.019301459219733,
-    alt: 0.13,
-    color: "white",
-  },
-  {
-    startLat: 22.243255335845944,
-    startLng: 113.48552631992973,
-    endLat: 38.10681977721793,
-    endLng: -109.93310721381238,
-    alt: 0.2,
-    color: "white",
-  },
-  {
-    startLat: 22.243255335845944,
-    startLng: 113.48552631992973,
-    endLat: 34.58176320817789,
-    endLng: -108.98736554433808,
-    alt: 0.22,
-    color: "white",
-  },
-  {
-    startLat: 22.243255335845944,
-    startLng: 113.48552631992973,
-    endLat: 27.68087914068041,
-    endLng: -105.0661391185123,
-    alt: 0.25,
-    color: "white",
-  },
-];
+export const arcsData = airportObjects.map((ap) => {
+  return {
+    startLat: 22.5,
+    startLng: 113.5993578911301,
+    endLat: ap.lat,
+    endLng: ap.lng,
+    color: "rgba(255,255,255, 0.25)",
+    altAutoScale: 0.33,
+  };
+});
 
-//
 // a = airport
 // lb = low buildings
 // tb = tall buildings
@@ -157,7 +128,6 @@ export const customData = [
     id: uid(),
     state: EUROPE_STATE,
   },
-
 
   // Europe B2C Hubs
   {
@@ -243,7 +213,6 @@ export const customData = [
     state: USA_STATE,
   },
 
-
   // China
   {
     lat: 20.413554687037546,
@@ -279,6 +248,7 @@ export const customData = [
     objType: "explosion",
     id: uid(),
   },
+  ...airportObjects,
 ];
 
 export const fulfillment = {

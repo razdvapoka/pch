@@ -1,6 +1,5 @@
 import { geoDistance } from "d3-geo";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { uid } from "uid";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import anime from "animejs/lib/anime.es.js";
 import * as THREE from "three";
 import ThreeGlobe from "three-globe";
@@ -21,13 +20,12 @@ import {
   singleTallBuilding,
 } from "./buildings";
 
-import largeAirports from "./largeAirports.json";
-
 import {
   pointsGeometry,
   pointsMaterial,
   launchCurveAnimationLoop,
   getArcAnimationHandle,
+  setMaxPointTimeout,
 } from "./arcs";
 
 import {
@@ -54,23 +52,10 @@ import {
   CAM_R,
   Z_AXIS,
   Y_AXIS,
+  DEFAULT_POINT_TIMEOUT,
 } from "../../consts";
 
 import { leftButton, rightButton } from "../../ui";
-
-const CANONIC_HEIGHT = 1080;
-const CANONIC_ZOOM = 0.5;
-
-const airportObjects = largeAirports.map((a) => {
-  const [lng, lat] = a.coordinates.split(", ");
-  return {
-    objType: "a",
-    lat,
-    lng,
-    id: uid(),
-    small: true,
-  };
-});
 
 const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
@@ -269,7 +254,7 @@ const handleCustomObject = (objData) => {
           [objData.endLng, objData.endLat]
         );
         const curve = calcCurve(objData);
-        launchCurveAnimationLoop(objData.id, curve.getPoints(400), dist);
+        launchCurveAnimationLoop(objData.id, curve.getPoints(1500), dist);
       }
       if (!pointsMesh) {
         pointsMesh = new THREE.Points(pointsGeometry, pointsMaterial);
@@ -507,14 +492,10 @@ export const addFulfillment = () => {
       explosion.element.classList.add("active");
       wait(1000).then(() => {
         globe
-          .customLayerData([
-            ...customData,
-            ...largeAirports,
-            fulfillment,
-            fulfillmentLabel,
-          ])
+          .customLayerData([...customData, fulfillment, fulfillmentLabel])
           .pathTransitionDuration(0)
           .pathsData(fulfillmentPaths);
+        setMaxPointTimeout(DEFAULT_POINT_TIMEOUT / 5);
       });
     });
   });
@@ -716,13 +697,12 @@ export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
     .globeImageUrl(globeImage)
     .atmosphereColor("white")
     .atmosphereAltitude(0.1)
-    .customLayerData([...customData, ...airportObjects])
+    .customLayerData(customData)
     .customThreeObject((objData) => handleCustomObject(objData))
     .customThreeObjectUpdate(handleCustomObjectUpdate)
     .arcsData(arcsData)
     .arcColor("color")
-    .arcAltitude((arc) => arc.alt)
-    .arcAltitudeAutoScale((arc) => arc.altitudeAutoScale)
+    .arcAltitudeAutoScale((arc) => arc.altAutoScale)
     .pathsData(pathsData)
     .pathPointAlt(0.01)
     .pathColor(() => "rgb(90, 100, 250)")
@@ -788,7 +768,6 @@ export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
     cloudSphere.rotation.y = elapsedTime / 100;
   };
 
-  // camera.zoom = (CANONIC_HEIGHT / sizes.height) * CANONIC_ZOOM;
   camera.updateProjectionMatrix();
 
   // const controls = new OrbitControls(camera, canvas);
@@ -839,9 +818,7 @@ export const resetGlobeScene = () => {
   light1RotationProps.phi = d2r(90);
   light1RotationProps.r = 200;
 
-  globe
-    .customLayerData([...customData, ...airportObjects])
-    .pathsData(pathsData);
+  globe.customLayerData(customData).pathsData(pathsData);
 
   currentGlobeState = INTRO_STATE;
 };

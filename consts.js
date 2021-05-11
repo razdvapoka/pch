@@ -10,6 +10,8 @@ export const CHINA_CAM_THETA = Math.PI - 1.1732590418436886;
 export const CHINA_CAM_PHI = 1.2149334407322725;
 export const ROTATION_DURATION = 500;
 
+export const DEFAULT_POINT_TIMEOUT = 50000;
+
 export const Z_AXIS = new THREE.Vector3(0, 0, 1);
 export const Y_AXIS = new THREE.Vector3(0, 1, 0);
 

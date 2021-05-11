@@ -23,6 +23,7 @@ import {
   B2B_STEP_5,
   D2C_STEP_1,
   RESET_STEP,
+  DEFAULT_POINT_TIMEOUT,
 } from "./consts";
 
 import { wait } from "./utils";
@@ -415,6 +416,7 @@ const handleFulfillmentClick = getGlobeTransitioner({
 
 const showRestartScene = () => {
   setHeadingText("Our solution in China");
+  setElementVisibility(heading, true);
   setElementVisibility(restartButton, true);
   setElementVisibility(restartScene, true);
 };
@@ -454,6 +456,7 @@ const handleRestartButtonClick = () => {
     heading.classList.remove("today-heading");
     heading.classList.add("intro-heading");
     isD2C = false;
+    setMaxPointTimeout(DEFAULT_POINT_TIMEOUT);
     hideOverlay(600);
   });
 };

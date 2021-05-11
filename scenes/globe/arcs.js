@@ -2,14 +2,15 @@ import * as THREE from "three";
 import { uid } from "uid";
 import pointTexture from "../../assets/images/point-texture-2.png";
 import anime from "animejs/lib/anime.es.js";
+import { DEFAULT_POINT_TIMEOUT } from "../../consts";
 
-const POINT_VELOCITY = 0.8 / 5000;
+const POINT_VELOCITY = 0.8 / 5000 / 4;
 
 const textureLoader = new THREE.TextureLoader();
 const pointMap = textureLoader.load(pointTexture);
 
 const pointsMaterial = new THREE.PointsMaterial({
-  size: 10,
+  size: 3,
   sizeAttenuation: true,
   depthWrite: false,
   transparent: true,
@@ -55,13 +56,21 @@ const animateCurvePoint = (curvePoints, duration) => {
   });
 };
 
+let maxPointTimeout = DEFAULT_POINT_TIMEOUT;
+const getMaxPointTimeout = () => {
+  return maxPointTimeout;
+};
+export const setMaxPointTimeout = (value) => {
+  maxPointTimeout = value;
+};
+
 const launchCurveAnimationLoop = (id, curvePoints, dist) => {
-  const maxTimeout = 2000;
+  const timeout = getMaxPointTimeout();
   const duration = dist / POINT_VELOCITY;
   arcAnimationHandles[id] = setTimeout(() => {
     animateCurvePoint(curvePoints, duration);
     launchCurveAnimationLoop(id, curvePoints, dist);
-  }, Math.random() * maxTimeout);
+  }, Math.random() * timeout);
 };
 
 const getArcAnimationHandle = (id) => arcAnimationHandles[id];
