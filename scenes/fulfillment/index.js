@@ -80,7 +80,7 @@ export const launchDeliveryScene = (resolve) => {
       });
       timeline
         .add({
-          duration: COLOR_TRANSITION_DURATION,
+          duration: 500,
           targets: planeMaterial,
           emissiveIntensity: 0.2,
           __color: PURPLE,
@@ -88,12 +88,15 @@ export const launchDeliveryScene = (resolve) => {
             planeMaterial.color.set(planeMaterial.__color);
           },
         })
-        .add({
-          duration: 2000,
-          targets: plane.position,
-          y: 15000,
-          z: 30000,
-        })
+        .add(
+          {
+            duration: 2000,
+            targets: plane.position,
+            y: 15000,
+            z: 30000,
+          },
+          "-=500"
+        )
         .add(
           {
             targets: planeShadow.material,
@@ -110,6 +113,7 @@ export const launchDeliveryScene = (resolve) => {
           },
           "-=2000"
         );
+
       timeline.play();
     });
   });
@@ -317,7 +321,7 @@ const initDeliveryScene = () => {
   planeShadow = new THREE.Mesh(
     new THREE.PlaneGeometry(250, 250),
     new THREE.MeshBasicMaterial({
-      opacity: 0.8,
+      opacity: 0.6,
       color: 0x000000,
       transparent: true,
       alphaMap: planeShadowAlphaMap,
