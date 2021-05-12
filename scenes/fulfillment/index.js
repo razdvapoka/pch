@@ -35,8 +35,9 @@ const whiteColor = new THREE.Color(WHITE);
 //   }
 // };
 
+let planeShadowAlphaMap;
 let s;
-let sceneObject;
+let sceneObject = {};
 let camera;
 let cameraTarget;
 let controls;
@@ -66,8 +67,9 @@ let containerAGroup = new THREE.Group();
 let truckMaterial;
 let plane;
 let planeMaterial;
+let planeShadow;
 
-const launchDeliveryScene = (resolve) => {
+export const launchDeliveryScene = (resolve) => {
   showOverlay("white", 600).then(() => {
     initDeliveryScene();
     hideOverlay(600).then(() => {
@@ -91,7 +93,23 @@ const launchDeliveryScene = (resolve) => {
           targets: plane.position,
           y: 15000,
           z: 30000,
-        });
+        })
+        .add(
+          {
+            targets: planeShadow.material,
+            opacity: 0,
+            duration: 800,
+          },
+          "-=2000"
+        )
+        .add(
+          {
+            targets: planeShadow.position,
+            z: "+=300",
+            duration: 1000,
+          },
+          "-=2000"
+        );
       timeline.play();
     });
   });
@@ -296,6 +314,22 @@ const initDeliveryScene = () => {
 
   deliveryScene.add(deliveryModel);
 
+  planeShadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(250, 250),
+    new THREE.MeshBasicMaterial({
+      opacity: 0.8,
+      color: 0x000000,
+      transparent: true,
+      alphaMap: planeShadowAlphaMap,
+    })
+  );
+  planeShadow.rotateX(-Math.PI / 2);
+  planeShadow.rotateZ(Math.PI / 2);
+  planeShadow.translateX(100);
+  planeShadow.translateY(10);
+  planeShadow.translateZ(1);
+  deliveryScene.add(planeShadow);
+
   const deliveryCamera = new THREE.PerspectiveCamera(
     40,
     s.width / s.height,
@@ -308,9 +342,11 @@ const initDeliveryScene = () => {
     z: -0.0000016541668697174197,
   });
   const cameraTarget = new THREE.Vector3(0, 0, 0);
-  // controls.target = cameraTarget;
   deliveryCamera.lookAt(cameraTarget);
+
+  // controls = new OrbitControls(deliveryCamera, canvas);
   // controls.update();
+
   sceneObject.scene = deliveryScene;
   sceneObject.camera = deliveryCamera;
   sceneObject.onResize = (newSizes) => {
@@ -323,7 +359,9 @@ export const initFulfillmentSceneObject = ({
   fulfillmentModel,
   deliveryAModel,
   sizes,
+  planeShadowAlphaMap: psam,
 }) => {
+  planeShadowAlphaMap = psam;
   s = sizes;
   boxAGroup = new THREE.Group();
   boxBGroup = new THREE.Group();

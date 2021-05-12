@@ -4,6 +4,7 @@ import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 
 import lightMapTexture from "./assets/images/earth-lights.png";
 import cloudsTexture from "./assets/images/tex-clouds-inverted.jpg";
+import planeShadowAlphaTexture from "./assets/images/plane-shadow.png";
 import serversModelSrc from "./assets/models/servers-draco.gltf";
 import manufacturingModelSrc from "./assets/models/manufacturing-draco.gltf";
 import postponementModelSrc from "./assets/models/postponement-draco.gltf";
@@ -40,7 +41,6 @@ import {
   transitionToPostponement,
   transitionToFulfillment,
   transitionToDelivery,
-  transitionFromDeliveryToFulfillment,
   resetGlobeScene,
 } from "./scenes/globe";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
@@ -158,6 +158,7 @@ gltfLoader.load(orderD2CModelSrc, (gltf) => {
 const textureLoader = new THREE.TextureLoader(manager);
 const lightMap = textureLoader.load(lightMapTexture);
 const cloudsMap = textureLoader.load(cloudsTexture);
+const planeShadowAlphaMap = textureLoader.load(planeShadowAlphaTexture);
 
 const sizes = {
   width: window.innerWidth,
@@ -183,6 +184,7 @@ const stepToSceneObject = {
       canvas,
       fulfillmentModel,
       deliveryAModel,
+      planeShadowAlphaMap,
     }),
   [B2B_STEP_5]: () =>
     initDeliveryBSceneObject({
