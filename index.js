@@ -43,6 +43,7 @@ import {
   transitionToDelivery,
   resetGlobeScene,
 } from "./scenes/globe";
+import { setMaxPointTimeout } from "./scenes/globe/arcs";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
 import {
   initManufacturingSceneObject,
@@ -104,6 +105,7 @@ let orderD2CModel;
 let deliveryC_B2B_Model;
 let deliveryC_D2C_Model;
 let isD2C = false;
+let isLogoUploaded = false;
 
 const checkIfD2C = () => {
   return isD2C;
@@ -285,6 +287,9 @@ const handleB2BButtonClick = () => {
   });
   showOverlay("white", 300, 700);
   setElementVisibility(pathButtons, false);
+  if (!isLogoUploaded) {
+    setElementVisibility(uploadLogoLabel, false);
+  }
 };
 
 const handleD2CButtonClick = () => {
@@ -299,6 +304,9 @@ const handleD2CButtonClick = () => {
   });
   showOverlay("white", 300, 700);
   setElementVisibility(pathButtons, false);
+  if (!isLogoUploaded) {
+    setElementVisibility(uploadLogoLabel, false);
+  }
 };
 
 const handleLogoUpload = (e) => {
@@ -310,8 +318,9 @@ const handleLogoUpload = (e) => {
       const fileString = d.target.result;
       const url = `url(${fileString.replace(/(\r\n|\n|\r)/gm, "")})`;
       clientLogo.style.backgroundImage = url;
-      clientLogo.style.display = "block";
-      uploadLogoLabel.style.display = "none";
+      setElementVisibility(clientLogo, true);
+      setElementVisibility(uploadLogoLabel, false);
+      isLogoUploaded = true;
     };
     fileReader.readAsDataURL(file);
   }
@@ -458,6 +467,10 @@ const handleRestartButtonClick = () => {
     setElementVisibility(launchButton, true);
     setHeadingText("Single solution to end supply chain");
     isD2C = false;
+    isLogoUploaded = false;
+    setElementVisibility(clientLogo, false);
+    setElementVisibility(uploadLogoLabel, true);
+    clientLogo.style.backgroundImage = "none";
     setMaxPointTimeout(DEFAULT_POINT_TIMEOUT);
     hideOverlay(600);
   });
