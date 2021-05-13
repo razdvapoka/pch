@@ -44,7 +44,7 @@ export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
   const ambientLight = new THREE.AmbientLight(0xEBEBEB, 0.3);
   scene.add(ambientLight);
   const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.5);
-  directionalLight.position.set(0, 75, 75);
+  directionalLight.position.set(0, 90, 30);
   scene.add(ambientLight);
   scene.add(directionalLight);
   scene.add(serversModel);
@@ -52,7 +52,7 @@ export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
     if (obj.type === "Mesh") {
       obj.material.color = new THREE.Color("#686868");
       obj.material.emissive = new THREE.Color("#a1a1a1");
-      obj.material.emissiveIntensity = 1;
+      obj.material.emissiveIntensity = 1.1;
       if (obj.material.name === "Plain Violet") {
         purpleServer = obj;
         obj.material.color = new THREE.Color("#6F83FF");
