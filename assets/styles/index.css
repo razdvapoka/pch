@@ -140,6 +140,7 @@ a, a:visited {
   left: 50%;
   transform: translateX(-50%);
   color: #5c63ff;
+  white-space: nowrap;
 }
 
 .label.visible,
@@ -502,4 +503,14 @@ nav > ul {
 
 .restart-caption-3 {
   margin-left: 28rem;
+}
+
+.long-flights {
+  position: fixed;
+  right: 4.7rem;
+  bottom: 3.7rem;
+  text-transform:uppercase;
+  color: rgba(250, 250,250, 0.6);
+  font-size: 2rem;
+  letter-spacing: 0.07em;
 }

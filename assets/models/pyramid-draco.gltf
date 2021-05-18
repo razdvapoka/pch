@@ -1,0 +1,128 @@
+{
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "asset": {
+    "version": "2.0",
+    "generator": "Created using the official Cinema 4D glTF Exporter 1.000x290161"
+  },
+  "nodes": [
+    {
+      "name": "Fulfillment",
+      "translation": [
+        -1.0214051614793203e-15,
+        0.0027482484001666307,
+        -4.3044986181690024e-15
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        -1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 1
+          },
+          "indices": 0,
+          "material": 0,
+          "mode": 4,
+          "extensions": {
+            "KHR_draco_mesh_compression": {
+              "bufferView": 0,
+              "attributes": {
+                "POSITION": 0
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "accessors": [
+    {
+      "type": "SCALAR",
+      "componentType": 5123,
+      "count": 3648,
+      "min": [
+        0
+      ],
+      "max": [
+        609
+      ]
+    },
+    {
+      "type": "VEC3",
+      "componentType": 5126,
+      "count": 610,
+      "min": [
+        -0.15064251125877987,
+        -0.0002698868615020469,
+        -0.1502212554318298
+      ],
+      "max": [
+        0.15055122617750444,
+        0.552728292356192,
+        0.15016282141994836
+      ]
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 1749
+    }
+  ],
+  "buffers": [
+    {
+      "name": "pyramid",
+      "byteLength": 1752,
+      "uri": "data:application/octet-stream;base64,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"
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.3529411764705882,
+          0.39215686274509803,
+          0.9803921568627451,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5
+      },
+      "emissiveFactor": [
+        0.1,
+        0,
+        0.4
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": true,
+      "name": "Plain Violet"
+    }
+  ],
+  "scene": 0,
+  "extensionsRequired": [
+    "KHR_draco_mesh_compression"
+  ],
+  "extensionsUsed": [
+    "KHR_draco_mesh_compression"
+  ]
+}

@@ -27,8 +27,8 @@ export const pathsData = [
     [34.19275246598128, 101.3431390814407],
   ],
   [
-    [30.906290040140114, 107.10192191858035],
-    [26.10131939282151, 100.00000001524467],
+    [31.6, 106.7],
+    [30.7, 99.3],
   ],
 ];
 
@@ -50,8 +50,8 @@ export const fulfillmentPaths = [
     [34.19275246598128, 101.3431390814407],
   ],
   [
-    [30.906290040140114, 107.10192191858035],
-    [26.10131939282151, 100.00000001524467],
+    [31.6, 106.7],
+    [30.7, 99.3],
   ],
 ];
 
@@ -101,8 +101,8 @@ export const customData = [
     id: uid(),
   },
   {
-    lat: 26.094558607779327,
-    lng: 98.64827818735401,
+    lat: 30.850434299862897,
+    lng: 97.86767940342078,
     objType: "tb",
     id: uid(),
   },
@@ -224,16 +224,16 @@ export const customData = [
     state: CHINA_STATE,
   },
   {
-    lat: 23.099670914334197,
-    lng: 98.4498283380363,
+    lat: 28,
+    lng: 98,
     objType: "label",
     label: "manufacturers",
     id: uid(),
     state: CHINA_STATE,
   },
   {
-    lat: 33.89749680434696,
-    lng: 117.4922954485937,
+    lat: 34.5,
+    lng: 114.41096002666973,
     objType: "label",
     label: "postponement",
     id: uid(),
@@ -251,6 +251,26 @@ export const customData = [
   ...airportObjects,
 ];
 
+export const shenzhenAirport = {
+  lat: 29.885144074883932,
+  lng: 114.15653816052826,
+  objType: "a",
+  id: uid(),
+  small: true,
+  isShenzhen: true,
+};
+
+export const shenzhenLabel = {
+  lat: 27.918684189579828,
+  lng: 114.71708827811794,
+  objType: "label",
+  label: "Shenzhen",
+  subLabel: "airport *",
+  id: uid(),
+  state: CHINA_STATE,
+  isShenzhen: true,
+};
+
 export const fulfillment = {
   lat: 26.697672656009466,
   lng: 111.2,
@@ -258,10 +278,68 @@ export const fulfillment = {
   id: uid(),
 };
 export const fulfillmentLabel = {
-  lat: 28.367832556457905,
-  lng: 119.30302357080461,
+  lat: 26.5,
+  lng: 119.3,
   objType: "label",
   label: "fulfillment",
   id: uid(),
   state: CHINA_STATE,
 };
+
+export const pyramids = [
+  {
+    lat: 27.381928678384035,
+    lng: 121.56614125774303,
+    objType: "pyramid",
+    id: uid(),
+  },
+  {
+    lat: 37.461535731998595,
+    lng: 111.64091211571221,
+
+    objType: "pyramid",
+    id: uid(),
+  },
+  {
+    lat: 41.52587105016799,
+    lng: 126.1851943717729,
+
+    objType: "pyramid",
+    id: uid(),
+  },
+  {
+    lat: 5.596302845121826,
+    lng: 116.86703986874468,
+
+    objType: "pyramid",
+    id: uid(),
+  },
+  {
+    lat: 1.6037695646748773,
+    lng: 99.91862787264319,
+
+    objType: "pyramid",
+    id: uid(),
+  },
+  {
+    lat: 25.784588267474945,
+    lng: 82.21694607975658,
+
+    objType: "pyramid",
+    id: uid(),
+  },
+  {
+    lat: 29.93975937810714,
+    lng: 90.71470660856683,
+
+    objType: "pyramid",
+    id: uid(),
+  },
+  {
+    lat: 36.57276446270508,
+    lng: 79.02502494837277,
+
+    objType: "pyramid",
+    id: uid(),
+  },
+];

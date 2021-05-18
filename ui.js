@@ -1,5 +1,6 @@
 import { wait } from "./utils";
 
+export const longFlghts = document.querySelector(".long-flights");
 export const canvas = document.querySelector("#canvas");
 export const launchButton = document.querySelector(".launch-button");
 export const uploadLogoInput = document.querySelector(".upload-logo-input");

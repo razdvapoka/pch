@@ -32,6 +32,9 @@ import {
   arcsData,
   pathsData,
   customData,
+  pyramids,
+  shenzhenLabel,
+  shenzhenAirport,
   fulfillment,
   fulfillmentLabel,
   fulfillmentPaths,
@@ -66,18 +69,40 @@ const onMouseMove = (event) => {
 };
 
 const onClick = () => {
-  const tc = camera.position.angleTo(Z_AXIS);
-  const pc = camera.position.angleTo(Y_AXIS);
-  console.log(tc, pc);
+  // const tc = camera.position.angleTo(Z_AXIS);
+  // const pc = camera.position.angleTo(Y_AXIS);
+  // console.log(tc, pc);
+  // raycaster.setFromCamera(mouse, camera);
+  // const intersects = raycaster.intersectObjects(scene.children, true);
+  // if (intersects.length > 0) {
+  //   const c = globe.toGeoCoords(intersects[0].point);
+  // console.log(c);
+  // }
 };
 
 // State
 
 const labels = {};
 const explosions = {};
+const pyramidAnimationHandles = {};
 let isGlobeReady = false;
 let htmlElementsHidden = true;
 let currentGlobeState = INTRO_STATE;
+
+let pyramidModel;
+export const setPyramidModel = (model) => {
+  pyramidModel = model;
+  pyramidModel.scale.set(5, 5, 5);
+  pyramidModel.geometry.rotateX(-Math.PI / 2);
+  fulfillmentLabel.isHidden = true;
+  globe.customLayerData([
+    ...customData,
+    ...pyramids,
+    fulfillmentLabel,
+    shenzhenAirport,
+    shenzhenLabel,
+  ]);
+};
 
 const setCurrentGlobeState = (s) => {
   currentGlobeState = s;
@@ -211,6 +236,7 @@ const createExplosion = (objData) => {
 };
 
 const handleCustomObject = (objData) => {
+  // console.log("handleCustomObject", objData);
   switch (objData.objType) {
     case "label": {
       if (!labels[objData.id]) {
@@ -233,6 +259,8 @@ const handleCustomObject = (objData) => {
     }
     case "tb":
       return tallBuildingsGroup.clone();
+    case "pyramid":
+      return pyramidModel.clone();
     case "tb-single": {
       const building = singleTallBuilding.clone();
       anime({
@@ -264,11 +292,53 @@ const handleCustomObject = (objData) => {
   }
 };
 
+const animateFulfillmentPyramid = (pyramid, pyramidObj) => {
+  const curveToFulfillment = calcCurve({
+    alt: 0,
+    startLat: pyramid.lat,
+    startLng: pyramid.lng,
+    endLat: fulfillment.lat,
+    endLng: fulfillment.lng,
+  });
+  const curvePoints = curveToFulfillment.getPoints(1500);
+  const animated = { p: 0 };
+  const animation = anime({
+    targets: animated,
+    duration: 1000,
+    easing: "easeInOutCubic",
+    p: 1,
+    begin: () => {
+      pyramidAnimationHandles[pyramid.id] = animation;
+    },
+    update: () => {
+      const i = Math.floor((curvePoints.length - 1) * animated.p);
+      pyramidObj.position.copy(curvePoints[i]);
+      pyramidObj.lookAt(new THREE.Vector3(0, 0, 0));
+      const scaleFactor = 5 + 5 * animated.p;
+      pyramidObj.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    },
+    complete: () => {
+      pyramid.isAnimated = false;
+      delete pyramidAnimationHandles[pyramid.id];
+    },
+  });
+};
+
 const handleCustomObjectUpdate = (obj, d) => {
   Object.assign(obj.position, globe.getCoords(d.lat, d.lng, d.alt));
   obj.lookAt(new THREE.Vector3(0, 0, 0));
   if (d.objType !== "a") {
     obj.rotation.z += Math.PI / 2;
+  }
+  if (
+    d.objType === "pyramid" &&
+    d.isAnimated &&
+    !pyramidAnimationHandles[d.id]
+  ) {
+    animateFulfillmentPyramid(d, obj);
+  }
+  if (d.objType === "pyramid" && !d.isAnimated) {
+    obj.scale.set(5, 5, 5);
   }
 };
 
@@ -334,6 +404,7 @@ const updateGlobeHTMLElements = (elements, sizes) => {
     const element = elements[elementKey];
     if (
       !htmlElementsHidden &&
+      !element.data.isHidden &&
       (!element.data.state || element.data.state === currentGlobeState)
     ) {
       const screenPosition = element.position.clone();
@@ -491,8 +562,13 @@ export const addFulfillment = () => {
       const explosion = explosions[explosionKey];
       explosion.element.classList.add("active");
       wait(1000).then(() => {
+        pyramids.forEach((p) => {
+          p.isAnimated = true;
+        });
+        shenzhenLabel.isHidden = true;
+        fulfillmentLabel.isHidden = false;
         globe
-          .customLayerData([...customData, fulfillment, fulfillmentLabel])
+          .customLayerData([...customData, ...pyramids, fulfillmentLabel])
           .pathTransitionDuration(0)
           .pathsData(fulfillmentPaths);
         setMaxPointTimeout(DEFAULT_POINT_TIMEOUT / 5);
@@ -818,7 +894,18 @@ export const resetGlobeScene = () => {
   light1RotationProps.phi = d2r(90);
   light1RotationProps.r = 200;
 
-  globe.customLayerData(customData).pathsData(pathsData);
+  globe
+    .customLayerData([
+      ...customData,
+      ...pyramids,
+      fulfillmentLabel,
+      shenzhenAirport,
+      shenzhenLabel,
+    ])
+    .pathsData(pathsData);
+
+  fulfillmentLabel.isHidden = true;
+  shenzhenLabel.isHidden = false;
 
   currentGlobeState = INTRO_STATE;
 };

@@ -14,6 +14,7 @@ import deliveryBModelSrc from "./assets/models/delivery-b-draco.gltf";
 import orderD2CModelSrc from "./assets/models/order-d2c-draco.gltf";
 import deliveryC_B2B_ModelSrc from "./assets/models/delivery-c-b2b-draco.gltf";
 import deliveryC_D2C_ModelSrc from "./assets/models/delivery-c-d2c-draco.gltf";
+import pyramidSrc from "./assets/models/pyramid-draco.gltf";
 
 import {
   GLOBE_STEP,
@@ -42,6 +43,7 @@ import {
   transitionToFulfillment,
   transitionToDelivery,
   resetGlobeScene,
+  setPyramidModel,
 } from "./scenes/globe";
 import { setMaxPointTimeout } from "./scenes/globe/arcs";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
@@ -93,6 +95,7 @@ import {
   globeButton,
   restartScene,
   restartButton,
+  longFlghts,
 } from "./ui";
 
 let serversModel;
@@ -129,6 +132,9 @@ const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
 const gltfLoader = new GLTFLoader(manager);
 gltfLoader.setDRACOLoader(dracoLoader);
+gltfLoader.load(pyramidSrc, (gltf) => {
+  setPyramidModel(gltf.scene.children[0]);
+});
 gltfLoader.load(serversModelSrc, (gltf) => {
   serversModel = gltf.scene.children[0];
 });
@@ -333,12 +339,14 @@ const handleLaunchButtonClick = () => {
     heading.classList.remove("intro-heading");
     heading.classList.add("today-heading");
     setElementVisibility(nextButton, true);
+    setElementVisibility(longFlghts, true);
   });
 };
 
 const handleNextButtonClick = () => {
   setElementVisibility(nextButton, false);
   setElementVisibility(pathButtons, true);
+  setElementVisibility(longFlghts, false);
   setHeadingText("Tomorrow");
   addFulfillment();
 };
