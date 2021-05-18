@@ -37,7 +37,7 @@ export const launchManufacturingScene = () => {
       .add({
         duration: COLOR_TRANSITION_DURATION,
         targets: purpleMaterial,
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 0.5,
         easing: "easeInOutSine",
         __color: PURPLE,
         update: () => {
@@ -93,11 +93,11 @@ export const initManufacturingSceneObject = ({
 }) => {
   model = manufacturingModel;
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
+  scene.background = new THREE.Color("#EBEBEB");
+  const ambientLight = new THREE.AmbientLight(0xEBEBEB, 0.4);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(100, 75, 45);
+  const directionalLight = new THREE.DirectionalLight(0xEBEBEB, 0.4);
+  directionalLight.position.set(-120, 90, 90);
   // const helper = new THREE.DirectionalLightHelper(directionalLight, 10, "red");
   // scene.add(helper);
   scene.add(ambientLight);
@@ -106,7 +106,9 @@ export const initManufacturingSceneObject = ({
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
+      obj.material.color = new THREE.Color("#686868");
+      obj.material.emissive = new THREE.Color("#a1a1a1");
+      obj.material.emissiveIntensity = 1.125;
       if (obj.material.name === "Plain Violet") {
         obj.material.color = purpleColor;
         obj.material.emissive = purpleColor;

@@ -79,10 +79,11 @@ const launchDeliveryScene = (resolve) => {
         .add({
           duration: COLOR_TRANSITION_DURATION,
           targets: planeMaterial,
-          emissiveIntensity: 0.2,
+          emissiveIntensity: 0.5,
           __color: PURPLE,
           update: () => {
             planeMaterial.color.set(planeMaterial.__color);
+            planeMaterial.emissive.set(planeMaterial.__color);
           },
         })
         .add({
@@ -106,10 +107,12 @@ export const launchFulfillmentScene = () =>
       .add({
         duration: COLOR_TRANSITION_DURATION,
         targets: boxesMaterial,
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 1.125,
         __color: PURPLE,
         update: () => {
           boxesMaterial.color.set(boxesMaterial.__color);
+          boxesMaterial.emissive.set(boxesMaterial.__color);
+          // boxesMaterial.emissiveIntensity = 0.5;
         },
       })
       .add({
@@ -137,10 +140,12 @@ export const launchFulfillmentScene = () =>
       .add({
         duration: COLOR_TRANSITION_DURATION,
         targets: paletteAMaterial,
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 1.125,
         __color: PURPLE,
         update: () => {
           paletteAMaterial.color.set(paletteAMaterial.__color);
+          paletteAMaterial.emissive.set(boxesMaterial.__color);
+          // paletteAMaterial.emissiveIntensity.set(0.5);
         },
         complete: () => {
           paletteAGroup.add(paletteA, boxBGroup);
@@ -191,11 +196,13 @@ export const launchFulfillmentScene = () =>
       .add({
         duration: COLOR_TRANSITION_DURATION,
         targets: containerAMaterial,
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 1.125,
         easing: "easeInOutSine",
         __color: PURPLE,
         update: () => {
           containerAMaterial.color.set(containerAMaterial.__color);
+          containerAMaterial.emissive.set(boxesMaterial.__color);
+          // containerAMaterial.emissiveIntensity.set(0.5);
         },
       })
       .add({
@@ -211,11 +218,12 @@ export const launchFulfillmentScene = () =>
       .add({
         duration: COLOR_TRANSITION_DURATION,
         targets: truckMaterial,
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 0.5,
         easing: "easeInOutSine",
         __color: PURPLE,
         update: () => {
           truckMaterial.color.set(truckMaterial.__color);
+          truckMaterial.emissive.set(truckMaterial.__color);
         },
       })
       .add({
@@ -266,25 +274,25 @@ export const launchFulfillmentScene = () =>
 
 const initDeliveryScene = () => {
   const deliveryScene = new THREE.Scene();
-  deliveryScene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  deliveryScene.background = new THREE.Color("#ebebeb");
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.42);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.4);
   directionalLight.position.set(100, 75, 45);
   deliveryScene.add(ambientLight, directionalLight);
   // scene.add(transformControls);
   deliveryModel.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
+      obj.material.color = new THREE.Color("#686868");
+      obj.material.emissive = new THREE.Color("#a1a1a1");
+      obj.material.emissiveIntensity = 1.125;
     }
   });
 
   plane = parts["plane_update"];
   planeMaterial = boxA.material.clone();
-  planeMaterial.color = whiteColor.clone();
-  planeMaterial.__color = WHITE;
+  planeMaterial.color = new THREE.Color("#686868");
+  planeMaterial.__color = new THREE.Color("#686868");
   plane.traverse((obj) => {
     if (obj.type === "Mesh") {
       obj.material = planeMaterial;
@@ -330,11 +338,11 @@ export const initFulfillmentSceneObject = ({
   scene = new THREE.Scene();
   scene.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
-  scene.background = new THREE.Color("#ffffff");
+  scene.background = new THREE.Color("#ebebeb");
   scene.fog = new THREE.Fog("white", 1900 * scaleFactor, 2500 * scaleFactor);
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.42);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.4);
   directionalLight.position.set(
     100 * scaleFactor,
     75 * scaleFactor,
@@ -348,9 +356,9 @@ export const initFulfillmentSceneObject = ({
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
+      obj.material.color = new THREE.Color("#686868");
+      obj.material.emissive = new THREE.Color("#a1a1a1");
+      obj.material.emissiveIntensity = 1.125;
     }
   });
 
@@ -412,14 +420,14 @@ export const initFulfillmentSceneObject = ({
   scene.add(boxBGroup);
 
   boxesMaterial = boxA.material.clone();
-  boxesMaterial.color = whiteColor.clone();
-  boxesMaterial.__color = WHITE;
+  boxesMaterial.color = new THREE.Color("#686868");
+  boxesMaterial.__color = new THREE.Color("#686868");
   boxA.material = boxesMaterial;
   boxB.material = boxesMaterial;
 
   paletteAMaterial = boxA.material.clone();
-  paletteAMaterial.color = whiteColor.clone();
-  paletteAMaterial.__color = WHITE;
+  paletteAMaterial.color = new THREE.Color("#686868");
+  paletteAMaterial.__color = new THREE.Color("#686868");
   paletteA.traverse((obj) => {
     if (obj.type === "Mesh") {
       obj.material = paletteAMaterial;
@@ -427,8 +435,8 @@ export const initFulfillmentSceneObject = ({
   });
 
   truckMaterial = boxA.material.clone();
-  truckMaterial.color = whiteColor.clone();
-  truckMaterial.__color = WHITE;
+  truckMaterial.color = new THREE.Color("#686868");
+  truckMaterial.__color = new THREE.Color("#686868");
   truck.traverse((obj) => {
     if (obj.type === "Mesh") {
       obj.material = truckMaterial;
@@ -436,8 +444,8 @@ export const initFulfillmentSceneObject = ({
   });
 
   containerAMaterial = containerA.material.clone();
-  containerAMaterial.color = whiteColor.clone();
-  containerAMaterial.__color = WHITE;
+  containerAMaterial.color = new THREE.Color("#686868");
+  containerAMaterial.__color = new THREE.Color("#686868");
   containerA.material = containerAMaterial;
 
   // const transformedMesh = parts["main_box_b"];

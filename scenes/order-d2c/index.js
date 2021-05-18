@@ -37,10 +37,11 @@ export const launchOrderD2CScene = () =>
     timeline.add({
       duration: COLOR_TRANSITION_DURATION,
       targets: laptopMaterial,
-      emissiveIntensity: 0.2,
+      emissiveIntensity: 0.5,
       __color: PURPLE,
       update: () => {
         laptopMaterial.color.set(laptopMaterial.__color);
+        laptopMaterial.emissive.set(laptopMaterial.__color);
       },
     });
     timeline.play();
@@ -49,10 +50,10 @@ export const launchOrderD2CScene = () =>
 export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   model = orderD2CModel;
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
+  scene.background = new THREE.Color("#ebebeb");
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.42);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.4);
   directionalLight.position.set(100, 70, 50);
   // const helper = new THREE.DirectionalLightHelper(directionalLight, 10, "red");
   // scene.add(helper);
@@ -62,9 +63,9 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
+      obj.material.color = new THREE.Color("#686868");
+      obj.material.emissive = new THREE.Color("#a1a1a1");
+      obj.material.emissiveIntensity = 1.125;
     }
   });
 
@@ -79,19 +80,22 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   screenFinal = parts["screen-final"];
   screenFinal.visible = false;
   screenInitMaterial = screenInit.material;
-  screenInitMaterial.color = new THREE.Color("white");
+  screenInitMaterial.color = new THREE.Color("#ffffff");
+  // screenInitMaterial.emissive = new THREE.Color("#ebebeb");
   screenInitMaterial.metalness = 0;
   screenInitMaterial.roughness = 1;
+  screenInitMaterial.emissiveIntensity = 0.8;
   screenFinalMaterial = screenFinal.material;
-  screenFinalMaterial.color = new THREE.Color("white");
+  screenFinalMaterial.color = new THREE.Color("#ebebeb");
   screenFinalMaterial.metalness = 0;
   screenFinalMaterial.roughness = 1;
+  screenFinalMaterial.emissiveIntensity = 0.8;
 
   // const axesHelper = new THREE.AxesHelper(1000);
   // scene.add(axesHelper);
 
   camera = new THREE.PerspectiveCamera(
-    40,
+    30,
     sizes.width / sizes.height,
     0.1,
     2500
