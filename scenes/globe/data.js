@@ -1,6 +1,7 @@
 import { uid } from "uid";
 import { CHINA_STATE, EUROPE_STATE, USA_STATE } from "../../consts";
 import largeAirports from "./largeAirports.json";
+import shuffle from "array-shuffle";
 
 const airportObjects = largeAirports.map((a) => {
   const [lng, lat] = a.coordinates.split(", ");
@@ -63,7 +64,20 @@ export const arcsData = airportObjects.map((ap) => {
     endLng: ap.lng,
     color: "rgba(255,255,255, 0.25)",
     altAutoScale: 0.33,
+    id: uid(),
   };
+});
+
+const shuffledArcsData = shuffle(arcsData);
+export const quarterArcsData = shuffledArcsData.slice(
+  0,
+  Math.floor(arcsData.length / 4)
+);
+export const restArcsData = shuffledArcsData.slice(
+  Math.floor(arcsData.length / 4)
+);
+restArcsData.forEach((arc) => {
+  arc.isHidden = true;
 });
 
 // a = airport
@@ -71,10 +85,9 @@ export const arcsData = airportObjects.map((ap) => {
 // tb = tall buildings
 // arc = arc
 export const customData = [
-  ...arcsData.map((a) => ({
-    ...a,
+  ...arcsData.map((arc) => ({
+    ...arc,
     objType: "arc",
-    id: uid(),
   })),
   {
     lat: 4.72157227071834,

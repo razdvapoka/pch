@@ -22,8 +22,9 @@ const pointsMaterial = new THREE.PointsMaterial({
 
 let pointsGeometry = new THREE.BufferGeometry();
 
-const visiblePoints = {};
-const arcAnimationHandles = {};
+let visiblePoints = {};
+let arcAnimationHandles = {};
+let animations = {};
 
 const updatePointsGeometry = () => {
   const positions = new Float32Array(Object.keys(visiblePoints).length * 3);
@@ -40,7 +41,7 @@ const updatePointsGeometry = () => {
 const animateCurvePoint = (curvePoints, duration) => {
   const id = uid();
   const animatedPoint = {};
-  anime({
+  animations[id] = anime({
     duration,
     easing: "linear",
     targets: animatedPoint,
@@ -74,6 +75,14 @@ const launchCurveAnimationLoop = (id, curvePoints, dist) => {
 };
 
 const getArcAnimationHandle = (id) => arcAnimationHandles[id];
+
+export const resetCurveAnimations = () => {
+  Object.values(arcAnimationHandles).forEach(clearTimeout);
+  Object.values(animations).forEach((a) => a.pause());
+  animations = {};
+  arcAnimationHandles = {};
+  visiblePoints = {};
+};
 
 export {
   pointsGeometry,

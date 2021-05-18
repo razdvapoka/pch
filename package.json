@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "animejs": "^3.2.1",
+    "array-shuffle": "^2.0.0",
     "dat.gui": "^0.7.7",
     "deep-diff": "^1.0.2",
     "three": "^0.126.1",

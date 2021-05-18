@@ -26,10 +26,13 @@ import {
   launchCurveAnimationLoop,
   getArcAnimationHandle,
   setMaxPointTimeout,
+  resetCurveAnimations,
 } from "./arcs";
 
 import {
   arcsData,
+  quarterArcsData,
+  restArcsData,
   pathsData,
   customData,
   pyramids,
@@ -235,8 +238,18 @@ const createExplosion = (objData) => {
   };
 };
 
+const handleArcObject = (arc) => {
+  if (!getArcAnimationHandle(arc.id) && !arc.isHidden) {
+    const dist = geoDistance(
+      [arc.startLng, arc.startLat],
+      [arc.endLng, arc.endLat]
+    );
+    const curve = calcCurve(arc);
+    launchCurveAnimationLoop(arc.id, curve.getPoints(1500), dist);
+  }
+};
+
 const handleCustomObject = (objData) => {
-  // console.log("handleCustomObject", objData);
   switch (objData.objType) {
     case "label": {
       if (!labels[objData.id]) {
@@ -276,14 +289,7 @@ const handleCustomObject = (objData) => {
     case "lb":
       return lowBuildingsGroup.clone();
     case "arc": {
-      if (!getArcAnimationHandle(objData.id)) {
-        const dist = geoDistance(
-          [objData.startLng, objData.startLat],
-          [objData.endLng, objData.endLat]
-        );
-        const curve = calcCurve(objData);
-        launchCurveAnimationLoop(objData.id, curve.getPoints(1500), dist);
-      }
+      handleArcObject(objData);
       if (!pointsMesh) {
         pointsMesh = new THREE.Points(pointsGeometry, pointsMaterial);
         globe.add(pointsMesh);
@@ -567,8 +573,14 @@ export const addFulfillment = () => {
         });
         shenzhenLabel.isHidden = true;
         fulfillmentLabel.isHidden = false;
+        customData.forEach((o) => {
+          if (o.objType === "arc") {
+            o.isHidden = false;
+          }
+        });
         globe
           .customLayerData([...customData, ...pyramids, fulfillmentLabel])
+          .arcsData([...quarterArcsData, ...restArcsData])
           .pathTransitionDuration(0)
           .pathsData(fulfillmentPaths);
         setMaxPointTimeout(DEFAULT_POINT_TIMEOUT / 5);
@@ -776,7 +788,7 @@ export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
     .customLayerData(customData)
     .customThreeObject((objData) => handleCustomObject(objData))
     .customThreeObjectUpdate(handleCustomObjectUpdate)
-    .arcsData(arcsData)
+    .arcsData(quarterArcsData)
     .arcColor("color")
     .arcAltitudeAutoScale((arc) => arc.altAutoScale)
     .pathsData(pathsData)
@@ -894,6 +906,7 @@ export const resetGlobeScene = () => {
   light1RotationProps.phi = d2r(90);
   light1RotationProps.r = 200;
 
+  // resetCurveAnimations();
   globe
     .customLayerData([
       ...customData,
@@ -902,6 +915,7 @@ export const resetGlobeScene = () => {
       shenzhenAirport,
       shenzhenLabel,
     ])
+    .arcsData(quarterArcsData)
     .pathsData(pathsData);
 
   fulfillmentLabel.isHidden = true;
