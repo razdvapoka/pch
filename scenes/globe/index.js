@@ -49,6 +49,8 @@ import {
   INTRO_CAM_R,
   CHINA_CAM_THETA,
   CHINA_CAM_PHI,
+  USA_CAM_THETA,
+  USA_CAM_PHI,
   USA_STATE,
   CHINA_STATE,
   EUROPE_STATE,
@@ -56,9 +58,19 @@ import {
   CANONIC_GLOBE_RADIUS,
   ROTATION_DURATION,
   CAM_R,
-  Z_AXIS,
-  Y_AXIS,
   DEFAULT_POINT_TIMEOUT,
+  CENTER,
+  EUROPE_CAM_THETA,
+  EUROPE_CAM_PHI,
+  MANUFACTURERS_CAM_PHI,
+  MANUFACTURERS_CAM_THETA,
+  POSTPONEMENT_CAM_PHI,
+  POSTPONEMENT_CAM_THETA,
+  FULFILLMENT_CAM_PHI,
+  FULFILLMENT_CAM_THETA,
+  DELIVERY_CAM_PHI,
+  DELIVERY_CAM_THETA,
+  ZOOMED_CAM_R,
 } from "../../consts";
 
 import { leftButton, rightButton } from "../../ui";
@@ -72,9 +84,11 @@ const onMouseMove = (event) => {
 };
 
 const onClick = () => {
-  // const tc = camera.position.angleTo(Z_AXIS);
-  // const pc = camera.position.angleTo(Y_AXIS);
-  // console.log(tc, pc);
+  const r = camera.position.distanceTo(CENTER);
+  const phi = Math.acos(camera.position.y / r);
+  const theta = Math.atan2(camera.position.x, camera.position.z);
+  console.log(theta, phi, r);
+
   // raycaster.setFromCamera(mouse, camera);
   // const intersects = raycaster.intersectObjects(scene.children, true);
   // if (intersects.length > 0) {
@@ -90,6 +104,7 @@ const explosions = {};
 const pyramidAnimationHandles = {};
 let isGlobeReady = false;
 let htmlElementsHidden = true;
+export const setHtmlElementsHidden = (hidden) => (htmlElementsHidden = hidden);
 let currentGlobeState = INTRO_STATE;
 
 let pyramidModel;
@@ -139,50 +154,11 @@ let europe2ChinaRotator;
 let europe2USARotator;
 let zoomRotator;
 let zoomOutRotator;
-let cameraRotationProps = {
-  theta: INTRO_CAM_THETA,
-  phi: INTRO_CAM_PHI,
-  r: INTRO_CAM_R,
-};
 let light1RotationProps = {
   theta: d2r(-40),
   phi: d2r(90),
   r: 200,
 };
-
-const USAZoomedCamera = {
-  theta: CHINA_CAM_THETA + Math.PI * 0.8,
-  phi: CHINA_CAM_PHI - Math.PI * 0.08,
-  r: 100,
-};
-
-//china2EuropeRotator = getCameraRotator(-Math.PI * 0.5, -Math.PI * 0.12);
-const europeZoomedCamera = {
-  theta: CHINA_CAM_THETA - Math.PI * 0.5,
-  phi: CHINA_CAM_PHI - Math.PI * 0.12,
-  r: 100,
-};
-
-const manufactureZoomedCamera = {
-  theta: 1.6935725424213968,
-  phi: 1.1314157529547064,
-  r: 100,
-};
-
-const postponementZoomedCamera = {
-  theta: 1.9406723835181216,
-  phi: 1.0162240223230787,
-  r: 100,
-};
-
-const fulfillmentZoomedCamera = {
-  theta: 1.95827946696545,
-  phi: 1.02801727397001,
-  r: 100,
-};
-
-const getCameraRotator = (theta, phi, r = 0, duration = ROTATION_DURATION) =>
-  getObjectRotator(theta, phi, r, camera, cameraRotationProps, duration);
 
 const createLabel = (objData) => {
   const element = document.createElement("div");
@@ -558,6 +534,10 @@ const getBackToChinaRotator = () => {
   }
 };
 
+export const sceneToChinaRotator = (step) => {
+  return getCameraRotatorNew(CHINA_CAM_THETA, CHINA_CAM_PHI, CAM_R);
+};
+
 export const addFulfillment = () => {
   htmlElementsHidden = true;
   const rotator = getBackToChinaRotator();
@@ -589,12 +569,12 @@ export const addFulfillment = () => {
   });
 };
 
-const showNavButtons = () => {
+export const showNavButtons = () => {
   leftButton.classList.remove("hidden");
   rightButton.classList.remove("hidden");
 };
 
-const hideNavButtons = () => {
+export const hideNavButtons = () => {
   leftButton.classList.add("hidden");
   rightButton.classList.add("hidden");
 };
@@ -624,6 +604,74 @@ export const globeToD2C = () => {
     .then(() => wait(100));
 };
 
+const getObjectSphereProps = (object) => {
+  const r = object.position.distanceTo(CENTER);
+  const phi = Math.acos(object.position.y / r);
+  const theta = Math.atan2(object.position.x, object.position.z);
+  return {
+    r,
+    phi,
+    theta,
+  };
+};
+
+export const getObjectRotatorNew = (
+  theta,
+  phi,
+  r,
+  object,
+  right,
+  duration = ROTATION_DURATION
+) => () =>
+  new Promise((resolve) => {
+    const {
+      r: currentR,
+      phi: currentPhi,
+      theta: currentTheta,
+    } = getObjectSphereProps(object);
+
+    const newR = r === null ? currentR : r;
+    const newTheta = theta === null ? currentTheta : theta;
+    const newPhi = phi === null ? currentPhi : phi;
+
+    const animated = {
+      alpha: 0,
+    };
+
+    const targetTheta = right
+      ? newTheta > currentTheta
+        ? newTheta
+        : newTheta + Math.PI * 2
+      : newTheta > currentTheta
+      ? newTheta - Math.PI * 2
+      : newTheta;
+
+    anime({
+      duration,
+      targets: animated,
+      alpha: 1,
+      easing: "cubicBezier(.08,.98,.8,.98)",
+      update: () => {
+        const { alpha } = animated;
+        const t = currentTheta + alpha * (targetTheta - currentTheta);
+        const p = currentPhi + alpha * (newPhi - currentPhi);
+        const rr = currentR + alpha * (newR - currentR);
+        setObjectPositionOnSphere(object, t, p, rr);
+      },
+      complete: () => {
+        resolve();
+      },
+    });
+  });
+
+const getCameraRotatorNew = (
+  theta,
+  phi,
+  r,
+  right,
+  duration = ROTATION_DURATION
+) => getObjectRotatorNew(theta, phi, r, camera, right, duration);
+
 const initRotators = () => {
   intro2ChinaLight1Rotator = getObjectRotator(
     d2r(91),
@@ -632,49 +680,89 @@ const initRotators = () => {
     light1,
     light1RotationProps
   );
-  intro2ChinaRotator = getCameraRotator(
-    CHINA_CAM_THETA - INTRO_CAM_THETA,
-    CHINA_CAM_PHI - INTRO_CAM_PHI,
-    CAM_R - INTRO_CAM_R
+
+  intro2ChinaRotator = getCameraRotatorNew(
+    CHINA_CAM_THETA,
+    CHINA_CAM_PHI,
+    CAM_R,
+    true
   );
-  china2USARotator = getCameraRotator(Math.PI * 0.8, -Math.PI * 0.08);
-  china2EuropeRotator = getCameraRotator(-Math.PI * 0.5, -Math.PI * 0.12);
-  USA2ChinaRotator = getCameraRotator(-Math.PI * 0.8, Math.PI * 0.08);
-  USA2ManufacturingRotator = getCameraRotator(
-    -USAZoomedCamera.theta + 1.6935725424213968,
-    -USAZoomedCamera.phi + 1.1314157529547064,
-    0
+
+  china2USARotator = getCameraRotatorNew(
+    USA_CAM_THETA,
+    USA_CAM_PHI,
+    CAM_R,
+    true
   );
-  europe2ManufacturingRotator = getCameraRotator(
-    -europeZoomedCamera.theta + 1.6935725424213968,
-    -europeZoomedCamera.phi + 1.1314157529547064,
-    0
+
+  china2EuropeRotator = getCameraRotatorNew(
+    EUROPE_CAM_THETA,
+    EUROPE_CAM_PHI,
+    CAM_R
   );
-  manufacturing2PostponementRotator = getCameraRotator(
-    -manufactureZoomedCamera.theta + 1.9406723835181216,
-    -manufactureZoomedCamera.phi + 1.0162240223230787,
-    0
+
+  USA2ChinaRotator = getCameraRotatorNew(CHINA_CAM_THETA, CHINA_CAM_PHI, CAM_R);
+
+  USA2ManufacturingRotator = getCameraRotatorNew(
+    MANUFACTURERS_CAM_THETA,
+    MANUFACTURERS_CAM_PHI,
+    CAM_R
   );
-  postponementToFulfillmentRotator = getCameraRotator(
-    -postponementZoomedCamera.theta + 1.9036574695043624,
-    -postponementZoomedCamera.phi + 1.1380471009664879,
-    0
+  europe2ManufacturingRotator = getCameraRotatorNew(
+    MANUFACTURERS_CAM_THETA,
+    MANUFACTURERS_CAM_PHI,
+    CAM_R,
+    true
   );
-  fulfillmentToDeliveryRotator = getCameraRotator(2.8, -0.3, 0, 1500);
-  deliveryToFulfillmentRotator = getCameraRotator(-2.8, 0.3, 0, 1500);
-  USA2EuropeRotator = getCameraRotator(Math.PI * 0.7, -Math.PI * 0.04);
-  europe2ChinaRotator = getCameraRotator(Math.PI * 0.5, Math.PI * 0.12);
-  europe2USARotator = getCameraRotator(-Math.PI * 0.7, Math.PI * 0.04);
-  zoomRotator = getCameraRotator(0, 0, -100);
-  zoomOutRotator = getCameraRotator(0, 0, 100);
+  manufacturing2PostponementRotator = getCameraRotatorNew(
+    POSTPONEMENT_CAM_THETA,
+    POSTPONEMENT_CAM_PHI,
+    CAM_R,
+    true
+  );
+  postponementToFulfillmentRotator = getCameraRotatorNew(
+    FULFILLMENT_CAM_THETA,
+    FULFILLMENT_CAM_PHI,
+    CAM_R,
+    true
+  );
+  fulfillmentToDeliveryRotator = getCameraRotatorNew(
+    DELIVERY_CAM_THETA,
+    DELIVERY_CAM_PHI,
+    CAM_R,
+    true,
+    1500
+  );
+  deliveryToFulfillmentRotator = getCameraRotatorNew(
+    FULFILLMENT_CAM_THETA,
+    FULFILLMENT_CAM_PHI,
+    CAM_R,
+    false,
+    1500
+  );
+  USA2EuropeRotator = getCameraRotatorNew(
+    EUROPE_CAM_THETA,
+    EUROPE_CAM_PHI,
+    CAM_R,
+    true
+  );
+  europe2ChinaRotator = getCameraRotatorNew(
+    CHINA_CAM_THETA,
+    CHINA_CAM_PHI,
+    CAM_R,
+    true
+  );
+  europe2USARotator = getCameraRotatorNew(USA_CAM_THETA, USA_CAM_PHI, CAM_R);
+  zoomRotator = getCameraRotatorNew(null, null, ZOOMED_CAM_R);
+  zoomOutRotator = getCameraRotatorNew(null, null, CAM_R);
 };
 
 export const transitionD2CToManufacturing = () => {
   setObjectPositionOnSphere(
     camera,
-    europeZoomedCamera.theta,
-    europeZoomedCamera.phi,
-    europeZoomedCamera.r
+    EUROPE_CAM_THETA,
+    EUROPE_CAM_PHI,
+    ZOOMED_CAM_R
   );
   return zoomOutRotator()
     .then(() => europe2ManufacturingRotator())
@@ -685,12 +773,7 @@ export const transitionD2CToManufacturing = () => {
 };
 
 export const transitionB2BToManufacturing = () => {
-  setObjectPositionOnSphere(
-    camera,
-    USAZoomedCamera.theta,
-    USAZoomedCamera.phi,
-    USAZoomedCamera.r
-  );
+  setObjectPositionOnSphere(camera, USA_CAM_THETA, USA_CAM_PHI, ZOOMED_CAM_R);
   return zoomOutRotator()
     .then(() => USA2ManufacturingRotator())
     .then(() => {
@@ -702,9 +785,9 @@ export const transitionB2BToManufacturing = () => {
 export const transitionToPostponement = () => {
   setObjectPositionOnSphere(
     camera,
-    manufactureZoomedCamera.theta,
-    manufactureZoomedCamera.phi,
-    manufactureZoomedCamera.r
+    MANUFACTURERS_CAM_THETA,
+    MANUFACTURERS_CAM_PHI,
+    ZOOMED_CAM_R
   );
   return zoomOutRotator()
     .then(() => {
@@ -720,9 +803,9 @@ export const transitionToPostponement = () => {
 export const transitionToFulfillment = () => {
   setObjectPositionOnSphere(
     camera,
-    postponementZoomedCamera.theta,
-    postponementZoomedCamera.phi,
-    postponementZoomedCamera.r
+    POSTPONEMENT_CAM_THETA,
+    POSTPONEMENT_CAM_PHI,
+    ZOOMED_CAM_R
   );
   return zoomOutRotator()
     .then(() => {
@@ -738,9 +821,9 @@ export const transitionToFulfillment = () => {
 export const transitionToDelivery = () => {
   setObjectPositionOnSphere(
     camera,
-    fulfillmentZoomedCamera.theta,
-    fulfillmentZoomedCamera.phi,
-    fulfillmentZoomedCamera.r
+    FULFILLMENT_CAM_THETA,
+    FULFILLMENT_CAM_PHI,
+    ZOOMED_CAM_R
   );
   return zoomOutRotator()
     .then(() => {
@@ -756,9 +839,9 @@ export const transitionToDelivery = () => {
 export const transitionFromDeliveryToFulfillment = () => {
   setObjectPositionOnSphere(
     camera,
-    fulfillmentZoomedCamera.theta + 2.8,
-    fulfillmentZoomedCamera.phi - 0.3,
-    fulfillmentZoomedCamera.r
+    DELIVERY_CAM_THETA,
+    DELIVERY_CAM_PHI,
+    ZOOMED_CAM_R
   );
   return zoomOutRotator().then(() => {
     htmlElementsHidden = false;
@@ -882,9 +965,6 @@ export const resetGlobeScene = () => {
     INTRO_CAM_PHI,
     INTRO_CAM_R
   );
-  cameraRotationProps.theta = INTRO_CAM_THETA;
-  cameraRotationProps.phi = INTRO_CAM_PHI;
-  cameraRotationProps.r = INTRO_CAM_R;
 
   setObjectPositionOnSphere(scene.lights.light1, d2r(-40), d2r(90), 200);
   setObjectPositionOnSphere(scene.lights.light2, d2r(23), d2r(279), 200);

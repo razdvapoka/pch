@@ -31,6 +31,7 @@ import {
 import { wait } from "./utils";
 
 import {
+  sceneToChinaRotator,
   addFulfillment,
   launchGlobeScene,
   globeToB2B,
@@ -44,6 +45,8 @@ import {
   transitionToDelivery,
   resetGlobeScene,
   setPyramidModel,
+  showNavButtons,
+  setHtmlElementsHidden,
 } from "./scenes/globe";
 import { setMaxPointTimeout } from "./scenes/globe/arcs";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
@@ -305,6 +308,7 @@ const handleD2CButtonClick = () => {
     setLightTheme();
     setNavVisibility(true);
     setElementVisibility(placeOrderD2CButton, true);
+    setElementVisibility(globeButton, true);
     setHeadingText("Direct-to-consumer");
     hideOverlay(600);
   });
@@ -484,6 +488,26 @@ const handleRestartButtonClick = () => {
   });
 };
 
+const handleGlobeButtonClick = () => {
+  setElementVisibility(nav, false);
+  setElementVisibility(heading, false);
+  setElementVisibility(globeButton, false);
+  const actionButton = document.querySelector(".action-button:not(.hidden)");
+  setElementVisibility(actionButton, false);
+  setDarkTheme();
+  showOverlay("white", 600).then(() => {
+    setCurrentSceneObject(getGlobeSceneObject());
+    hideOverlay(500, 150);
+    sceneToChinaRotator(currentStep)().then(() => {
+      setElementVisibility(pathButtons, true);
+      setElementVisibility(heading, true);
+      setHeadingText("Tomorrow");
+      showNavButtons();
+      setHtmlElementsHidden(false);
+    });
+  });
+};
+
 const addEventListeners = () => {
   nextButton.addEventListener("click", handleNextButtonClick);
   launchButton.addEventListener("click", handleLaunchButtonClick);
@@ -497,6 +521,7 @@ const addEventListeners = () => {
   fulfillmentButton.addEventListener("click", handleFulfillmentClick);
   deliveryButton.addEventListener("click", handleDeliveryButtonClick);
   restartButton.addEventListener("click", handleRestartButtonClick);
+  globeButton.addEventListener("click", handleGlobeButtonClick);
   window.addEventListener("resize", onResize);
 };
 

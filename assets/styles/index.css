@@ -362,6 +362,7 @@ nav > ul {
   position: fixed;
   left: 2rem;
   bottom: 2.2rem;
+  cursor: pointer;
 }
 
 .restart {

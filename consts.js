@@ -3,11 +3,33 @@ import * as THREE from "three";
 export const CANONIC_GLOBE_RADIUS = 100;
 export const CENTER = new THREE.Vector3(0, 0, 0);
 export const CAM_R = 260;
+export const ZOOMED_CAM_R = 160;
+
 export const INTRO_CAM_R = 750;
-export const INTRO_CAM_THETA = 1.2324469461144;
-export const INTRO_CAM_PHI = 1.3532513064958416;
-export const CHINA_CAM_THETA = Math.PI - 1.1732590418436886;
-export const CHINA_CAM_PHI = 1.2149334407322725;
+export const INTRO_CAM_THETA = 1.23;
+export const INTRO_CAM_PHI = 1.35;
+
+export const CHINA_CAM_THETA = 1.97;
+export const CHINA_CAM_PHI = 1.21;
+
+export const USA_CAM_THETA = -1.7;
+export const USA_CAM_PHI = 0.96;
+
+export const EUROPE_CAM_THETA = 0.396;
+export const EUROPE_CAM_PHI = 0.838;
+
+export const MANUFACTURERS_CAM_THETA = 1.73;
+export const MANUFACTURERS_CAM_PHI = 1.033;
+
+export const POSTPONEMENT_CAM_THETA = 1.912;
+export const POSTPONEMENT_CAM_PHI = 1.003;
+
+export const FULFILLMENT_CAM_THETA = 1.947;
+export const FULFILLMENT_CAM_PHI = 1.102;
+
+export const DELIVERY_CAM_THETA = -1.737;
+export const DELIVERY_CAM_PHI = 0.904;
+
 export const ROTATION_DURATION = 500;
 
 export const DEFAULT_POINT_TIMEOUT = 50000;
