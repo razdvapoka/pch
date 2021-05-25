@@ -103,6 +103,7 @@ const explosions = {};
 const pyramidAnimationHandles = {};
 let isGlobeReady = false;
 let htmlElementsHidden = true;
+export const getHtmlElementsHidden = () => htmlElementsHidden;
 export const setHtmlElementsHidden = (hidden) => (htmlElementsHidden = hidden);
 let currentGlobeState = INTRO_STATE;
 
@@ -129,30 +130,16 @@ const FOV = 60;
 let pointsMesh = null;
 let scene = null;
 let camera = null;
+const getCamera = () => camera;
 let tick = null;
 let onResize = null;
 let globe = null;
 let globeMesh = null;
 let light1 = null;
+const getLight1 = () => light1;
 let light2 = null;
 let cloudSphere = null;
 let material = null;
-let intro2ChinaLight1Rotator;
-let intro2ChinaRotator;
-let china2USARotator;
-let china2EuropeRotator;
-let USA2ChinaRotator;
-let USA2ManufacturingRotator;
-let europe2ManufacturingRotator;
-let manufacturing2PostponementRotator;
-let postponementToFulfillmentRotator;
-let fulfillmentToDeliveryRotator;
-let deliveryToFulfillmentRotator;
-let USA2EuropeRotator;
-let europe2ChinaRotator;
-let europe2USARotator;
-let zoomRotator;
-let zoomOutRotator;
 
 const createLabel = (objData) => {
   const element = document.createElement("div");
@@ -370,7 +357,7 @@ const launchIntro2ChinaAnimation = () => {
     easing: "easeInOutCubic",
     autoplay: false,
     complete: () => {
-      htmlElementsHidden = false;
+      setHtmlElementsHidden(false);
     },
   });
   timeline.add(intro2ChinaLight1Animation);
@@ -384,7 +371,7 @@ const updateGlobeHTMLElements = (elements, sizes) => {
   Object.keys(elements).forEach((elementKey) => {
     const element = elements[elementKey];
     if (
-      !htmlElementsHidden &&
+      !getHtmlElementsHidden() &&
       !element.data.isHidden &&
       (!element.data.state || element.data.state === currentGlobeState)
     ) {
@@ -457,32 +444,32 @@ const hideAndRevealNav = (cb) => {
 };
 
 const handleRightButtonClick = () => {
-  htmlElementsHidden = true;
+  setHtmlElementsHidden(true);
   switch (currentGlobeState) {
     case CHINA_STATE: {
-      china2USARotator();
+      rotateToUSA();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(USA_STATE);
-        htmlElementsHidden = false;
+        setHtmlElementsHidden(false);
       });
       setCurrentGlobeState(USA_STATE);
       return;
     }
     case USA_STATE: {
-      USA2EuropeRotator();
+      rotateToEurope();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(EUROPE_STATE);
-        htmlElementsHidden = false;
+        setHtmlElementsHidden(false);
       });
       setCurrentGlobeState(EUROPE_STATE);
       return;
     }
     case EUROPE_STATE: {
-      europe2ChinaRotator();
+      rotateToChina();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(CHINA_STATE);
         setCurrentGlobeState(CHINA_STATE);
-        htmlElementsHidden = false;
+        setHtmlElementsHidden(false);
       });
       return;
     }
@@ -490,32 +477,32 @@ const handleRightButtonClick = () => {
 };
 
 const handleLeftButtonClick = () => {
-  htmlElementsHidden = true;
+  setHtmlElementsHidden(true);
   switch (currentGlobeState) {
     case CHINA_STATE: {
-      china2EuropeRotator();
+      leftRotateToEurope();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(EUROPE_STATE);
-        htmlElementsHidden = false;
+        setHtmlElementsHidden(false);
       });
       setCurrentGlobeState(EUROPE_STATE);
       return;
     }
     case EUROPE_STATE: {
-      europe2USARotator();
+      leftRotateToUSA();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(USA_STATE);
-        htmlElementsHidden = false;
+        setHtmlElementsHidden(false);
       });
       setCurrentGlobeState(USA_STATE);
       return;
     }
     case USA_STATE: {
-      USA2ChinaRotator();
+      leftRotateToChina();
       hideAndRevealNav(() => {
         updateGlobeNavButtons(CHINA_STATE);
         setCurrentGlobeState(CHINA_STATE);
-        htmlElementsHidden = false;
+        setHtmlElementsHidden(false);
       });
       return;
     }
@@ -525,9 +512,9 @@ const handleLeftButtonClick = () => {
 const getBackToChinaRotator = () => {
   switch (currentGlobeState) {
     case USA_STATE:
-      return USA2ChinaRotator;
+      return leftRotateToChina;
     case EUROPE_STATE:
-      return europe2ChinaRotator;
+      return rotateToChina;
     case CHINA_STATE:
       return () => Promise.resolve();
   }
@@ -538,11 +525,11 @@ export const sceneToChinaRotator = () => {
 };
 
 export const switchToTomorrow = () => {
-  htmlElementsHidden = true;
+  setHtmlElementsHidden(true);
   const rotator = getBackToChinaRotator();
   rotator().then(() => {
     setCurrentGlobeState(CHINA_STATE);
-    htmlElementsHidden = false;
+    setHtmlElementsHidden(false);
     Object.values(explosions).map((explosion) => {
       explosion.element.classList.add("active");
     });
@@ -573,11 +560,11 @@ export const switchToTomorrow = () => {
 };
 
 export const switchToToday = () => {
-  htmlElementsHidden = true;
+  setHtmlElementsHidden(true);
   const rotator = getBackToChinaRotator();
   rotator().then(() => {
     setCurrentGlobeState(CHINA_STATE);
-    htmlElementsHidden = false;
+    setHtmlElementsHidden(false);
     shenzhenLabel.isHidden = false;
     fulfillmentLabel.isHidden = true;
     Object.values(explosions).map((explosion) => {
@@ -611,8 +598,8 @@ export const hideNavButtons = () => {
 };
 
 export const launchGlobeScene = () => {
-  intro2ChinaRotator();
-  intro2ChinaLight1Rotator();
+  rotateToChina();
+  rotateLight1ToChina();
   launchIntro2ChinaAnimation();
   return wait(600).then(() => {
     setCurrentGlobeState(CHINA_STATE);
@@ -623,15 +610,15 @@ export const launchGlobeScene = () => {
 
 export const globeToB2B = () => {
   hideNavButtons();
-  return china2USARotator()
-    .then(() => zoomRotator())
+  return rotateToUSA()
+    .then(() => zoomIn())
     .then(() => wait(100));
 };
 
 export const globeToD2C = () => {
   hideNavButtons();
-  return china2EuropeRotator()
-    .then(() => zoomRotator())
+  return leftRotateToEurope()
+    .then(() => zoomIn())
     .then(() => wait(100));
 };
 
@@ -650,11 +637,12 @@ export const getObjectRotator = (
   theta,
   phi,
   r,
-  object,
+  objectGetter,
   right,
   duration = ROTATION_DURATION
 ) => () =>
   new Promise((resolve) => {
+    const object = objectGetter();
     const {
       r: currentR,
       phi: currentPhi,
@@ -696,179 +684,144 @@ export const getObjectRotator = (
   });
 
 const getCameraRotator = (theta, phi, r, right, duration = ROTATION_DURATION) =>
-  getObjectRotator(theta, phi, r, camera, right, duration);
+  getObjectRotator(theta, phi, r, getCamera, right, duration);
 
-const initRotators = () => {
-  intro2ChinaLight1Rotator = getObjectRotator(
-    LIGHT_1_CHINA_THETA,
-    LIGHT_1_CHINA_PHI,
-    LIGHT_1_CHINA_R,
-    light1,
-    true
-  );
+const rotateLight1ToChina = getObjectRotator(
+  LIGHT_1_CHINA_THETA,
+  LIGHT_1_CHINA_PHI,
+  LIGHT_1_CHINA_R,
+  getLight1,
+  true
+);
 
-  intro2ChinaRotator = getCameraRotator(
-    CHINA_CAM_THETA,
-    CHINA_CAM_PHI,
-    CAM_R,
-    true
-  );
+const rotateToChina = getCameraRotator(
+  CHINA_CAM_THETA,
+  CHINA_CAM_PHI,
+  CAM_R,
+  true
+);
+const leftRotateToChina = getCameraRotator(
+  CHINA_CAM_THETA,
+  CHINA_CAM_PHI,
+  CAM_R
+);
 
-  china2USARotator = getCameraRotator(USA_CAM_THETA, USA_CAM_PHI, CAM_R, true);
+const rotateToUSA = getCameraRotator(USA_CAM_THETA, USA_CAM_PHI, CAM_R, true);
+const leftRotateToUSA = getCameraRotator(USA_CAM_THETA, USA_CAM_PHI, CAM_R);
 
-  china2EuropeRotator = getCameraRotator(
-    EUROPE_CAM_THETA,
-    EUROPE_CAM_PHI,
-    CAM_R
-  );
+const rotateToEurope = getCameraRotator(
+  EUROPE_CAM_THETA,
+  EUROPE_CAM_PHI,
+  CAM_R,
+  true
+);
+const leftRotateToEurope = getCameraRotator(
+  EUROPE_CAM_THETA,
+  EUROPE_CAM_PHI,
+  CAM_R
+);
 
-  USA2ChinaRotator = getCameraRotator(CHINA_CAM_THETA, CHINA_CAM_PHI, CAM_R);
+const rotateToManufacturing = getCameraRotator(
+  MANUFACTURERS_CAM_THETA,
+  MANUFACTURERS_CAM_PHI,
+  CAM_R,
+  true
+);
+const leftRotateToManufacturing = getCameraRotator(
+  MANUFACTURERS_CAM_THETA,
+  MANUFACTURERS_CAM_PHI,
+  CAM_R
+);
 
-  USA2ManufacturingRotator = getCameraRotator(
-    MANUFACTURERS_CAM_THETA,
-    MANUFACTURERS_CAM_PHI,
-    CAM_R
-  );
-  europe2ManufacturingRotator = getCameraRotator(
-    MANUFACTURERS_CAM_THETA,
-    MANUFACTURERS_CAM_PHI,
-    CAM_R,
-    true
-  );
-  manufacturing2PostponementRotator = getCameraRotator(
-    POSTPONEMENT_CAM_THETA,
-    POSTPONEMENT_CAM_PHI,
-    CAM_R,
-    true
-  );
-  postponementToFulfillmentRotator = getCameraRotator(
-    FULFILLMENT_CAM_THETA,
-    FULFILLMENT_CAM_PHI,
-    CAM_R,
-    true
-  );
-  fulfillmentToDeliveryRotator = getCameraRotator(
-    DELIVERY_CAM_THETA,
-    DELIVERY_CAM_PHI,
-    CAM_R,
-    true,
-    1500
-  );
-  deliveryToFulfillmentRotator = getCameraRotator(
-    FULFILLMENT_CAM_THETA,
-    FULFILLMENT_CAM_PHI,
-    CAM_R,
-    false,
-    1500
-  );
-  USA2EuropeRotator = getCameraRotator(
-    EUROPE_CAM_THETA,
-    EUROPE_CAM_PHI,
-    CAM_R,
-    true
-  );
-  europe2ChinaRotator = getCameraRotator(
-    CHINA_CAM_THETA,
-    CHINA_CAM_PHI,
-    CAM_R,
-    true
-  );
-  europe2USARotator = getCameraRotator(USA_CAM_THETA, USA_CAM_PHI, CAM_R);
-  zoomRotator = getCameraRotator(null, null, ZOOMED_CAM_R);
-  zoomOutRotator = getCameraRotator(null, null, CAM_R);
-};
+const rotateToPostponement = getCameraRotator(
+  POSTPONEMENT_CAM_THETA,
+  POSTPONEMENT_CAM_PHI,
+  CAM_R,
+  true
+);
 
-export const transitionD2CToManufacturing = () => {
-  setObjectPositionOnSphere(
-    camera,
-    EUROPE_CAM_THETA,
-    EUROPE_CAM_PHI,
-    ZOOMED_CAM_R
-  );
-  return zoomOutRotator()
-    .then(() => europe2ManufacturingRotator())
+const rotateToFulfillment = getCameraRotator(
+  FULFILLMENT_CAM_THETA,
+  FULFILLMENT_CAM_PHI,
+  CAM_R,
+  true
+);
+
+const rotateToDelivery = getCameraRotator(
+  DELIVERY_CAM_THETA,
+  DELIVERY_CAM_PHI,
+  CAM_R,
+  true,
+  1500
+);
+
+const leftRotateToFulfillment = getCameraRotator(
+  FULFILLMENT_CAM_THETA,
+  FULFILLMENT_CAM_PHI,
+  CAM_R,
+  false,
+  1500
+);
+
+const zoomIn = getCameraRotator(null, null, ZOOMED_CAM_R);
+const zoomOut = getCameraRotator(null, null, CAM_R);
+
+const getTransition = (
+  rotateToDestination,
+  initialTheta,
+  initialPhi,
+  initialR = ZOOMED_CAM_R
+) => () => {
+  setObjectPositionOnSphere(camera, initialTheta, initialPhi, initialR);
+  return zoomOut()
+    .then(() => rotateToDestination())
     .then(() => {
-      htmlElementsHidden = true;
-      zoomRotator();
+      setHtmlElementsHidden(true);
+      zoomIn();
     });
 };
 
-export const transitionB2BToManufacturing = () => {
-  setObjectPositionOnSphere(camera, USA_CAM_THETA, USA_CAM_PHI, ZOOMED_CAM_R);
-  return zoomOutRotator()
-    .then(() => USA2ManufacturingRotator())
-    .then(() => {
-      htmlElementsHidden = true;
-      zoomRotator();
-    });
-};
+export const transitionD2CToManufacturing = getTransition(
+  rotateToManufacturing,
+  EUROPE_CAM_THETA,
+  EUROPE_CAM_PHI
+);
 
-export const transitionToPostponement = () => {
-  setObjectPositionOnSphere(
-    camera,
-    MANUFACTURERS_CAM_THETA,
-    MANUFACTURERS_CAM_PHI,
-    ZOOMED_CAM_R
-  );
-  return zoomOutRotator()
-    .then(() => {
-      htmlElementsHidden = false;
-      return manufacturing2PostponementRotator();
-    })
-    .then(() => {
-      htmlElementsHidden = true;
-      zoomRotator();
-    });
-};
+export const transitionB2BToManufacturing = getTransition(
+  leftRotateToManufacturing,
+  USA_CAM_THETA,
+  USA_CAM_PHI
+);
 
-export const transitionToFulfillment = () => {
-  setObjectPositionOnSphere(
-    camera,
-    POSTPONEMENT_CAM_THETA,
-    POSTPONEMENT_CAM_PHI,
-    ZOOMED_CAM_R
-  );
-  return zoomOutRotator()
-    .then(() => {
-      htmlElementsHidden = false;
-      return postponementToFulfillmentRotator();
-    })
-    .then(() => {
-      htmlElementsHidden = true;
-      zoomRotator();
-    });
-};
+export const transitionToPostponement = getTransition(
+  rotateToPostponement,
+  MANUFACTURERS_CAM_THETA,
+  MANUFACTURERS_CAM_PHI
+);
 
-export const transitionToDelivery = () => {
-  setObjectPositionOnSphere(
-    camera,
-    FULFILLMENT_CAM_THETA,
-    FULFILLMENT_CAM_PHI,
-    ZOOMED_CAM_R
-  );
-  return zoomOutRotator()
-    .then(() => {
-      htmlElementsHidden = false;
-      return fulfillmentToDeliveryRotator();
-    })
-    .then(() => {
-      htmlElementsHidden = true;
-      zoomRotator();
-    });
-};
+export const transitionToFulfillment = getTransition(
+  rotateToFulfillment,
+  POSTPONEMENT_CAM_THETA,
+  POSTPONEMENT_CAM_PHI
+);
 
-export const transitionFromDeliveryToFulfillment = () => {
-  setObjectPositionOnSphere(
-    camera,
-    DELIVERY_CAM_THETA,
-    DELIVERY_CAM_PHI,
-    ZOOMED_CAM_R
-  );
-  return zoomOutRotator().then(() => {
-    htmlElementsHidden = false;
-    return deliveryToFulfillmentRotator();
-  });
-};
+export const transitionToDelivery = getTransition(
+  rotateToDelivery,
+  FULFILLMENT_CAM_THETA,
+  FULFILLMENT_CAM_PHI
+);
+
+export const transitionFromDeliveryToFulfillment = getTransition(
+  leftRotateToFulfillment,
+  DELIVERY_CAM_THETA,
+  DELIVERY_CAM_PHI
+);
+
+// const SCENE_CAM_POSITION = {};
+
+// export const getTransitionFromSceneToScene = (sceneFrom, sceneTo) => {
+//   return null;
+// };
 
 export const getGlobeSceneObject = () => {
   return {
@@ -942,8 +895,6 @@ export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
   light2.intensity = 0;
 
   scene.lights = { light1, light2 };
-
-  initRotators();
 
   rightButton.addEventListener("click", handleRightButtonClick);
   leftButton.addEventListener("click", handleLeftButtonClick);

@@ -18,12 +18,12 @@ import pyramidSrc from "./assets/models/pyramid-draco.gltf";
 
 import {
   GLOBE_STEP,
-  B2B_STEP_1,
-  B2B_STEP_2,
-  B2B_STEP_3,
-  B2B_STEP_4,
-  B2B_STEP_5,
-  D2C_STEP_1,
+  ORDER_B2B_STEP,
+  MANUFACTURING_STEP,
+  POSTPONEMENT_STEP,
+  FULFILLMENT_STEP,
+  DELIVERY_B2B_STEP,
+  ORDER_D2C_STEP,
   RESET_STEP,
   DEFAULT_POINT_TIMEOUT,
 } from "./consts";
@@ -186,12 +186,13 @@ const stepToSceneObject = {
       sizes,
       canvas,
     }),
-  [B2B_STEP_1]: () => initServersSceneObject({ sizes, canvas, serversModel }),
-  [B2B_STEP_2]: () =>
+  [ORDER_B2B_STEP]: () =>
+    initServersSceneObject({ sizes, canvas, serversModel }),
+  [MANUFACTURING_STEP]: () =>
     initManufacturingSceneObject({ sizes, canvas, manufacturingModel }),
-  [B2B_STEP_3]: () =>
+  [POSTPONEMENT_STEP]: () =>
     initPostponementSceneObject({ sizes, canvas, postponementModel }),
-  [B2B_STEP_4]: () =>
+  [FULFILLMENT_STEP]: () =>
     initFulfillmentSceneObject({
       sizes,
       canvas,
@@ -199,7 +200,7 @@ const stepToSceneObject = {
       deliveryAModel,
       planeShadowAlphaMap,
     }),
-  [B2B_STEP_5]: () =>
+  [DELIVERY_B2B_STEP]: () =>
     initDeliveryBSceneObject({
       sizes,
       canvas,
@@ -208,7 +209,8 @@ const stepToSceneObject = {
       deliveryC_D2C_Model,
       checkIfD2C,
     }),
-  [D2C_STEP_1]: () => initOrderD2CSceneObject({ sizes, canvas, orderD2CModel }),
+  [ORDER_D2C_STEP]: () =>
+    initOrderD2CSceneObject({ sizes, canvas, orderD2CModel }),
   [RESET_STEP]: () => {
     const scene = new THREE.Scene();
     scene.background = null;
@@ -288,7 +290,7 @@ const setHeadingText = (text) => {
 
 const getPathButtonClickHandler = (transition, heading) => () => {
   transition().then(() => {
-    setCurrentStep(B2B_STEP_1);
+    setCurrentStep(ORDER_B2B_STEP);
     setLightTheme();
     setNavVisibility(true);
     setElementVisibility(placeOrderButton, true);
@@ -391,7 +393,7 @@ const handlePlaceOrderD2CButtonClick = getGlobeTransitioner({
   transition: transitionD2CToManufacturing,
   startButton: placeOrderD2CButton,
   nextButton: manufactureButton,
-  nextStep: B2B_STEP_2,
+  nextStep: MANUFACTURING_STEP,
   navButton: "manufacturing",
 });
 
@@ -400,7 +402,7 @@ const handlePlaceOrderButtonClick = getGlobeTransitioner({
   transition: transitionB2BToManufacturing,
   startButton: placeOrderButton,
   nextButton: manufactureButton,
-  nextStep: B2B_STEP_2,
+  nextStep: MANUFACTURING_STEP,
   navButton: "manufacturing",
 });
 
@@ -409,7 +411,7 @@ const handleManufactureClick = getGlobeTransitioner({
   transition: transitionToPostponement,
   startButton: manufactureButton,
   nextButton: postponementButton,
-  nextStep: B2B_STEP_3,
+  nextStep: POSTPONEMENT_STEP,
   navButton: "postponement",
 });
 
@@ -418,7 +420,7 @@ const handlePostponementClick = getGlobeTransitioner({
   transition: transitionToFulfillment,
   startButton: postponementButton,
   nextButton: fulfillmentButton,
-  nextStep: B2B_STEP_4,
+  nextStep: FULFILLMENT_STEP,
   navButton: "fulfillment",
 });
 
@@ -427,7 +429,7 @@ const handleFulfillmentClick = getGlobeTransitioner({
   transition: transitionToDelivery,
   startButton: fulfillmentButton,
   nextButton: deliveryButton,
-  nextStep: B2B_STEP_5,
+  nextStep: DELIVERY_B2B_STEP,
   navButton: "delivery",
   waitBeforeOverlay: 2500,
 });

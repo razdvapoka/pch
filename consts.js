@@ -55,13 +55,13 @@ export const INTRO_STATE = "INTRO_STATE";
 
 // presentation steps
 export const GLOBE_STEP = "GLOBE_STEP";
-export const B2B_STEP_1 = "B2B_STEP_1";
-export const B2B_STEP_2 = "B2B_STEP_2";
-export const B2B_STEP_3 = "B2B_STEP_3";
-export const B2B_STEP_4 = "B2B_STEP_4";
-export const B2B_STEP_5 = "B2B_STEP_5";
-export const B2B_STEP_6 = "B2B_STEP_6";
-export const D2C_STEP_1 = "D2C_STEP_1";
+export const ORDER_B2B_STEP = "ORDER_B2B_STEP";
+export const ORDER_D2C_STEP = "ORDER_D2C_STEP";
+export const MANUFACTURING_STEP = "MANUFACTURING_STEP";
+export const POSTPONEMENT_STEP = "POSTPONEMENT_STEP";
+export const FULFILLMENT_STEP = "FULFILLMENT_STEP";
+export const DELIVERY_B2B_STEP = "DELIVERY_B2B_STEP";
+export const DELIVERY_D2C_STEP = "DELIVERY_D2C_STEP";
 export const RESET_STEP = "RESET_STEP";
 
 export const SKIP = false;
