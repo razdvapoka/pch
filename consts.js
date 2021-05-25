@@ -30,6 +30,16 @@ export const FULFILLMENT_CAM_PHI = 1.102;
 export const DELIVERY_CAM_THETA = -1.737;
 export const DELIVERY_CAM_PHI = 0.904;
 
+export const LIGHT_1_INTRO_THETA = -0.7;
+export const LIGHT_1_INTRO_PHI = 1.57;
+
+export const LIGHT_1_CHINA_THETA = 0.89;
+export const LIGHT_1_CHINA_PHI = 1.553;
+export const LIGHT_1_CHINA_R = 400;
+
+export const LIGHT_2_INTRO_THETA = -2.74;
+export const LIGHT_2_INTRO_PHI = 1.413;
+
 export const ROTATION_DURATION = 500;
 
 export const DEFAULT_POINT_TIMEOUT = 50000;

@@ -5,13 +5,7 @@ import * as THREE from "three";
 import ThreeGlobe from "three-globe";
 import globeImage from "../../assets/images/earth-gray.png";
 import { calcCurve } from "./calcCurve";
-import {
-  getObjectRotator,
-  d2r,
-  wait,
-  setObjectPositionOnSphere,
-  polar2Cartesian,
-} from "../../utils";
+import { wait, setObjectPositionOnSphere, polar2Cartesian } from "../../utils";
 
 import {
   airport,
@@ -30,7 +24,6 @@ import {
 } from "./arcs";
 
 import {
-  arcsData,
   quarterArcsData,
   restArcsData,
   pathsData,
@@ -71,6 +64,13 @@ import {
   DELIVERY_CAM_PHI,
   DELIVERY_CAM_THETA,
   ZOOMED_CAM_R,
+  LIGHT_1_INTRO_THETA,
+  LIGHT_1_INTRO_PHI,
+  LIGHT_1_CHINA_THETA,
+  LIGHT_1_CHINA_PHI,
+  LIGHT_1_CHINA_R,
+  LIGHT_2_INTRO_THETA,
+  LIGHT_2_INTRO_PHI,
 } from "../../consts";
 
 import { leftButton, rightButton } from "../../ui";
@@ -84,9 +84,9 @@ const onMouseMove = (event) => {
 };
 
 const onClick = () => {
-  // const r = camera.position.distanceTo(CENTER);
-  // const phi = Math.acos(camera.position.y / r);
-  // const theta = Math.atan2(camera.position.x, camera.position.z);
+  // const r = light2.position.distanceTo(CENTER);
+  // const phi = Math.acos(light2.position.y / r);
+  // const theta = Math.atan2(light2.position.x, light2.position.z);
   // console.log(theta, phi, r);
   // raycaster.setFromCamera(mouse, camera);
   // const intersects = raycaster.intersectObjects(scene.children, true);
@@ -153,11 +153,6 @@ let europe2ChinaRotator;
 let europe2USARotator;
 let zoomRotator;
 let zoomOutRotator;
-let light1RotationProps = {
-  theta: d2r(-40),
-  phi: d2r(90),
-  r: 200,
-};
 
 const createLabel = (objData) => {
   const element = document.createElement("div");
@@ -539,7 +534,7 @@ const getBackToChinaRotator = () => {
 };
 
 export const sceneToChinaRotator = () => {
-  return getCameraRotatorNew(CHINA_CAM_THETA, CHINA_CAM_PHI, CAM_R);
+  return getCameraRotator(CHINA_CAM_THETA, CHINA_CAM_PHI, CAM_R);
 };
 
 export const switchToTomorrow = () => {
@@ -651,7 +646,7 @@ const getObjectSphereProps = (object) => {
   };
 };
 
-export const getObjectRotatorNew = (
+export const getObjectRotator = (
   theta,
   phi,
   r,
@@ -700,97 +695,87 @@ export const getObjectRotatorNew = (
     });
   });
 
-const getCameraRotatorNew = (
-  theta,
-  phi,
-  r,
-  right,
-  duration = ROTATION_DURATION
-) => getObjectRotatorNew(theta, phi, r, camera, right, duration);
+const getCameraRotator = (theta, phi, r, right, duration = ROTATION_DURATION) =>
+  getObjectRotator(theta, phi, r, camera, right, duration);
 
 const initRotators = () => {
   intro2ChinaLight1Rotator = getObjectRotator(
-    d2r(91),
-    d2r(-1),
-    200,
+    LIGHT_1_CHINA_THETA,
+    LIGHT_1_CHINA_PHI,
+    LIGHT_1_CHINA_R,
     light1,
-    light1RotationProps
+    true
   );
 
-  intro2ChinaRotator = getCameraRotatorNew(
+  intro2ChinaRotator = getCameraRotator(
     CHINA_CAM_THETA,
     CHINA_CAM_PHI,
     CAM_R,
     true
   );
 
-  china2USARotator = getCameraRotatorNew(
-    USA_CAM_THETA,
-    USA_CAM_PHI,
-    CAM_R,
-    true
-  );
+  china2USARotator = getCameraRotator(USA_CAM_THETA, USA_CAM_PHI, CAM_R, true);
 
-  china2EuropeRotator = getCameraRotatorNew(
+  china2EuropeRotator = getCameraRotator(
     EUROPE_CAM_THETA,
     EUROPE_CAM_PHI,
     CAM_R
   );
 
-  USA2ChinaRotator = getCameraRotatorNew(CHINA_CAM_THETA, CHINA_CAM_PHI, CAM_R);
+  USA2ChinaRotator = getCameraRotator(CHINA_CAM_THETA, CHINA_CAM_PHI, CAM_R);
 
-  USA2ManufacturingRotator = getCameraRotatorNew(
+  USA2ManufacturingRotator = getCameraRotator(
     MANUFACTURERS_CAM_THETA,
     MANUFACTURERS_CAM_PHI,
     CAM_R
   );
-  europe2ManufacturingRotator = getCameraRotatorNew(
+  europe2ManufacturingRotator = getCameraRotator(
     MANUFACTURERS_CAM_THETA,
     MANUFACTURERS_CAM_PHI,
     CAM_R,
     true
   );
-  manufacturing2PostponementRotator = getCameraRotatorNew(
+  manufacturing2PostponementRotator = getCameraRotator(
     POSTPONEMENT_CAM_THETA,
     POSTPONEMENT_CAM_PHI,
     CAM_R,
     true
   );
-  postponementToFulfillmentRotator = getCameraRotatorNew(
+  postponementToFulfillmentRotator = getCameraRotator(
     FULFILLMENT_CAM_THETA,
     FULFILLMENT_CAM_PHI,
     CAM_R,
     true
   );
-  fulfillmentToDeliveryRotator = getCameraRotatorNew(
+  fulfillmentToDeliveryRotator = getCameraRotator(
     DELIVERY_CAM_THETA,
     DELIVERY_CAM_PHI,
     CAM_R,
     true,
     1500
   );
-  deliveryToFulfillmentRotator = getCameraRotatorNew(
+  deliveryToFulfillmentRotator = getCameraRotator(
     FULFILLMENT_CAM_THETA,
     FULFILLMENT_CAM_PHI,
     CAM_R,
     false,
     1500
   );
-  USA2EuropeRotator = getCameraRotatorNew(
+  USA2EuropeRotator = getCameraRotator(
     EUROPE_CAM_THETA,
     EUROPE_CAM_PHI,
     CAM_R,
     true
   );
-  europe2ChinaRotator = getCameraRotatorNew(
+  europe2ChinaRotator = getCameraRotator(
     CHINA_CAM_THETA,
     CHINA_CAM_PHI,
     CAM_R,
     true
   );
-  europe2USARotator = getCameraRotatorNew(USA_CAM_THETA, USA_CAM_PHI, CAM_R);
-  zoomRotator = getCameraRotatorNew(null, null, ZOOMED_CAM_R);
-  zoomOutRotator = getCameraRotatorNew(null, null, CAM_R);
+  europe2USARotator = getCameraRotator(USA_CAM_THETA, USA_CAM_PHI, CAM_R);
+  zoomRotator = getCameraRotator(null, null, ZOOMED_CAM_R);
+  zoomOutRotator = getCameraRotator(null, null, CAM_R);
 };
 
 export const transitionD2CToManufacturing = () => {
@@ -951,8 +936,8 @@ export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
     INTRO_CAM_R
   );
 
-  light1 = createLight(d2r(-40), d2r(90), 200);
-  light2 = createLight(d2r(23), d2r(279), 200);
+  light1 = createLight(LIGHT_1_INTRO_THETA, LIGHT_1_INTRO_PHI, 200);
+  light2 = createLight(LIGHT_2_INTRO_THETA, LIGHT_2_INTRO_PHI, 200);
   light1.intensity = 2;
   light2.intensity = 0;
 
@@ -988,8 +973,8 @@ export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
     // controls.update();
   };
 
-  // window.addEventListener("mousemove", onMouseMove);
-  // window.addEventListener("click", onClick);
+  window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("click", onClick);
 
   return { scene, camera, tick, onResize };
 };
@@ -1002,25 +987,32 @@ export const resetGlobeScene = () => {
     INTRO_CAM_R
   );
 
-  setObjectPositionOnSphere(scene.lights.light1, d2r(-40), d2r(90), 200);
-  setObjectPositionOnSphere(scene.lights.light2, d2r(23), d2r(279), 200);
+  setObjectPositionOnSphere(
+    scene.lights.light1,
+    LIGHT_1_INTRO_THETA,
+    LIGHT_1_INTRO_PHI,
+    200
+  );
+  setObjectPositionOnSphere(
+    scene.lights.light2,
+    LIGHT_2_INTRO_THETA,
+    LIGHT_2_INTRO_PHI,
+    200
+  );
   setObjectPositionOnSphere(
     scene.lights.light1.target,
-    d2r(-40) + Math.PI,
-    d2r(90) + Math.PI,
+    LIGHT_1_INTRO_THETA + Math.PI,
+    LIGHT_1_INTRO_PHI + Math.PI,
     1
   );
   setObjectPositionOnSphere(
     scene.lights.light2.target,
-    d2r(23) + Math.PI,
-    d2r(279) + Math.PI,
+    LIGHT_2_INTRO_THETA + Math.PI,
+    LIGHT_2_INTRO_PHI + Math.PI,
     1
   );
   scene.lights.light1.intensity = 2;
   scene.lights.light2.intensity = 0;
-  light1RotationProps.theta = d2r(-40);
-  light1RotationProps.phi = d2r(90);
-  light1RotationProps.r = 200;
 
   Object.values(explosions).map((explosion) => {
     explosion.element.classList.remove("active");
