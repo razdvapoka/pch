@@ -6,12 +6,11 @@ import anime from "animejs/lib/anime.es.js";
 // import * as dat from "dat.gui";
 import { SKIP } from "../../consts";
 
-const WHITE = "#b7b7b7";
+const BASE = "#686868";
+const EMISSIVE = "#a1a1a1";
+const WHITE = "#ebebeb";
 const PURPLE = "#5964fa";
 const COLOR_TRANSITION_DURATION = 700;
-
-const whiteColor = new THREE.Color(WHITE);
-const purpleColor = new THREE.Color(WHITE);
 
 let camera;
 let scene;
@@ -53,11 +52,11 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
   model = postponementModel.clone();
   scene = new THREE.Scene();
   scene.translateY(-20);
-  scene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
+  scene.background = new THREE.Color(WHITE);
+  const ambientLight = new THREE.AmbientLight(WHITE, 0.42);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(-100, 79, -61);
+  const directionalLight = new THREE.DirectionalLight(WHITE, 0.4);
+  directionalLight.position.set(-180, 120, 180);
   directionalLight.translateY(20);
   // const helper = new THREE.DirectionalLightHelper(directionalLight, 10, "red");
   // scene.add(helper);
@@ -69,15 +68,17 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
+      obj.material.emissiveIntensity = 1.125;
+      obj.material.color = new THREE.Color(BASE);
+      obj.material.emissive = new THREE.Color(EMISSIVE);
     }
   });
   purpleMaterial = parts["box3"].material.clone();
-  purpleMaterial.color = purpleColor;
-  purpleMaterial.emissive = purpleColor;
-  purpleMaterial.__color = WHITE;
+  purpleMaterial.color = new THREE.Color(BASE);
+  purpleMaterial.emissive = new THREE.Color(EMISSIVE);
+  purpleMaterial.emissiveIntensity = 0.5;
+  purpleMaterial.__color = BASE;
+  purpleMaterial.__emissive = EMISSIVE;
   parts["box3"].material = purpleMaterial;
   Object.values(parts).map((part) => {
     if (part.type === "Mesh" && part.material.name === "Plain Violet") {
@@ -142,11 +143,13 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
         duration: COLOR_TRANSITION_DURATION,
         delay: 500,
         targets: purpleMaterial,
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 0.5,
         easing: "easeOutExpo",
         __color: PURPLE,
+        __emissive: PURPLE,
         update: () => {
           purpleMaterial.color.set(purpleMaterial.__color);
+          purpleMaterial.emissive.set(purpleMaterial.__emissive);
         },
       },
       0

@@ -6,12 +6,12 @@ import anime from "animejs/lib/anime.es.js";
 // import * as dat from "dat.gui";
 import { SKIP } from "../../consts";
 
-const WHITE = "#b7b7b7";
+const WHITE = "#ebebeb";
 const PURPLE = "#5964fa";
+const BASE = "#686868";
+const EMISSIVE = "#a1a1a1";
 const COLOR_TRANSITION_DURATION = 700;
 const FOV = 60;
-
-const whiteColor = new THREE.Color(WHITE);
 
 let camera;
 let scene;
@@ -41,10 +41,12 @@ export const launchOrderD2CScene = () =>
         timeline.add({
           duration: COLOR_TRANSITION_DURATION,
           targets: laptopMaterial,
-          emissiveIntensity: 0.2,
+          emissiveIntensity: 0.5,
           __color: PURPLE,
+          __emissive: PURPLE,
           update: () => {
             laptopMaterial.color.set(laptopMaterial.__color);
+            laptopMaterial.emissive.set(laptopMaterial.__emissive);
           },
         });
         timeline.play();
@@ -53,10 +55,10 @@ export const launchOrderD2CScene = () =>
 export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   model = orderD2CModel.clone();
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
+  scene.background = new THREE.Color(WHITE);
+  const ambientLight = new THREE.AmbientLight(WHITE, 0.42);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  const directionalLight = new THREE.DirectionalLight(WHITE, 0.4);
   directionalLight.position.set(100, 70, 50);
   // const helper = new THREE.DirectionalLightHelper(directionalLight, 10, "red");
   // scene.add(helper);
@@ -67,15 +69,16 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
+      obj.material.emissiveIntensity = 1.125;
+      obj.material.color = new THREE.Color(BASE);
+      obj.material.emissive = new THREE.Color(EMISSIVE);
     }
   });
 
   laptopMaterial = parts["base"].material.clone();
   laptopMaterial.color = laptopMaterial.color.clone();
-  laptopMaterial.__color = WHITE;
+  laptopMaterial.__color = BASE;
+  laptopMaterial.__emissive = EMISSIVE;
   parts["base"].material = laptopMaterial;
   parts["screen"].material = laptopMaterial;
   parts["buttons"].material = laptopMaterial;
@@ -84,11 +87,15 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   screenFinal = parts["screen-final"];
   screenFinal.visible = false;
   screenInitMaterial = screenInit.material;
-  screenInitMaterial.color = new THREE.Color("white");
+  screenInitMaterial.color = new THREE.Color(WHITE);
+  screenInitMaterial.emissive = new THREE.Color(WHITE);
+  screenInitMaterial.emissiveIntensity = 0.45;
   screenInitMaterial.metalness = 0;
   screenInitMaterial.roughness = 1;
   screenFinalMaterial = screenFinal.material;
-  screenFinalMaterial.color = new THREE.Color("white");
+  screenFinalMaterial.color = new THREE.Color(WHITE);
+  screenFinalMaterial.emissive = new THREE.Color(WHITE);
+  screenFinalMaterial.emissiveIntensity = 0.45;
   screenFinalMaterial.metalness = 0;
   screenFinalMaterial.roughness = 1;
 

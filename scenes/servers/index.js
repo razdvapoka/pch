@@ -4,8 +4,10 @@ import anime from "animejs/lib/anime.es.js";
 import { wait } from "../../utils";
 // import { SKIP } from "../../consts";
 
-// const WHITE = "#bebebe";
+const WHITE = "#ebebeb";
 const PURPLE = "#5964fa";
+const BASE = "#686868";
+const EMISSIVE = "#a1a1a1";
 const COLOR_TRANSITION_DURATION = 700;
 const BLINK_DURATION = 600;
 const FOV = 60;
@@ -13,53 +15,54 @@ const FOV = 60;
 let camera;
 let scene;
 let model;
-let purpleServer;
+let purpleServerMaterial;
 let bulb;
 
 export const launchServerScene = () => {
   anime({
     duration: COLOR_TRANSITION_DURATION,
-    targets: purpleServer.material,
-    emissiveIntensity: 0.2,
+    targets: purpleServerMaterial,
+    emissiveIntensity: 1.125,
     easing: "easeInOutSine",
     __color: PURPLE,
+    __emissive: PURPLE,
     update: () => {
-      purpleServer.material.color.set(purpleServer.material.__color);
+      purpleServerMaterial.color.set(purpleServerMaterial.__color);
+      purpleServerMaterial.emissive.set(purpleServerMaterial.__emissive);
     },
   });
-  return wait(COLOR_TRANSITION_DURATION).then(() => {
-    anime({
-      duration: BLINK_DURATION,
-      targets: bulb,
-      intensity: 5,
-      direction: "alternate",
-      loop: true,
-      easing: "easeInOutSine",
-    });
+  anime({
+    duration: BLINK_DURATION,
+    targets: bulb,
+    intensity: 5,
+    direction: "alternate",
+    loop: true,
+    easing: "easeInOutSine",
   });
+  return wait(BLINK_DURATION * 2);
 };
 
-export const initServersSceneObject = ({ serversModel, sizes, canvas }) => {
+export const initServersSceneObject = ({ serversModel, sizes }) => {
   model = serversModel.clone();
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#EBEBEB");
-  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.3);
+  scene.background = new THREE.Color(WHITE);
+  const ambientLight = new THREE.AmbientLight(WHITE, 0.3);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.5);
-  directionalLight.position.set(0, 75, 75);
+  const directionalLight = new THREE.DirectionalLight(WHITE, 0.5);
+  directionalLight.position.set(0, 90, 30);
   scene.add(ambientLight);
   scene.add(directionalLight);
   scene.add(serversModel);
   model.traverse((obj) => {
     if (obj.type === "Mesh") {
-      obj.material.color = new THREE.Color("#686868");
-      obj.material.emissive = new THREE.Color("#a1a1a1");
-      obj.material.emissiveIntensity = 1;
+      obj.material.color = new THREE.Color(BASE);
+      obj.material.emissive = new THREE.Color(EMISSIVE);
+      obj.material.emissiveIntensity = 1.1;
       if (obj.material.name === "Plain Violet") {
-        purpleServer = obj;
-        obj.material.color = new THREE.Color("#6F83FF");
-        obj.material.emissive = new THREE.Color(PURPLE);
-        obj.material.emissiveIntensity = 0.6;
+        purpleServerMaterial = obj.material;
+        obj.material.__color = BASE;
+        obj.material.__emissive = EMISSIVE;
+        obj.material.emissiveIntensity = 1.125;
       }
     }
   });

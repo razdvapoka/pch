@@ -6,12 +6,12 @@ import anime from "animejs/lib/anime.es.js";
 // import * as dat from "dat.gui";
 import { SKIP } from "../../consts";
 
-const WHITE = "#b7b7b7";
+const WHITE = "#ebebeb";
 const PURPLE = "#5964fa";
-const COLOR_TRANSITION_DURATION = 700;
+const BASE = "#686868";
+const EMISSIVE = "#a1a1a1";
 
-const whiteColor = new THREE.Color(WHITE);
-const purpleColor = new THREE.Color(WHITE);
+const COLOR_TRANSITION_DURATION = 700;
 
 let camera;
 let scene;
@@ -40,11 +40,13 @@ export const launchManufacturingScene = () =>
           .add({
             duration: COLOR_TRANSITION_DURATION,
             targets: purpleMaterial,
-            emissiveIntensity: 0.2,
+            emissiveIntensity: 1.125,
             easing: "easeInOutSine",
             __color: PURPLE,
+            __emissive: PURPLE,
             update: () => {
               purpleMaterial.color.set(purpleMaterial.__color);
+              purpleMaterial.emissive.set(purpleMaterial.__emissive);
             },
           })
           .add(
@@ -91,11 +93,11 @@ export const launchManufacturingScene = () =>
 export const initManufacturingSceneObject = ({ manufacturingModel, sizes }) => {
   model = manufacturingModel.clone();
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
+  scene.background = new THREE.Color(WHITE);
+  const ambientLight = new THREE.AmbientLight(WHITE, 0.4);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(100, 75, 45);
+  const directionalLight = new THREE.DirectionalLight(WHITE, 0.4);
+  directionalLight.position.set(-120, 90, 90);
   // const helper = new THREE.DirectionalLightHelper(directionalLight, 10, "red");
   // scene.add(helper);
   scene.add(ambientLight);
@@ -105,17 +107,16 @@ export const initManufacturingSceneObject = ({ manufacturingModel, sizes }) => {
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
+      obj.material.color = new THREE.Color(BASE);
+      obj.material.emissive = new THREE.Color(EMISSIVE);
+      obj.material.emissiveIntensity = 1.125;
       if (obj.material.name === "Plain Violet") {
-        obj.material.color = purpleColor;
-        obj.material.emissive = purpleColor;
         if (!purpleMaterial) {
-          purpleMaterial = obj.material;
-          purpleMaterial.__color = WHITE;
+          purpleMaterial = obj.material.clone();
+          purpleMaterial.__color = BASE;
+          purpleMaterial.__emissive = EMISSIVE;
         }
-      } else {
-        obj.material.color = whiteColor;
-        obj.material.emissive = whiteColor;
+        obj.material = purpleMaterial;
       }
     }
   });
