@@ -64,4 +64,35 @@ export const DELIVERY_B2B_STEP = "DELIVERY_B2B_STEP";
 export const DELIVERY_D2C_STEP = "DELIVERY_D2C_STEP";
 export const RESET_STEP = "RESET_STEP";
 
+export const SCENE_CAM_POSITION = {
+  [ORDER_D2C_STEP]: {
+    theta: EUROPE_CAM_THETA,
+    phi: EUROPE_CAM_PHI,
+  },
+  [ORDER_B2B_STEP]: {
+    theta: USA_CAM_THETA,
+    phi: USA_CAM_PHI,
+  },
+  [MANUFACTURING_STEP]: {
+    theta: MANUFACTURERS_CAM_THETA,
+    phi: MANUFACTURERS_CAM_PHI,
+  },
+  [POSTPONEMENT_STEP]: {
+    theta: POSTPONEMENT_CAM_THETA,
+    phi: POSTPONEMENT_CAM_PHI,
+  },
+  [FULFILLMENT_STEP]: {
+    theta: FULFILLMENT_CAM_THETA,
+    phi: FULFILLMENT_CAM_PHI,
+  },
+  [DELIVERY_D2C_STEP]: {
+    theta: DELIVERY_CAM_THETA,
+    phi: DELIVERY_CAM_PHI,
+  },
+  [DELIVERY_B2B_STEP]: {
+    theta: DELIVERY_CAM_THETA,
+    phi: DELIVERY_CAM_PHI,
+  },
+};
+
 export const SKIP = false;

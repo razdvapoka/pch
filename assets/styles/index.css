@@ -351,7 +351,6 @@ nav > ul {
 
 .nav-menu-button.active {
   opacity: 1;
-  pointer-events: none;
 }
 
 .progress-bar {

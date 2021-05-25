@@ -31,14 +31,20 @@ export const progressBar = document.querySelector(".progress-bar");
 export const globeButton = document.querySelector(".globe-button");
 export const restartScene = document.querySelector(".restart");
 export const restartButton = document.querySelector(".restart-button");
+export const menuButtons = document.querySelectorAll(".nav-menu-button");
 
-export const setNavButtonActive = (name, isActive) => {
-  const btn = document.querySelector(`.nav-button-${name}`);
-  if (isActive) {
-    btn.classList.add("active");
-  } else {
-    btn.classList.remove("active");
-  }
+export const setNavButtonActive = (name) => {
+  const navButtons = document.querySelectorAll(".nav-menu-button");
+  navButtons.forEach((b) => {
+    b.classList.remove("active");
+  });
+  Array.from(navButtons).every((b) => {
+    b.classList.add("active");
+    if (b.classList.contains(`nav-button-${name}`)) {
+      return false;
+    }
+    return true;
+  });
 };
 
 export const setElementVisibility = (element, visible) => {

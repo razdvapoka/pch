@@ -48,6 +48,7 @@ import {
   setPyramidModel,
   showNavButtons,
   setHtmlElementsHidden,
+  getTransitionFromStepToStep,
 } from "./scenes/globe";
 import { setMaxPointTimeout } from "./scenes/globe/arcs";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
@@ -101,6 +102,7 @@ import {
   restartButton,
   longFlghts,
   todayButton,
+  menuButtons,
 } from "./ui";
 
 let serversModel;
@@ -234,6 +236,7 @@ const setCurrentStep = (s) => {
   currentStep = s;
   setCurrentSceneObject(stepToSceneObject[s]());
 };
+const getCurrentStep = () => currentStep;
 
 setCurrentStep(GLOBE_STEP);
 
@@ -373,19 +376,59 @@ const getGlobeTransitioner = ({
         hideOverlay(600);
         transition();
         wait(waitBeforeOverlay)
-          .then(() => showOverlay("white", 300))
-          .then(() => wait(300))
+          .then(() => showOverlay("white", 300, 300))
           .then(() => {
             setElementVisibility(heading, true);
             setElementVisibility(nav, true);
             setElementVisibility(globeButton, true);
             setElementVisibility(nextButton, true);
             setCurrentStep(nextStep);
-            setNavButtonActive(navButton, true);
+            setNavButtonActive(navButton);
             hideOverlay(300);
           });
       });
     });
+};
+
+const NEXT_BUTTONS = {
+  [ORDER_B2B_STEP]: placeOrderButton,
+  [ORDER_D2C_STEP]: placeOrderD2CButton,
+  [MANUFACTURING_STEP]: manufactureButton,
+  [POSTPONEMENT_STEP]: postponementButton,
+  [FULFILLMENT_STEP]: fulfillmentButton,
+  [DELIVERY_B2B_STEP]: deliveryButton,
+};
+
+const NAV_BUTTONS = {
+  [ORDER_B2B_STEP]: "order",
+  [ORDER_D2C_STEP]: "order",
+  [MANUFACTURING_STEP]: "manufacturing",
+  [POSTPONEMENT_STEP]: "postponement",
+  [FULFILLMENT_STEP]: "fulfillment",
+  [DELIVERY_B2B_STEP]: "delivery",
+};
+
+const handleMenuButtonClick = (e) => {
+  const stepFrom = getCurrentStep();
+  let stepTo = e.target.dataset.step;
+  if (checkIfD2C() && stepTo === ORDER_B2B_STEP) {
+    stepTo = ORDER_D2C_STEP;
+  }
+  if (checkIfD2C() && stepTo === DELIVERY_B2B_STEP) {
+    stepTo = DELIVERY_D2C_STEP;
+  }
+  const transition = getTransitionFromStepToStep(stepFrom, stepTo);
+  const startButton = document.querySelector(".action-button:not(.hidden)");
+  const globeTransitionProps = {
+    launchScene: () => Promise.resolve(),
+    transition,
+    startButton,
+    nextButton: NEXT_BUTTONS[stepTo],
+    nextStep: stepTo,
+    navButton: NAV_BUTTONS[stepTo],
+  };
+  const globeTransition = getGlobeTransitioner(globeTransitionProps);
+  return globeTransition();
 };
 
 const handlePlaceOrderD2CButtonClick = getGlobeTransitioner({
@@ -530,6 +573,9 @@ const addEventListeners = () => {
   restartButton.addEventListener("click", handleRestartButtonClick);
   globeButton.addEventListener("click", handleGlobeButtonClick);
   todayButton.addEventListener("click", handleTodayButtonClick);
+  menuButtons.forEach((button) =>
+    button.addEventListener("click", handleMenuButtonClick)
+  );
   window.addEventListener("resize", onResize);
 };
 

@@ -71,6 +71,7 @@ import {
   LIGHT_1_CHINA_R,
   LIGHT_2_INTRO_THETA,
   LIGHT_2_INTRO_PHI,
+  SCENE_CAM_POSITION,
 } from "../../consts";
 
 import { leftButton, rightButton } from "../../ui";
@@ -774,7 +775,10 @@ const getTransition = (
 ) => () => {
   setObjectPositionOnSphere(camera, initialTheta, initialPhi, initialR);
   return zoomOut()
-    .then(() => rotateToDestination())
+    .then(() => {
+      setHtmlElementsHidden(false);
+      return rotateToDestination();
+    })
     .then(() => {
       setHtmlElementsHidden(true);
       zoomIn();
@@ -817,11 +821,14 @@ export const transitionFromDeliveryToFulfillment = getTransition(
   DELIVERY_CAM_PHI
 );
 
-// const SCENE_CAM_POSITION = {};
-
-// export const getTransitionFromSceneToScene = (sceneFrom, sceneTo) => {
-//   return null;
-// };
+export const getTransitionFromStepToStep = (stepFrom, stepTo) => {
+  if (SCENE_CAM_POSITION[stepFrom] && SCENE_CAM_POSITION[stepTo]) {
+    const { theta, phi } = SCENE_CAM_POSITION[stepFrom];
+    const { theta: thetaTo, phi: phiTo } = SCENE_CAM_POSITION[stepTo];
+    const rotator = getCameraRotator(thetaTo, phiTo, CAM_R, thetaTo > theta);
+    return getTransition(rotator, theta, phi);
+  }
+};
 
 export const getGlobeSceneObject = () => {
   return {
