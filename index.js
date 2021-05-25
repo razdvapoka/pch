@@ -115,6 +115,7 @@ manager.onLoad = () => {
     setElementVisibility(launchButton, true);
     progressBar.style.opacity = 0;
     hideOverlay(800);
+    setCurrentStep(B2B_STEP_4);
   });
 };
 
@@ -409,8 +410,8 @@ const handleDeliveryButtonClick = () => {
 
 const addEventListeners = () => {
   nextButton.addEventListener("click", handleNextButtonClick);
-  // launchButton.addEventListener("click", handleLaunchButtonClick);
-  launchButton.addEventListener("click", launchOrderD2CScene);
+  launchButton.addEventListener("click", handleLaunchButtonClick);
+  launchButton.addEventListener("click", launchFulfillmentScene);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
   d2cButton.addEventListener("click", handleD2CButtonClick);
