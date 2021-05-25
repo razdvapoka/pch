@@ -273,18 +273,15 @@ export const shenzhenAirport = {
   objType: "a",
   id: uid(),
   small: true,
-  isShenzhen: true,
 };
 
 export const shenzhenLabel = {
-  lat: 27.918684189579828,
-  lng: 114.71708827811794,
+  lat: 30,
+  lng: 120.5,
   objType: "label",
   label: "Shenzhen",
-  subLabel: "airport *",
   id: uid(),
   state: CHINA_STATE,
-  isShenzhen: true,
 };
 
 export const fulfillment = {

@@ -84,16 +84,15 @@ const onMouseMove = (event) => {
 };
 
 const onClick = () => {
-  const r = camera.position.distanceTo(CENTER);
-  const phi = Math.acos(camera.position.y / r);
-  const theta = Math.atan2(camera.position.x, camera.position.z);
-  console.log(theta, phi, r);
-
+  // const r = camera.position.distanceTo(CENTER);
+  // const phi = Math.acos(camera.position.y / r);
+  // const theta = Math.atan2(camera.position.x, camera.position.z);
+  // console.log(theta, phi, r);
   // raycaster.setFromCamera(mouse, camera);
   // const intersects = raycaster.intersectObjects(scene.children, true);
   // if (intersects.length > 0) {
   //   const c = globe.toGeoCoords(intersects[0].point);
-  // console.log(c);
+  //   console.log(c);
   // }
 };
 
@@ -556,7 +555,7 @@ export const switchToTomorrow = () => {
       p.isAnimated = true;
       p.isVisible = true;
     });
-    shenzhenLabel.isHidden = true;
+    // shenzhenLabel.isHidden = true;
     fulfillmentLabel.isHidden = false;
     customData.forEach((o) => {
       if (o.objType === "arc") {
@@ -564,7 +563,13 @@ export const switchToTomorrow = () => {
       }
     });
     globe
-      .customLayerData([...customData, ...pyramids, fulfillmentLabel])
+      .customLayerData([
+        ...customData,
+        ...pyramids,
+        shenzhenAirport,
+        shenzhenLabel,
+        fulfillmentLabel,
+      ])
       .arcsData([...quarterArcsData, ...restArcsData])
       .pathTransitionDuration(0)
       .pathsData(fulfillmentPaths);
