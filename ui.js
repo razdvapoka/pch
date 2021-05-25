@@ -1,10 +1,11 @@
 import { wait } from "./utils";
 
+export const todayButton = document.querySelector(".today-button");
 export const longFlghts = document.querySelector(".long-flights");
 export const canvas = document.querySelector("#canvas");
 export const launchButton = document.querySelector(".launch-button");
 export const uploadLogoInput = document.querySelector(".upload-logo-input");
-export const nextButton = document.querySelector(".next-button");
+export const tomorrowButton = document.querySelector(".tomorrow-button");
 export const pathButtons = document.querySelector(".path-buttons");
 export const rightButton = document.querySelector(".right-nav-button");
 export const leftButton = document.querySelector(".left-nav-button");

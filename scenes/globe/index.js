@@ -215,7 +215,7 @@ const createExplosion = (objData) => {
 };
 
 const handleArcObject = (arc) => {
-  if (!getArcAnimationHandle(arc.id) && !arc.isHidden) {
+  if (!getArcAnimationHandle(arc.id) && arc.hasMovingPoints) {
     const dist = geoDistance(
       [arc.startLng, arc.startLat],
       [arc.endLng, arc.endLat]
@@ -249,7 +249,9 @@ const handleCustomObject = (objData) => {
     case "tb":
       return tallBuildingsGroup.clone();
     case "pyramid":
-      return pyramidModel.clone();
+      const pyramid = pyramidModel.clone();
+      pyramid.visible = !!objData.isVisible;
+      return pyramid;
     case "tb-single": {
       const building = singleTallBuilding.clone();
       anime({
@@ -270,6 +272,7 @@ const handleCustomObject = (objData) => {
         pointsMesh = new THREE.Points(pointsGeometry, pointsMaterial);
         globe.add(pointsMesh);
       }
+      return;
     }
   }
 };
@@ -309,18 +312,20 @@ const animateFulfillmentPyramid = (pyramid, pyramidObj) => {
 const handleCustomObjectUpdate = (obj, d) => {
   Object.assign(obj.position, globe.getCoords(d.lat, d.lng, d.alt));
   obj.lookAt(new THREE.Vector3(0, 0, 0));
-  if (d.objType !== "a") {
+  if (obj.objType !== "a") {
     obj.rotation.z += Math.PI / 2;
   }
-  if (
-    d.objType === "pyramid" &&
-    d.isAnimated &&
-    !pyramidAnimationHandles[d.id]
-  ) {
-    animateFulfillmentPyramid(d, obj);
-  }
-  if (d.objType === "pyramid" && !d.isAnimated) {
-    obj.scale.set(5, 5, 5);
+  switch (d.objType) {
+    case "pyramid": {
+      if (d.isAnimated && !pyramidAnimationHandles[d.id]) {
+        animateFulfillmentPyramid(d, obj);
+      }
+      if (!d.isAnimated) {
+        obj.scale.set(5, 5, 5);
+      }
+      obj.visible = d.isVisible;
+      break;
+    }
   }
 };
 
@@ -534,38 +539,64 @@ const getBackToChinaRotator = () => {
   }
 };
 
-export const sceneToChinaRotator = (step) => {
+export const sceneToChinaRotator = () => {
   return getCameraRotatorNew(CHINA_CAM_THETA, CHINA_CAM_PHI, CAM_R);
 };
 
-export const addFulfillment = () => {
+export const switchToTomorrow = () => {
   htmlElementsHidden = true;
   const rotator = getBackToChinaRotator();
   rotator().then(() => {
     setCurrentGlobeState(CHINA_STATE);
     htmlElementsHidden = false;
-    Object.keys(explosions).map((explosionKey) => {
-      const explosion = explosions[explosionKey];
+    Object.values(explosions).map((explosion) => {
       explosion.element.classList.add("active");
-      wait(1000).then(() => {
-        pyramids.forEach((p) => {
-          p.isAnimated = true;
-        });
-        shenzhenLabel.isHidden = true;
-        fulfillmentLabel.isHidden = false;
-        customData.forEach((o) => {
-          if (o.objType === "arc") {
-            o.isHidden = false;
-          }
-        });
-        globe
-          .customLayerData([...customData, ...pyramids, fulfillmentLabel])
-          .arcsData([...quarterArcsData, ...restArcsData])
-          .pathTransitionDuration(0)
-          .pathsData(fulfillmentPaths);
-        setMaxPointTimeout(DEFAULT_POINT_TIMEOUT / 5);
-      });
     });
+    pyramids.forEach((p) => {
+      p.isAnimated = true;
+      p.isVisible = true;
+    });
+    shenzhenLabel.isHidden = true;
+    fulfillmentLabel.isHidden = false;
+    customData.forEach((o) => {
+      if (o.objType === "arc") {
+        o.hasMovingPoints = true;
+      }
+    });
+    globe
+      .customLayerData([...customData, ...pyramids, fulfillmentLabel])
+      .arcsData([...quarterArcsData, ...restArcsData])
+      .pathTransitionDuration(0)
+      .pathsData(fulfillmentPaths);
+    setMaxPointTimeout(DEFAULT_POINT_TIMEOUT / 5);
+  });
+};
+
+export const switchToToday = () => {
+  htmlElementsHidden = true;
+  const rotator = getBackToChinaRotator();
+  rotator().then(() => {
+    setCurrentGlobeState(CHINA_STATE);
+    htmlElementsHidden = false;
+    shenzhenLabel.isHidden = false;
+    fulfillmentLabel.isHidden = true;
+    Object.values(explosions).map((explosion) => {
+      explosion.element.classList.remove("active");
+    });
+    pyramids.forEach((p) => {
+      p.isAnimated = false;
+      p.isVisible = false;
+    });
+    restArcsData.forEach((arcData) => {
+      const arc = customData.find((o) => o.id === arcData.id);
+      arc.hasMovingPoints = false;
+    });
+    resetCurveAnimations();
+    globe
+      .pathsData(pathsData)
+      .customLayerData([...customData, ...pyramids])
+      .arcsData(quarterArcsData);
+    setMaxPointTimeout(DEFAULT_POINT_TIMEOUT);
   });
 };
 
@@ -869,7 +900,7 @@ export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
     .atmosphereColor("white")
     .atmosphereAltitude(0.1)
     .customLayerData(customData)
-    .customThreeObject((objData) => handleCustomObject(objData))
+    .customThreeObject(handleCustomObject)
     .customThreeObjectUpdate(handleCustomObjectUpdate)
     .arcsData(quarterArcsData)
     .arcColor("color")
@@ -986,7 +1017,20 @@ export const resetGlobeScene = () => {
   light1RotationProps.phi = d2r(90);
   light1RotationProps.r = 200;
 
-  // resetCurveAnimations();
+  Object.values(explosions).map((explosion) => {
+    explosion.element.classList.remove("active");
+  });
+  pyramids.forEach((p) => {
+    p.isAnimated = false;
+    p.isVisible = false;
+  });
+  restArcsData.forEach((arcData) => {
+    const arc = customData.find((o) => o.id === arcData.id);
+    arc.hasMovingPoints = false;
+  });
+  resetCurveAnimations();
+  setMaxPointTimeout(DEFAULT_POINT_TIMEOUT);
+
   globe
     .customLayerData([
       ...customData,

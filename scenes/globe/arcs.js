@@ -82,6 +82,7 @@ export const resetCurveAnimations = () => {
   animations = {};
   arcAnimationHandles = {};
   visiblePoints = {};
+  updatePointsGeometry();
 };
 
 export {

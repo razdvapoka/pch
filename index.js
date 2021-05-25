@@ -32,7 +32,8 @@ import { wait } from "./utils";
 
 import {
   sceneToChinaRotator,
-  addFulfillment,
+  switchToTomorrow,
+  switchToToday,
   launchGlobeScene,
   globeToB2B,
   globeToD2C,
@@ -81,7 +82,7 @@ import {
   clientLogo,
   uploadLogoLabel,
   uploadLogoInput,
-  nextButton,
+  tomorrowButton,
   b2bButton,
   d2cButton,
   placeOrderButton,
@@ -99,6 +100,7 @@ import {
   restartScene,
   restartButton,
   longFlghts,
+  todayButton,
 } from "./ui";
 
 let serversModel;
@@ -284,40 +286,33 @@ const setHeadingText = (text) => {
   heading.innerText = text;
 };
 
-const handleB2BButtonClick = () => {
-  globeToB2B().then(() => {
+const getPathButtonClickHandler = (transition, heading) => () => {
+  transition().then(() => {
     setCurrentStep(B2B_STEP_1);
     setLightTheme();
     setNavVisibility(true);
     setElementVisibility(placeOrderButton, true);
     setElementVisibility(globeButton, true);
-    setHeadingText("Business-to-business");
+    setHeadingText(heading);
     hideOverlay(600);
   });
   showOverlay("white", 300, 700);
   setElementVisibility(pathButtons, false);
+  setElementVisibility(todayButton, false);
+  setElementVisibility(longFlghts, false);
   if (!isLogoUploaded) {
     setElementVisibility(uploadLogoLabel, false);
   }
 };
 
-const handleD2CButtonClick = () => {
-  globeToD2C().then(() => {
-    isD2C = true;
-    setCurrentStep(D2C_STEP_1);
-    setLightTheme();
-    setNavVisibility(true);
-    setElementVisibility(placeOrderD2CButton, true);
-    setElementVisibility(globeButton, true);
-    setHeadingText("Direct-to-consumer");
-    hideOverlay(600);
-  });
-  showOverlay("white", 300, 700);
-  setElementVisibility(pathButtons, false);
-  if (!isLogoUploaded) {
-    setElementVisibility(uploadLogoLabel, false);
-  }
-};
+const handleB2BButtonClick = getPathButtonClickHandler(
+  globeToB2B,
+  "Business-to-business"
+);
+const handleD2CButtonClick = getPathButtonClickHandler(
+  globeToD2C,
+  "Direct-to-consumer"
+);
 
 const handleLogoUpload = (e) => {
   const files = e.target.files;
@@ -342,17 +337,17 @@ const handleLaunchButtonClick = () => {
     setHeadingText("Today");
     heading.classList.remove("intro-heading");
     heading.classList.add("today-heading");
-    setElementVisibility(nextButton, true);
-    setElementVisibility(longFlghts, true);
+    setElementVisibility(tomorrowButton, true);
   });
 };
 
-const handleNextButtonClick = () => {
-  setElementVisibility(nextButton, false);
+const handleTomorrowButtonClick = () => {
+  setElementVisibility(tomorrowButton, false);
   setElementVisibility(pathButtons, true);
-  setElementVisibility(longFlghts, false);
+  setElementVisibility(todayButton, true);
+  setElementVisibility(longFlghts, true);
   setHeadingText("Tomorrow");
-  addFulfillment();
+  switchToTomorrow();
 };
 
 const getGlobeTransitioner = ({
@@ -482,6 +477,7 @@ const handleRestartButtonClick = () => {
     isLogoUploaded = false;
     setElementVisibility(clientLogo, false);
     setElementVisibility(uploadLogoLabel, true);
+    setElementVisibility(longFlghts, false);
     clientLogo.style.backgroundImage = "none";
     setMaxPointTimeout(DEFAULT_POINT_TIMEOUT);
     hideOverlay(600);
@@ -508,8 +504,17 @@ const handleGlobeButtonClick = () => {
   });
 };
 
+const handleTodayButtonClick = () => {
+  setElementVisibility(tomorrowButton, true);
+  setElementVisibility(pathButtons, false);
+  setElementVisibility(todayButton, false);
+  setElementVisibility(longFlghts, false);
+  setHeadingText("Today");
+  switchToToday();
+};
+
 const addEventListeners = () => {
-  nextButton.addEventListener("click", handleNextButtonClick);
+  tomorrowButton.addEventListener("click", handleTomorrowButtonClick);
   launchButton.addEventListener("click", handleLaunchButtonClick);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
@@ -522,6 +527,7 @@ const addEventListeners = () => {
   deliveryButton.addEventListener("click", handleDeliveryButtonClick);
   restartButton.addEventListener("click", handleRestartButtonClick);
   globeButton.addEventListener("click", handleGlobeButtonClick);
+  todayButton.addEventListener("click", handleTodayButtonClick);
   window.addEventListener("resize", onResize);
 };
 

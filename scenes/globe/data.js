@@ -76,8 +76,11 @@ export const quarterArcsData = shuffledArcsData.slice(
 export const restArcsData = shuffledArcsData.slice(
   Math.floor(arcsData.length / 4)
 );
+quarterArcsData.forEach((arc) => {
+  arc.hasMovingPoints = true;
+});
 restArcsData.forEach((arc) => {
-  arc.isHidden = true;
+  arc.hasMovingPoints = false;
 });
 
 // a = airport
@@ -305,6 +308,7 @@ export const pyramids = [
     lng: 121.56614125774303,
     objType: "pyramid",
     id: uid(),
+    isVisible: false,
   },
   {
     lat: 37.461535731998595,
@@ -312,6 +316,7 @@ export const pyramids = [
 
     objType: "pyramid",
     id: uid(),
+    isVisible: false,
   },
   {
     lat: 41.52587105016799,
@@ -319,6 +324,7 @@ export const pyramids = [
 
     objType: "pyramid",
     id: uid(),
+    isVisible: false,
   },
   {
     lat: 5.596302845121826,
@@ -326,6 +332,7 @@ export const pyramids = [
 
     objType: "pyramid",
     id: uid(),
+    isVisible: false,
   },
   {
     lat: 1.6037695646748773,
@@ -333,6 +340,7 @@ export const pyramids = [
 
     objType: "pyramid",
     id: uid(),
+    isVisible: false,
   },
   {
     lat: 25.784588267474945,
@@ -340,6 +348,7 @@ export const pyramids = [
 
     objType: "pyramid",
     id: uid(),
+    isVisible: false,
   },
   {
     lat: 29.93975937810714,
@@ -347,6 +356,7 @@ export const pyramids = [
 
     objType: "pyramid",
     id: uid(),
+    isVisible: false,
   },
   {
     lat: 36.57276446270508,
@@ -354,5 +364,6 @@ export const pyramids = [
 
     objType: "pyramid",
     id: uid(),
+    isVisible: false,
   },
 ];
