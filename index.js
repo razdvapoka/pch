@@ -291,12 +291,13 @@ const setHeadingText = (text) => {
   heading.innerText = text;
 };
 
-const getPathButtonClickHandler = (transition, heading) => () => {
+const getPathButtonClickHandler = (transition, heading, d2c) => () => {
   transition().then(() => {
-    setCurrentStep(ORDER_B2B_STEP);
+    setCurrentStep(d2c ? ORDER_D2C_STEP : ORDER_B2B_STEP);
+    isD2C = d2c;
     setLightTheme();
     setNavVisibility(true);
-    setElementVisibility(placeOrderButton, true);
+    setElementVisibility(d2c ? placeOrderD2CButton : placeOrderButton, true);
     setElementVisibility(globeButton, true);
     setHeadingText(heading);
     hideOverlay(600);
@@ -312,11 +313,13 @@ const getPathButtonClickHandler = (transition, heading) => () => {
 
 const handleB2BButtonClick = getPathButtonClickHandler(
   globeToB2B,
-  "Business-to-business"
+  "Business-to-business",
+  false
 );
 const handleD2CButtonClick = getPathButtonClickHandler(
   globeToD2C,
-  "Direct-to-consumer"
+  "Direct-to-consumer",
+  true
 );
 
 const handleLogoUpload = (e) => {
