@@ -5,7 +5,7 @@ import anime from "animejs/lib/anime.es.js";
 import { showOverlay, hideOverlay } from "../../ui";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
-import { SKIP } from "../../consts";
+import { SKIP, ALT_FULFILLMENT_CAMERA } from "../../consts";
 
 const WHITE = "#ebebeb";
 const PURPLE = "#5964fa";
@@ -70,6 +70,8 @@ let plane;
 let planeMaterial;
 let planeShadow;
 
+const PURPLE_EM_INT = 0.9;
+
 export const launchDeliveryScene = (resolve) => {
   showOverlay("white", 600).then(() => {
     initDeliveryScene();
@@ -83,7 +85,7 @@ export const launchDeliveryScene = (resolve) => {
         .add({
           duration: 500,
           targets: planeMaterial,
-          emissiveIntensity: 1.125,
+          emissiveIntensity: PURPLE_EM_INT,
           __color: PURPLE,
           __emissive: PURPLE,
           update: () => {
@@ -134,7 +136,7 @@ export const launchFulfillmentScene = () =>
           .add({
             duration: COLOR_TRANSITION_DURATION,
             targets: boxesMaterial,
-            emissiveIntensity: 1.125,
+            emissiveIntensity: PURPLE_EM_INT,
             __color: PURPLE,
             __emissive: PURPLE,
             update: () => {
@@ -167,7 +169,7 @@ export const launchFulfillmentScene = () =>
           .add({
             duration: COLOR_TRANSITION_DURATION,
             targets: paletteAMaterial,
-            emissiveIntensity: 1.125,
+            emissiveIntensity: PURPLE_EM_INT,
             __color: PURPLE,
             __emissive: PURPLE,
             update: () => {
@@ -190,24 +192,28 @@ export const launchFulfillmentScene = () =>
             z: (_, i) => `+=${352 * (i === 0 ? 1 : scaleFactor)}`,
             duration: 500,
           })
-          .add({
-            targets: paletteAGroup.position,
-            z: "+=1835",
-            x: "+=14",
-            duration: 1500,
-          })
           .add(
-            {
-              targets: [camera.position, cameraTarget],
-              z: (_, i) => (i === 0 ? "+=47.38" : "+=52.43"),
-              x: (_, i) => (i === 0 ? "+=2.644" : "+=0.4"),
-              y: (_, i) => (i === 0 ? "+=2.32" : "+=0"),
-              duration: 1500,
-              update: () => {
-                camera.lookAt(cameraTarget);
-              },
-            },
-            "-=1500"
+            ALT_FULFILLMENT_CAMERA
+              ? {
+                  targets: [
+                    paletteAGroup.position,
+                    camera.position,
+                    cameraTarget,
+                  ],
+                  z: (_, i) => `+=${1835 * (i === 0 ? 1 : scaleFactor)}`,
+                  x: (_, i) => (i === 0 ? `+=14` : `+=0`),
+                  duration: 1500,
+                }
+              : {
+                  targets: [camera.position, cameraTarget],
+                  z: (_, i) => (i === 0 ? "+=47.38" : "+=52.43"),
+                  x: (_, i) => (i === 0 ? "+=2.644" : "+=0.4"),
+                  y: (_, i) => (i === 0 ? "+=2.32" : "+=0"),
+                  duration: 1500,
+                  update: () => {
+                    camera.lookAt(cameraTarget);
+                  },
+                }
           )
           .add(
             {
@@ -223,7 +229,7 @@ export const launchFulfillmentScene = () =>
           .add({
             duration: COLOR_TRANSITION_DURATION,
             targets: containerAMaterial,
-            emissiveIntensity: 1.125,
+            emissiveIntensity: PURPLE_EM_INT,
             easing: "easeInOutSine",
             __color: PURPLE,
             __emissive: PURPLE,
@@ -245,7 +251,7 @@ export const launchFulfillmentScene = () =>
           .add({
             duration: COLOR_TRANSITION_DURATION,
             targets: truckMaterial,
-            emissiveIntensity: 1.125,
+            emissiveIntensity: PURPLE_EM_INT,
             easing: "easeInOutSine",
             __color: PURPLE,
             __emissive: PURPLE,
@@ -318,7 +324,7 @@ const initDeliveryScene = () => {
   });
 
   plane = parts["plane_update"];
-  planeMaterial = boxA.material.clone();
+  planeMaterial = plane.children[0].material.clone();
   planeMaterial.color = new THREE.Color(BASE);
   planeMaterial.emissive = new THREE.Color(EMISSIVE);
   planeMaterial.__color = BASE;
@@ -334,7 +340,7 @@ const initDeliveryScene = () => {
   planeShadow = new THREE.Mesh(
     new THREE.PlaneGeometry(250, 250),
     new THREE.MeshBasicMaterial({
-      opacity: 0.6,
+      opacity: 0.3,
       color: 0x000000,
       transparent: true,
       alphaMap: planeShadowAlphaMap,
@@ -429,16 +435,11 @@ export const initFulfillmentSceneObject = ({
   );
   camera.zoom = 5;
   camera.updateProjectionMatrix();
-  camera.position.copy(
-    // {
-    //   x: 257 * scaleFactor,
-    //   y: 306 * scaleFactor,
-    //   z: 494 * scaleFactor,
-    // }
-    // { x: 8.298074077304108, y: 12.97306420463098, z: 8.259501851231171 }
-    { x: 8.306184599688665, y: 10.439592469326413, z: 10.489405509234365 }
-    // { x: 12.913666938266108, y: 13.427161236322922, z: 8.259501851231171 }
-  );
+  camera.position.copy({
+    x: 8.306184599688665,
+    y: 10.439592469326413,
+    z: 10.489405509234365,
+  });
   cameraTarget = new THREE.Vector3(0, 120 * scaleFactor, 0);
   // controls = new OrbitControls(camera, canvas);
   // controls.target = cameraTarget;
@@ -465,6 +466,15 @@ export const initFulfillmentSceneObject = ({
   parts["container_b"].visible = false;
   cube133.position.x = -13.164300453074018;
   cube131.position.x = -15.355573540012779;
+
+  usa.material = usa.material.clone();
+  usa.material.color = new THREE.Color("white");
+  usa.material.emissive = new THREE.Color("white");
+  usa.material.emissiveIntensity = 0.4;
+  eu.material = eu.material.clone();
+  eu.material.color = new THREE.Color("white");
+  eu.material.emissive = new THREE.Color("white");
+  eu.material.emissiveIntensity = 0.4;
 
   // usa.position.z = 45;
   // eu.position.z = 45;

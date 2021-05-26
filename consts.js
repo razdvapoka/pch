@@ -96,6 +96,7 @@ export const SCENE_CAM_POSITION = {
 };
 
 export const SKIP = false;
+export const ALT_FULFILLMENT_CAMERA = true;
 
 export const WHITE = "#ebebeb";
 export const PURPLE = "#5964fa";
