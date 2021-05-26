@@ -67,11 +67,11 @@ export const initServersSceneObject = ({ serversModel, sizes }) => {
     }
   });
 
-  bulb = new THREE.PointLight("red", 0, 10);
+  bulb = new THREE.PointLight(WHITE, 0, 10);
   bulb.position.set(7.7, 77.6, 12);
   const bulbSphere = new THREE.Mesh(
     new THREE.SphereBufferGeometry(0.5, 32, 32),
-    new THREE.MeshBasicMaterial({ color: "red" })
+    new THREE.MeshBasicMaterial({ color: WHITE })
   );
   bulbSphere.position.set(7.7, 77.6, 9);
   scene.add(bulb);
