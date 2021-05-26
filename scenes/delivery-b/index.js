@@ -10,6 +10,7 @@ import { SKIP } from "../../consts";
 const WHITE = "#b7b7b7";
 const PURPLE = "#5964fa";
 const COLOR_TRANSITION_DURATION = 700;
+const SCALE_FACTOR = 0.03;
 
 const whiteColor = new THREE.Color(WHITE);
 
@@ -27,7 +28,7 @@ let model;
 let b2bModel;
 let d2cModel;
 let parts = {};
-// let transformControls;
+let transformControls;
 let containerB;
 let cartGroup = new THREE.Group();
 let cartMaterial;
@@ -102,10 +103,10 @@ const initB2BScene = () => {
   // });
   // b2bScene.add(transformControls);
 
-  b2bModel.scale.set(0.03, 0.03, 0.03);
+  b2bModel.scale.set(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
   b2bScene.add(b2bModel);
 
-  camera.position.copy({ x: -11, y: 1055, z: 100 });
+  camera.position.copy({ x: -11, y: 500, z: 100 });
   cameraTarget = new THREE.Vector3(-12, 0, 100);
   camera.lookAt(cameraTarget);
   // controls.target = cameraTarget;
@@ -153,7 +154,7 @@ const initD2CScene = () => {
   //   console.log(transformControls.object.rotation);
   // });
 
-  d2cScene.scale.set(0.03, 0.03, 0.03);
+  d2cScene.scale.set(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
   d2cScene.add(d2cModel);
 
   camera.position.copy({ x: -12, y: 205, z: 210 });
@@ -246,9 +247,9 @@ export const launchDeliveryBScene = () =>
         });
         timeline
           .add({
-            targets: containerB.position,
-            x: -1021.9810791015625,
-            y: 116.2855224609375,
+            targets: [containerB.position, camera.position, cameraTarget],
+            x: (_, i) => -1022 * (i === 0 ? 1 : SCALE_FACTOR),
+            y: (_, i) => (i === 0 ? 116 : "+=0"),
             duration: 600,
           })
           .add({
@@ -265,11 +266,15 @@ export const launchDeliveryBScene = () =>
               cartGroup.position,
               containerB.position,
               camera.position,
-              // controls.target,
+              cameraTarget,
             ],
             z: (_, i) => (i === 0 ? "+=25451" : "+=0"),
             x: (_, i) =>
-              i === 1 ? "-=5110" : i === 2 || i === 3 ? "-=170" : "+=0",
+              i === 1
+                ? "-=5110"
+                : i === 2 || i === 3
+                ? `-=${5110 * SCALE_FACTOR}`
+                : "+=0",
             duration: 1000,
           })
           .add({
@@ -291,13 +296,9 @@ export const launchDeliveryBScene = () =>
             duration: 300,
           })
           .add({
-            targets: [
-              containerB.position,
-              camera.position,
-              // controls.target
-            ],
-            x: (_, i) => (i === 0 ? -7140 : "-=30"),
-            y: (_, i) => (i === 1 ? "+=50" : "+=0"),
+            targets: [containerB.position, camera.position, cameraTarget],
+            x: (_, i) => -7140 * (i === 0 ? 1 : SCALE_FACTOR),
+            y: (_, i) => (i === 1 ? "+=40" : "+=0"),
             duration: 500,
           })
           .add({
@@ -306,12 +307,8 @@ export const launchDeliveryBScene = () =>
             duration: 300,
           })
           .add({
-            targets: [
-              containerB.position,
-              camera.position,
-              //controls.target
-            ],
-            x: (_, i) => (i === 0 ? -11450 : "-=135"),
+            targets: [containerB.position, camera.position, cameraTarget],
+            x: (_, i) => -11450 * (i === 0 ? 1 : SCALE_FACTOR),
             duration: 1000,
           })
           .add({
@@ -329,13 +326,9 @@ export const launchDeliveryBScene = () =>
             z: (_, i) => `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
           })
           .add({
-            targets: [
-              containerB.position,
-              camera.position,
-              // controls.target
-            ],
+            targets: [containerB.position, camera.position, cameraTarget],
             y: (_, i) => (i === 0 ? "+=110" : "+=0"),
-            x: (_, i) => (i === 0 ? "-=1030" : "-=40"),
+            x: (_, i) => `-=${1030 * (i === 0 ? 1 : SCALE_FACTOR)}`,
             duration: 1000,
           })
           .add({
@@ -348,22 +341,14 @@ export const launchDeliveryBScene = () =>
               truck.position,
               containerB.position,
               camera.position,
-              // controls.target,
+              cameraTarget,
             ],
             duration: 1500,
             x: (_, i) =>
-              i === 0 || i === 1 ? "-=15160" : i === 2 ? -810 : -811,
+              `-=${15160 * (i === 0 || i === 1 ? 1 : SCALE_FACTOR)} `,
           })
           .add({
-            targets: [
-              camera.position,
-              // controls.target
-            ],
-            duration: 1000,
-            keyframes: [{ x: -490 }, { z: -250 }], //, { z: -50 }, { x: -810 }],
-          })
-          .add({
-            duration: COLOR_TRANSITION_DURATION,
+            duration: 100,
             targets: vanMaterial,
             emissiveIntensity: 0.2,
             __color: PURPLE,
@@ -372,45 +357,25 @@ export const launchDeliveryBScene = () =>
             },
           })
           .add({
-            targets: [
-              van.position,
-              camera.position,
-              // controls.target
-            ],
-            duration: 500,
-            z: (_, i) => (i === 0 ? -1750 : -50),
-          })
-          .add({
-            targets: [van.rotation],
-            duration: 500,
-            y: `-=${Math.PI / 2}`,
-          })
-          .add({
-            targets: [
-              van.position,
-              camera.position,
-              //controls.target
-            ],
+            targets: van.position,
+            z: -2086,
             duration: 2000,
-            x: (_, i) => (i === 0 ? -26760 : -810),
           })
           .add({
-            targets: [leftDoor.rotation, rightDoor.rotation, van.rotation],
+            targets: [leftDoor.rotation, rightDoor.rotation],
             duration: 500,
-            z: (_, i) =>
-              i === 2 ? "+=0" : `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
-            y: (_, i) => (i === 2 ? `-=${Math.PI / 2}` : "+=0"),
+            z: (_, i) => `+=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
           })
           .add({
-            targets: containerB.position,
+            targets: [containerB.position, camera.position, cameraTarget],
             duration: 400,
-            x: -26626,
-            y: 163,
+            x: (_, i) => -26681 * (i === 0 ? 1 : SCALE_FACTOR),
+            y: (_, i) => (i === 0 ? 163 : "+=0"),
           })
           .add({
-            targets: containerB.position,
+            targets: [containerB.position, camera.position, cameraTarget],
             duration: 400,
-            z: -1494,
+            z: (_, i) => -1834 * (i === 0 ? 1 : SCALE_FACTOR),
           })
           .add({
             targets: [leftDoor.rotation, rightDoor.rotation],
@@ -418,10 +383,18 @@ export const launchDeliveryBScene = () =>
             z: (_, i) => `-=${i === 0 ? -Math.PI / 2 : Math.PI / 2}`,
           })
           .add({
-            targets: [van.position, containerB.position],
-            duration: 2000,
-            z: (_, i) => (i === 0 ? -13550 : -13310),
-          });
+            targets: [camera.position, cameraTarget],
+            duration: 1500,
+            z: -7572 * SCALE_FACTOR,
+          })
+          .add(
+            {
+              targets: [van.position, containerB.position],
+              duration: 2000,
+              z: (_, i) => (i === 0 ? -13550 : -13310),
+            },
+            "-=1500"
+          );
         timeline.play();
       });
 
@@ -439,7 +412,7 @@ export const initDeliveryBSceneObject = ({
   d2cModel = deliveryC_D2C_Model.clone();
 
   model = deliveryBModel.clone();
-  model.scale.set(0.03, 0.03, 0.03);
+  model.scale.set(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#ffffff");
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -463,9 +436,9 @@ export const initDeliveryBSceneObject = ({
 
   containerB = parts["container_b"];
   containerB.position.copy({
-    x: 30.833626018425775,
-    y: 323.74526285305944,
-    z: -1222.3502197265625,
+    x: 30,
+    y: 323,
+    z: -1222,
   });
   containerB.material = containerB.material.clone();
   containerB.material.emissiveIntensity = 0.2;
@@ -497,7 +470,7 @@ export const initDeliveryBSceneObject = ({
   });
 
   van = parts["van"];
-  van.rotateY(Math.PI);
+  van.position.copy({ x: -26832, y: 0, z: 5230 });
   vanMaterial = cart.material.clone();
   vanMaterial.color = whiteColor.clone();
   vanMaterial.__color = WHITE;
@@ -525,11 +498,11 @@ export const initDeliveryBSceneObject = ({
     2500
   );
   camera.position.copy({
-    x: -20,
+    x: containerB.position.x * SCALE_FACTOR,
     y: 150,
-    z: -30,
+    z: containerB.position.z * SCALE_FACTOR,
   });
-  cameraTarget = new THREE.Vector3(-21, 0, -30);
+  cameraTarget = new THREE.Vector3(camera.position.x - 1, 0, camera.position.z);
   camera.lookAt(cameraTarget);
   // controls = new OrbitControls(camera, canvas);
   // controls.target = cameraTarget;
@@ -573,22 +546,22 @@ export const initDeliveryBSceneObject = ({
   //   switch (e.which) {
   //     case 38: {
   //       camera.position.x -= 10;
-  //       controls.target.x -= 10;
+  //       // controls.target.x -= 10;
   //       break;
   //     }
   //     case 37: {
   //       camera.position.z += 10;
-  //       controls.target.z += 10;
+  //       // controls.target.z += 10;
   //       break;
   //     }
   //     case 39: {
   //       camera.position.z -= 10;
-  //       controls.target.z -= 10;
+  //       // controls.target.z -= 10;
   //       break;
   //     }
   //     case 40: {
   //       camera.position.x += 10;
-  //       controls.target.x += 10;
+  //       // controls.target.x += 10;
   //       break;
   //     }
   //   }
