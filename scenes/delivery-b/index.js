@@ -63,18 +63,18 @@ let vanMaterial;
 
 const initB2BScene = () => {
   const b2bScene = new THREE.Scene();
-  b2bScene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(100, 75, 45);
+  b2bScene.background = new THREE.Color("#ebebeb");
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.42);
+  const directionalLight = new THREE.AmbientLight(0xebebeb, 0.42);
+  directionalLight.position.set(50, 185, 0);
   b2bScene.add(ambientLight, directionalLight);
   parts = {};
   b2bModel.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
       obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
+      obj.material.color = new THREE.Color("#686868");
+      obj.material.emissive = new THREE.Color("#a1a1a1");
     }
   });
 
@@ -113,20 +113,21 @@ const initB2BScene = () => {
   sceneObject.scene = b2bScene;
 };
 
+
 const initD2CScene = () => {
   const d2cScene = new THREE.Scene();
-  d2cScene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(100, 75, 45);
+  d2cScene.background = new THREE.Color("#ebebeb");
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.42);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.4);
+  directionalLight.position.set(50, 185, 0);
   d2cScene.add(ambientLight, directionalLight);
   parts = {};
   d2cModel.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
+      obj.material.emissiveIntensity = 1.125;
+      obj.material.color = new THREE.Color("#686868");
+      obj.material.emissive = new THREE.Color("#a1a1a1");
     }
   });
 
@@ -436,11 +437,11 @@ export const initDeliveryBSceneObject = ({
   model = deliveryBModel;
   model.scale.set(0.03, 0.03, 0.03);
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.background = new THREE.Color("#ebebeb");
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.42);
   scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(-100, 60, 100);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.4);
+  directionalLight.position.set(120, 45, 120);
   // const helper = new THREE.DirectionalLightHelper(directionalLight, 10, "red");
   // scene.add(helper);
   scene.add(ambientLight);
@@ -449,7 +450,7 @@ export const initDeliveryBSceneObject = ({
   model.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
+      obj.material.emissiveIntensity = 0.65;
       obj.material.color = whiteColor;
       obj.material.emissive = whiteColor;
     }
