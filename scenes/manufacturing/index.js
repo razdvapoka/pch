@@ -4,14 +4,7 @@ import * as THREE from "three";
 import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
-import { SKIP } from "../../consts";
-
-const WHITE = "#ebebeb";
-const PURPLE = "#5964fa";
-const BASE = "#686868";
-const EMISSIVE = "#a1a1a1";
-
-const COLOR_TRANSITION_DURATION = 700;
+import { SKIP, PURPLE, WHITE, BASE, EMISSIVE } from "../../consts";
 
 let camera;
 let scene;
@@ -37,18 +30,6 @@ export const launchManufacturingScene = () =>
           complete: resolve,
         });
         timeline
-          .add({
-            duration: COLOR_TRANSITION_DURATION,
-            targets: purpleMaterial,
-            emissiveIntensity: 1.125,
-            easing: "easeInOutSine",
-            __color: PURPLE,
-            __emissive: PURPLE,
-            update: () => {
-              purpleMaterial.color.set(purpleMaterial.__color);
-              purpleMaterial.emissive.set(purpleMaterial.__emissive);
-            },
-          })
           .add(
             {
               duration: 600,
@@ -113,8 +94,9 @@ export const initManufacturingSceneObject = ({ manufacturingModel, sizes }) => {
       if (obj.material.name === "Plain Violet") {
         if (!purpleMaterial) {
           purpleMaterial = obj.material.clone();
-          purpleMaterial.__color = BASE;
-          purpleMaterial.__emissive = EMISSIVE;
+          purpleMaterial.color = new THREE.Color(PURPLE);
+          purpleMaterial.emissive = new THREE.Color(PURPLE);
+          purpleMaterial.emissiveIntensity = 0.8;
         }
         obj.material = purpleMaterial;
       }
@@ -133,7 +115,7 @@ export const initManufacturingSceneObject = ({ manufacturingModel, sizes }) => {
     1000
   );
   camera.position.set(52.6, 60, 50.2);
-  camera.zoom = 22;
+  camera.zoom = 15;
   camera.updateProjectionMatrix();
   const cameraTarget = new THREE.Vector3(-5, 7, 0);
   // const controls = new OrbitControls(camera, canvas);

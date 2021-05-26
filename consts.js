@@ -96,3 +96,8 @@ export const SCENE_CAM_POSITION = {
 };
 
 export const SKIP = false;
+
+export const WHITE = "#ebebeb";
+export const PURPLE = "#5964fa";
+export const BASE = "#686868";
+export const EMISSIVE = "#a1a1a1";
