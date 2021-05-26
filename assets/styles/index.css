@@ -77,7 +77,6 @@ a, a:visited {
   bottom: 3.3rem;
   font-size: 3rem;
   line-height: 1;
-  text-transform: uppercase;
   font-weight: 300;
   opacity: 0;
   transition: opacity 0.2s ease;
