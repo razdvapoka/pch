@@ -5,7 +5,7 @@
 import * as THREE from "three";
 import anime from "animejs/lib/anime.es.js";
 import { showOverlay, hideOverlay } from "../../ui";
-import { SKIP } from "../../consts";
+import { SKIP, BASE, EMISSIVE } from "../../consts";
 
 const WHITE = "#b7b7b7";
 const PURPLE = "#5964fa";
@@ -14,6 +14,9 @@ const SCALE_FACTOR = 0.03;
 
 const whiteColor = new THREE.Color(WHITE);
 
+let vanD2C0;
+let roverD2C0;
+let packageD2C0;
 let checkIfD2CFunction;
 let vanB2B;
 let vanB2BMaterial;
@@ -27,8 +30,9 @@ let scene;
 let model;
 let b2bModel;
 let d2cModel;
+let d2c0Model;
 let parts = {};
-let transformControls;
+// let transformControls;
 let containerB;
 let cartGroup = new THREE.Group();
 let cartMaterial;
@@ -115,6 +119,50 @@ const initB2BScene = () => {
   sceneObject.scene = b2bScene;
 };
 
+const initD2C0Scene = () => {
+  const d2c0Scene = new THREE.Scene();
+  d2c0Scene.background = new THREE.Color("#ffffff");
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+  directionalLight.position.set(1000, 773, 166);
+  d2c0Scene.add(ambientLight, directionalLight);
+  parts = {};
+  d2c0Model.traverse((obj) => {
+    parts[obj.name] = obj;
+    if (obj.type === "Mesh") {
+      obj.material.emissiveIntensity = 1.125;
+      obj.material.color = new THREE.Color(BASE);
+      obj.material.emissive = new THREE.Color(EMISSIVE);
+      if (obj.material.name === "Plain Violet") {
+        obj.material = obj.material.clone();
+        obj.material.color = new THREE.Color(PURPLE);
+        obj.material.emissive = new THREE.Color(PURPLE);
+        obj.material.emissiveIntensity = 0.8;
+      }
+    }
+  });
+
+  vanD2C0 = parts["van"];
+  roverD2C0 = parts["rover"];
+  packageD2C0 = parts["package"];
+
+  vanD2C0.position.z = 628;
+  roverD2C0.position.z = 648;
+  packageD2C0.position.z = -70;
+  packageD2C0.visible = false;
+
+  d2c0Scene.scale.set(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
+  d2c0Scene.add(d2c0Model);
+
+  camera.position.copy({ x: 3, y: 18, z: 0 });
+  cameraTarget = new THREE.Vector3(camera.position.x - 1, 0, camera.position.z);
+  camera.lookAt(cameraTarget);
+  // controls.target = cameraTarget;
+  // controls.update();
+
+  sceneObject.scene = d2c0Scene;
+};
+
 const initD2CScene = () => {
   const d2cScene = new THREE.Scene();
   d2cScene.background = new THREE.Color("#ffffff");
@@ -132,17 +180,22 @@ const initD2CScene = () => {
     }
   });
 
-  vanD2C = parts["van"];
+  vanD2C = roverD2C0.clone();
+  vanD2C.position.clone(parts["van"].position);
   vanD2C.position.z = 8545;
+  vanD2C.position.x -= 500;
+  vanD2C.visible = true;
+  const scaleFactor = 200;
+  vanD2C.scale.set(scaleFactor, scaleFactor, scaleFactor);
+  parts["van"].visible = false;
+  d2cScene.add(vanD2C);
 
-  vanD2CMaterial = cart.material.clone();
+  vanD2CMaterial = vanD2C.material.clone();
+  vanD2CMaterial.emissiveIntensity = 0.3;
+  vanD2CMaterial.emissive = whiteColor.clone();
   vanD2CMaterial.color = whiteColor.clone();
   vanD2CMaterial.__color = WHITE;
-  vanD2C.traverse((obj) => {
-    if (obj.type === "Mesh") {
-      obj.material = vanD2CMaterial;
-    }
-  });
+  vanD2C.material = vanD2CMaterial;
 
   // transformControls = new TransformControls(camera, canvas);
   // transformControls.attach(vanD2C);
@@ -167,7 +220,58 @@ const initD2CScene = () => {
   sceneObject.scene = d2cScene;
 };
 
-const launchDeliveryD2CScene = (resolve) => {
+export const launchDeliveryD2C0Scene = (resolve) => {
+  showOverlay("white", 600).then(() => {
+    initD2C0Scene();
+    hideOverlay(600).then(() => {
+      const timeline = anime.timeline({
+        autoplay: false,
+        easing: "easeInOutSine",
+        complete: () => launchDeliveryD2CScene(resolve),
+      });
+      timeline
+        .add({
+          targets: vanD2C0.position,
+          z: -90,
+          duration: 2000,
+          complete: () => {
+            packageD2C0.visible = true;
+          },
+        })
+        .add({
+          targets: roverD2C0.position,
+          z: 24,
+          duration: 2000,
+        })
+        .add({
+          targets: packageD2C0.position,
+          z: 27,
+          y: 10,
+          duration: 1000,
+        })
+        .add({
+          targets: vanD2C0.position,
+          z: "-=700",
+          duration: 1500,
+          complete: () => {
+            vanD2C0.visible = false;
+          },
+        })
+        .add({
+          targets: [roverD2C0.position, packageD2C0.position],
+          z: "-=700",
+          duration: 1500,
+          complete: () => {
+            roverD2C0.visible = false;
+            packageD2C0.visible = false;
+          },
+        });
+      timeline.play();
+    });
+  });
+};
+
+export const launchDeliveryD2CScene = (resolve) => {
   showOverlay("white", 600).then(() => {
     initD2CScene();
     hideOverlay(600).then(() => {
@@ -239,7 +343,7 @@ export const launchDeliveryBScene = () =>
           easing: "easeInOutSine",
           complete: () => {
             if (checkIfD2CFunction()) {
-              launchDeliveryD2CScene(resolve);
+              launchDeliveryD2C0Scene(resolve);
             } else {
               launchDeliveryB2BScene(resolve);
             }
@@ -402,6 +506,7 @@ export const initDeliveryBSceneObject = ({
   deliveryBModel,
   deliveryC_B2B_Model,
   deliveryC_D2C_Model,
+  deliveryC0_D2C_Model,
   sizes,
   checkIfD2C,
   //canvas
@@ -410,6 +515,7 @@ export const initDeliveryBSceneObject = ({
   cartGroup = new THREE.Group();
   b2bModel = deliveryC_B2B_Model.clone();
   d2cModel = deliveryC_D2C_Model.clone();
+  d2c0Model = deliveryC0_D2C_Model.clone();
 
   model = deliveryBModel.clone();
   model.scale.set(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
@@ -545,23 +651,23 @@ export const initDeliveryBSceneObject = ({
   // window.addEventListener("keydown", (e) => {
   //   switch (e.which) {
   //     case 38: {
-  //       camera.position.x -= 10;
-  //       // controls.target.x -= 10;
+  //       camera.position.x -= 1;
+  //       controls.target.x -= 1;
   //       break;
   //     }
   //     case 37: {
-  //       camera.position.z += 10;
-  //       // controls.target.z += 10;
+  //       camera.position.z += 1;
+  //       controls.target.z += 1;
   //       break;
   //     }
   //     case 39: {
-  //       camera.position.z -= 10;
-  //       // controls.target.z -= 10;
+  //       camera.position.z -= 1;
+  //       controls.target.z -= 1;
   //       break;
   //     }
   //     case 40: {
-  //       camera.position.x += 10;
-  //       // controls.target.x += 10;
+  //       camera.position.x += 1;
+  //       controls.target.x += 1;
   //       break;
   //     }
   //   }

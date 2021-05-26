@@ -30,16 +30,6 @@ export const launchPostponementScene = () =>
             complete: resolve,
           })
           .add({
-            targets: purpleMaterial,
-            emissiveIntensity: 0.1,
-            __color: PURPLE,
-            __emissive: PURPLE,
-            update: () => {
-              purpleMaterial.color.set(purpleMaterial.__color);
-              purpleMaterial.emissive.set(purpleMaterial.__emissive);
-            },
-          })
-          .add({
             targets: boxHolder.position,
             y: -9.6,
           })
@@ -146,7 +136,6 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
         duration: COLOR_TRANSITION_DURATION,
         delay: 500,
         targets: purpleMaterial,
-        emissiveIntensity: 0.8,
         easing: "easeOutExpo",
         __color: PURPLE,
         __emissive: PURPLE,

@@ -13,6 +13,7 @@ import deliveryAModelSrc from "./assets/models/delivery-a-draco.gltf";
 import deliveryBModelSrc from "./assets/models/delivery-b-draco.gltf";
 import orderD2CModelSrc from "./assets/models/order-d2c-draco.gltf";
 import deliveryC_B2B_ModelSrc from "./assets/models/delivery-c-b2b-draco.gltf";
+import deliveryC0_D2C_ModelSrc from "./assets/models/delivery-c1-d2c-draco.gltf";
 import deliveryC_D2C_ModelSrc from "./assets/models/delivery-c-d2c-draco.gltf";
 import pyramidSrc from "./assets/models/pyramid-draco.gltf";
 
@@ -115,6 +116,7 @@ let deliveryBModel;
 let orderD2CModel;
 let deliveryC_B2B_Model;
 let deliveryC_D2C_Model;
+let deliveryC0_D2C_Model;
 let isD2C = false;
 let isLogoUploaded = false;
 
@@ -167,6 +169,9 @@ gltfLoader.load(deliveryC_B2B_ModelSrc, (gltf) => {
 gltfLoader.load(deliveryC_D2C_ModelSrc, (gltf) => {
   deliveryC_D2C_Model = gltf.scene.children[0];
 });
+gltfLoader.load(deliveryC0_D2C_ModelSrc, (gltf) => {
+  deliveryC0_D2C_Model = gltf.scene.children[0];
+});
 gltfLoader.load(orderD2CModelSrc, (gltf) => {
   orderD2CModel = gltf.scene.children[0];
 });
@@ -210,6 +215,7 @@ const stepToSceneObject = {
       deliveryBModel,
       deliveryC_B2B_Model,
       deliveryC_D2C_Model,
+      deliveryC0_D2C_Model,
       checkIfD2C,
     }),
   [ORDER_D2C_STEP]: () =>
