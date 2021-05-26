@@ -166,7 +166,7 @@ const initD2CScene = () => {
   sceneObject.scene = d2cScene;
 };
 
-const launchDeliveryD2CScene = (resolve) => {
+export const launchDeliveryD2CScene = (resolve) => {
   showOverlay("white", 600).then(() => {
     initD2CScene();
     hideOverlay(600).then(() => {
@@ -195,7 +195,7 @@ const launchDeliveryD2CScene = (resolve) => {
   });
 };
 
-const launchDeliveryB2BScene = (resolve) => {
+export const launchDeliveryB2BScene = (resolve) => {
   showOverlay("white", 600).then(() => {
     initB2BScene();
     hideOverlay(600).then(() => {
