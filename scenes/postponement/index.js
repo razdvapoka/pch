@@ -4,12 +4,8 @@ import * as THREE from "three";
 import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
-import { SKIP } from "../../consts";
+import { SKIP, BASE, EMISSIVE, WHITE, PURPLE } from "../../consts";
 
-const BASE = "#686868";
-const EMISSIVE = "#a1a1a1";
-const WHITE = "#ebebeb";
-const PURPLE = "#5964fa";
 const COLOR_TRANSITION_DURATION = 700;
 
 let camera;
@@ -32,6 +28,16 @@ export const launchPostponementScene = () =>
             easing: "easeOutExpo",
             duration: 400,
             complete: resolve,
+          })
+          .add({
+            targets: purpleMaterial,
+            emissiveIntensity: 0.1,
+            __color: PURPLE,
+            __emissive: PURPLE,
+            update: () => {
+              purpleMaterial.color.set(purpleMaterial.__color);
+              purpleMaterial.emissive.set(purpleMaterial.__emissive);
+            },
           })
           .add({
             targets: boxHolder.position,
@@ -74,9 +80,6 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
     }
   });
   purpleMaterial = parts["box3"].material.clone();
-  purpleMaterial.color = new THREE.Color(BASE);
-  purpleMaterial.emissive = new THREE.Color(EMISSIVE);
-  purpleMaterial.emissiveIntensity = 0.5;
   purpleMaterial.__color = BASE;
   purpleMaterial.__emissive = EMISSIVE;
   parts["box3"].material = purpleMaterial;
@@ -102,7 +105,7 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
     y: 115.95072054418478,
     z: -95.79763594924385,
   });
-  camera.zoom = 13;
+  camera.zoom = 8;
   camera.updateProjectionMatrix();
   const cameraTarget = new THREE.Vector3(0, 0, 0);
   // const controls = new OrbitControls(camera, canvas);
@@ -143,7 +146,7 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
         duration: COLOR_TRANSITION_DURATION,
         delay: 500,
         targets: purpleMaterial,
-        emissiveIntensity: 0.5,
+        emissiveIntensity: 0.8,
         easing: "easeOutExpo",
         __color: PURPLE,
         __emissive: PURPLE,
