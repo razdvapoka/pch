@@ -12,6 +12,7 @@ let camera;
 let scene;
 let model;
 let purpleMaterial;
+let vynilMaterial;
 let parts = {};
 // let transformControls;
 
@@ -78,6 +79,11 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
       part.material = purpleMaterial;
     }
   });
+  const vynil = parts["vynil"];
+  vynil.material.normalMap.wrapS = THREE.RepeatWrapping;
+  vynil.material.normalMap.wrapT = THREE.RepeatWrapping;
+  vynil.material.normalMap.repeat = new THREE.Vector2(2, 10);
+  vynilMaterial = vynil.material;
 
   // const axesHelper = new THREE.AxesHelper(1000);
   // scene.add(axesHelper);
@@ -127,10 +133,19 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
     .add({
       targets: parts["boxes"].position,
       z: -46.2,
-      duration: 1000,
+      duration: 1500,
       delay: 500,
       easing: "easeOutExpo",
     })
+    .add(
+      {
+        targets: vynilMaterial.normalMap.offset,
+        y: -46.2,
+        duration: 1500,
+        easing: "easeOutExpo",
+      },
+      "-=1500"
+    )
     .add(
       {
         duration: COLOR_TRANSITION_DURATION,
