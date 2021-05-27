@@ -48,10 +48,12 @@ export const setNavButtonActive = (name) => {
 };
 
 export const setElementVisibility = (element, visible) => {
-  if (visible) {
-    element.classList.remove("hidden");
-  } else {
-    element.classList.add("hidden");
+  if (element) {
+    if (visible) {
+      element.classList.remove("hidden");
+    } else {
+      element.classList.add("hidden");
+    }
   }
 };
 

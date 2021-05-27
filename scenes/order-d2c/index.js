@@ -83,7 +83,6 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   parts["screen"].material = laptopMaterial;
   parts["buttons"].material = laptopMaterial;
 
-  console.log(parts);
   const screenEmInt = 0.85;
   screenInit = parts["screen-init"];
   screenFinal = parts["screen-final"];

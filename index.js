@@ -218,6 +218,16 @@ const stepToSceneObject = {
       deliveryC0_D2C_Model,
       checkIfD2C,
     }),
+  [DELIVERY_D2C_STEP]: () =>
+    initDeliveryBSceneObject({
+      sizes,
+      canvas,
+      deliveryBModel,
+      deliveryC_B2B_Model,
+      deliveryC_D2C_Model,
+      deliveryC0_D2C_Model,
+      checkIfD2C,
+    }),
   [ORDER_D2C_STEP]: () =>
     initOrderD2CSceneObject({ sizes, canvas, orderD2CModel }),
   [RESET_STEP]: () => {
@@ -407,6 +417,7 @@ const NEXT_BUTTONS = {
   [POSTPONEMENT_STEP]: postponementButton,
   [FULFILLMENT_STEP]: fulfillmentButton,
   [DELIVERY_B2B_STEP]: deliveryButton,
+  [DELIVERY_D2C_STEP]: deliveryButton,
 };
 
 const NAV_BUTTONS = {
@@ -416,6 +427,7 @@ const NAV_BUTTONS = {
   [POSTPONEMENT_STEP]: "postponement",
   [FULFILLMENT_STEP]: "fulfillment",
   [DELIVERY_B2B_STEP]: "delivery",
+  [DELIVERY_D2C_STEP]: "delivery",
 };
 
 const handleMenuButtonClick = (e) => {
