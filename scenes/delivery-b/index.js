@@ -181,13 +181,13 @@ const initD2CScene = () => {
   });
 
   vanD2C = roverD2C0.clone();
-  vanD2C.position.clone(parts["van"].position);
+  vanD2C.position.clone(parts["rover"].position);
   vanD2C.position.z = 8545;
   vanD2C.position.x -= 500;
   vanD2C.visible = true;
   const scaleFactor = 200;
   vanD2C.scale.set(scaleFactor, scaleFactor, scaleFactor);
-  parts["van"].visible = false;
+  parts["rover"].visible = false;
   d2cScene.add(vanD2C);
 
   vanD2CMaterial = vanD2C.material.clone();
@@ -272,32 +272,32 @@ export const launchDeliveryD2C0Scene = (resolve) => {
 };
 
 export const launchDeliveryD2CScene = (resolve) => {
-  showOverlay("white", 600).then(() => {
-    initD2CScene();
-    hideOverlay(600).then(() => {
-      const timeline = anime.timeline({
-        autoplay: false,
-        easing: "easeInOutSine",
-        complete: resolve,
-      });
-      timeline
-        .add({
-          duration: COLOR_TRANSITION_DURATION,
-          targets: vanD2CMaterial,
-          emissiveIntensity: 0.2,
-          __color: PURPLE,
-          update: () => {
-            vanD2CMaterial.color.set(vanD2CMaterial.__color);
-          },
-        })
-        .add({
-          targets: [vanD2C.position, camera.position],
-          z: (_, i) => (i === 0 ? -2225 : -70),
-          duration: 3000,
-        });
-      timeline.play();
-    });
+  // showOverlay("white", 600).then(() => {
+  //   initD2CScene();
+  //   hideOverlay(600).then(() => {
+  const timeline = anime.timeline({
+    autoplay: false,
+    easing: "easeInOutSine",
+    complete: resolve,
   });
+  timeline
+    .add({
+      duration: COLOR_TRANSITION_DURATION,
+      targets: vanD2CMaterial,
+      emissiveIntensity: 0.2,
+      __color: PURPLE,
+      update: () => {
+        vanD2CMaterial.color.set(vanD2CMaterial.__color);
+      },
+    })
+    .add({
+      targets: [vanD2C.position, camera.position],
+      z: (_, i) => (i === 0 ? -2225 : -70),
+      duration: 3000,
+    });
+  timeline.play();
+  //   });
+  // });
 };
 
 const launchDeliveryB2BScene = (resolve) => {
@@ -675,5 +675,7 @@ export const initDeliveryBSceneObject = ({
   // });
 
   sceneObject = { scene, camera, onResize };
+  initD2C0Scene();
+  initD2CScene();
   return sceneObject;
 };
