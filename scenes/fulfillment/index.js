@@ -373,8 +373,8 @@ const initDeliveryScene = () => {
   sceneObject.scene = deliveryScene;
   sceneObject.camera = deliveryCamera;
   sceneObject.onResize = (newSizes) => {
-    camera.aspect = newSizes.width / newSizes.height;
-    camera.updateProjectionMatrix();
+    sceneObject.camera.aspect = newSizes.width / newSizes.height;
+    sceneObject.camera.updateProjectionMatrix();
   };
 };
 
