@@ -83,6 +83,11 @@ const initB2BScene = () => {
       obj.material.emissive = whiteColor;
     }
   });
+  const plane = parts["Plane"];
+  plane.material.normalMap.wrapS = THREE.RepeatWrapping;
+  plane.material.normalMap.wrapT = THREE.RepeatWrapping;
+  plane.material.normalMap.repeat = new THREE.Vector2(10, 20);
+  plane.material.emissiveIntensity = 0.8;
 
   vanB2B = parts["van"];
   vanB2B.position.z = 3500;
@@ -688,6 +693,12 @@ export const initDeliveryBSceneObject = ({
   //   }
   //   console.log(camera.position);
   // });
+
+  const ground = parts["Plane"];
+  ground.material.normalMap.wrapS = THREE.RepeatWrapping;
+  ground.material.normalMap.wrapT = THREE.RepeatWrapping;
+  ground.material.normalMap.repeat = new THREE.Vector2(50, 20);
+  ground.material.emissiveIntensity = 0.6;
 
   sceneObject = { scene, camera, onResize };
   return sceneObject;
