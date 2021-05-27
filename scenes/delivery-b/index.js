@@ -281,32 +281,32 @@ export const launchDeliveryD2C0Scene = (resolve) => {
 };
 
 export const launchDeliveryD2CScene = (resolve) => {
-  // showOverlay("white", 600).then(() => {
-  //   initD2CScene();
-  //   hideOverlay(600).then(() => {
-  const timeline = anime.timeline({
-    autoplay: false,
-    easing: "easeInOutSine",
-    complete: resolve,
-  });
-  timeline
-    .add({
-      duration: COLOR_TRANSITION_DURATION,
-      targets: vanD2CMaterial,
-      emissiveIntensity: 0.2,
-      __color: PURPLE,
-      update: () => {
-        vanD2CMaterial.color.set(vanD2CMaterial.__color);
-      },
-    })
-    .add({
-      targets: [vanD2C.position, camera.position],
-      z: (_, i) => (i === 0 ? -2225 : -70),
-      duration: 3000,
+  showOverlay("white", 600).then(() => {
+    initD2CScene();
+    hideOverlay(600).then(() => {
+      const timeline = anime.timeline({
+        autoplay: false,
+        easing: "easeInOutSine",
+        complete: resolve,
+      });
+      timeline
+        .add({
+          duration: COLOR_TRANSITION_DURATION,
+          targets: vanD2CMaterial,
+          emissiveIntensity: 0.2,
+          __color: PURPLE,
+          update: () => {
+            vanD2CMaterial.color.set(vanD2CMaterial.__color);
+          },
+        })
+        .add({
+          targets: [vanD2C.position, camera.position],
+          z: (_, i) => (i === 0 ? -2225 : -70),
+          duration: 3000,
+        });
+      timeline.play();
     });
-  timeline.play();
-  //   });
-  // });
+  });
 };
 
 const launchDeliveryB2BScene = (resolve) => {
@@ -684,7 +684,5 @@ export const initDeliveryBSceneObject = ({
   // });
 
   sceneObject = { scene, camera, onResize };
-  initD2C0Scene();
-  initD2CScene();
   return sceneObject;
 };
