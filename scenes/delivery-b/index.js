@@ -221,54 +221,54 @@ const initD2CScene = () => {
 };
 
 export const launchDeliveryD2C0Scene = (resolve) => {
-  showOverlay("white", 600).then(() => {
-    initD2C0Scene();
-    hideOverlay(600).then(() => {
-      const timeline = anime.timeline({
-        autoplay: false,
-        easing: "easeInOutSine",
-        complete: () => launchDeliveryD2CScene(resolve),
-      });
-      timeline
-        .add({
-          targets: vanD2C0.position,
-          z: -90,
-          duration: 2000,
-          complete: () => {
-            packageD2C0.visible = true;
-          },
-        })
-        .add({
-          targets: roverD2C0.position,
-          z: 24,
-          duration: 2000,
-        })
-        .add({
-          targets: packageD2C0.position,
-          z: 27,
-          y: 10,
-          duration: 1000,
-        })
-        .add({
-          targets: vanD2C0.position,
-          z: "-=700",
-          duration: 1500,
-          complete: () => {
-            vanD2C0.visible = false;
-          },
-        })
-        .add({
-          targets: [roverD2C0.position, packageD2C0.position],
-          z: "-=700",
-          duration: 1500,
-          complete: () => {
-            roverD2C0.visible = false;
-            packageD2C0.visible = false;
-          },
-        });
-      timeline.play();
-    });
+  // showOverlay("white", 600).then(() => {
+  //   initD2C0Scene();
+  // hideOverlay(600).then(() => {
+  const timeline = anime.timeline({
+    autoplay: false,
+    easing: "easeInOutSine",
+    complete: () => launchDeliveryD2CScene(resolve),
   });
+  timeline
+    .add({
+      targets: vanD2C0.position,
+      z: -90,
+      duration: 2000,
+      complete: () => {
+        packageD2C0.visible = true;
+      },
+    })
+    .add({
+      targets: roverD2C0.position,
+      z: 24,
+      duration: 2000,
+    })
+    .add({
+      targets: packageD2C0.position,
+      z: 27,
+      y: 10,
+      duration: 1000,
+    })
+    .add({
+      targets: vanD2C0.position,
+      z: "-=700",
+      duration: 1500,
+      complete: () => {
+        vanD2C0.visible = false;
+      },
+    })
+    .add({
+      targets: [roverD2C0.position, packageD2C0.position],
+      z: "-=700",
+      duration: 1500,
+      complete: () => {
+        roverD2C0.visible = false;
+        packageD2C0.visible = false;
+      },
+    });
+  timeline.play();
+  //   });
+  // });
 };
 
 export const launchDeliveryD2CScene = (resolve) => {
@@ -675,6 +675,6 @@ export const initDeliveryBSceneObject = ({
   // });
 
   sceneObject = { scene, camera, onResize };
-  initB2BScene();
+  initD2C0Scene();
   return sceneObject;
 };

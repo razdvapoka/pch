@@ -70,6 +70,7 @@ import {
   initDeliveryBSceneObject,
   launchDeliveryBScene,
   launchDeliveryB2BScene,
+  launchDeliveryD2C0Scene,
 } from "./scenes/delivery-b";
 import {
   initOrderD2CSceneObject,
@@ -118,7 +119,7 @@ let orderD2CModel;
 let deliveryC_B2B_Model;
 let deliveryC_D2C_Model;
 let deliveryC0_D2C_Model;
-let isD2C = false;
+let isD2C = true;
 let isLogoUploaded = false;
 
 const checkIfD2C = () => {
@@ -572,7 +573,7 @@ const handleTodayButtonClick = () => {
 
 const addEventListeners = () => {
   tomorrowButton.addEventListener("click", handleTomorrowButtonClick);
-  launchButton.addEventListener("click", launchDeliveryB2BScene);
+  launchButton.addEventListener("click", launchDeliveryD2C0Scene);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
   d2cButton.addEventListener("click", handleD2CButtonClick);
