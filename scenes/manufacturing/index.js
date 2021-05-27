@@ -10,6 +10,7 @@ let camera;
 let scene;
 let model;
 let purpleMaterial;
+let vynilMaterial;
 let parts = {};
 // let transformControls;
 
@@ -63,11 +64,20 @@ export const launchManufacturingScene = () =>
             offset
           )
           .add({
-            duration: 1000,
+            duration: 600,
             targets: phone.position,
             easing: "linear",
-            x: -120,
-          });
+            x: -80,
+          })
+          .add(
+            {
+              duration: 600,
+              targets: vynilMaterial.normalMap.offset,
+              easing: "linear",
+              x: -80,
+            },
+            "-=600"
+          );
         timeline.play();
       });
 
@@ -102,6 +112,12 @@ export const initManufacturingSceneObject = ({ manufacturingModel, sizes }) => {
       }
     }
   });
+
+  const vynil = parts["vynil"];
+  vynil.material.normalMap.wrapS = THREE.RepeatWrapping;
+  vynil.material.normalMap.wrapT = THREE.RepeatWrapping;
+  vynil.material.normalMap.repeat = new THREE.Vector2(2, 10);
+  vynilMaterial = vynil.material;
 
   // const axesHelper = new THREE.AxesHelper(1000);
   // scene.add(axesHelper);
