@@ -191,9 +191,9 @@ const initD2CScene = () => {
   d2cScene.add(vanD2C);
 
   vanD2CMaterial = vanD2C.material.clone();
-  vanD2CMaterial.emissiveIntensity = 0.3;
-  vanD2CMaterial.emissive = whiteColor.clone();
-  vanD2CMaterial.color = whiteColor.clone();
+  vanD2CMaterial.emissiveIntensity = 0.45;
+  vanD2CMaterial.emissive = new THREE.Color("#ebebeb");
+  vanD2CMaterial.color = new THREE.Color("#ebebeb");
   vanD2CMaterial.__color = WHITE;
   vanD2C.material = vanD2CMaterial;
 
@@ -284,10 +284,11 @@ export const launchDeliveryD2CScene = (resolve) => {
     .add({
       duration: COLOR_TRANSITION_DURATION,
       targets: vanD2CMaterial,
-      emissiveIntensity: 0.2,
+      emissiveIntensity: 0.5,
       __color: PURPLE,
       update: () => {
         vanD2CMaterial.color.set(vanD2CMaterial.__color);
+        vanD2CMaterial.emissive.set(vanD2CMaterial.__color);
       },
     })
     .add({
