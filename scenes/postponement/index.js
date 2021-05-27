@@ -137,6 +137,7 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
         delay: 500,
         targets: purpleMaterial,
         easing: "easeOutExpo",
+        emissiveIntensity: 0.8,
         __color: PURPLE,
         __emissive: PURPLE,
         update: () => {
