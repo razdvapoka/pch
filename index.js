@@ -574,7 +574,7 @@ const handleTodayButtonClick = () => {
 
 const addEventListeners = () => {
   tomorrowButton.addEventListener("click", handleTomorrowButtonClick);
-  launchButton.addEventListener("click", launchDeliveryD2CScene);
+  launchButton.addEventListener("click", launchDeliveryBScene);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
   d2cButton.addEventListener("click", handleD2CButtonClick);

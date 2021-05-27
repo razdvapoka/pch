@@ -675,7 +675,5 @@ export const initDeliveryBSceneObject = ({
   // });
 
   sceneObject = { scene, camera, onResize };
-  initD2C0Scene();
-  initD2CScene();
   return sceneObject;
 };
