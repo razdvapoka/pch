@@ -41,7 +41,7 @@ export const launchOrderD2CScene = () =>
         timeline.add({
           duration: COLOR_TRANSITION_DURATION,
           targets: laptopMaterial,
-          emissiveIntensity: 0.5,
+          emissiveIntensity: 1,
           __color: PURPLE,
           __emissive: PURPLE,
           update: () => {
@@ -83,19 +83,21 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
   parts["screen"].material = laptopMaterial;
   parts["buttons"].material = laptopMaterial;
 
+  console.log(parts);
+  const screenEmInt = 0.85;
   screenInit = parts["screen-init"];
   screenFinal = parts["screen-final"];
   screenFinal.visible = false;
   screenInitMaterial = screenInit.material;
   screenInitMaterial.color = new THREE.Color(WHITE);
-  screenInitMaterial.emissive = new THREE.Color(WHITE);
-  screenInitMaterial.emissiveIntensity = 0.45;
+  // screenInitMaterial.emissive = new THREE.Color(WHITE);
+  screenInitMaterial.emissiveIntensity = screenEmInt;
   screenInitMaterial.metalness = 0;
   screenInitMaterial.roughness = 1;
   screenFinalMaterial = screenFinal.material;
   screenFinalMaterial.color = new THREE.Color(WHITE);
-  screenFinalMaterial.emissive = new THREE.Color(WHITE);
-  screenFinalMaterial.emissiveIntensity = 0.45;
+  // screenFinalMaterial.emissive = new THREE.Color(WHITE);
+  screenFinalMaterial.emissiveIntensity = screenEmInt;
   screenFinalMaterial.metalness = 0;
   screenFinalMaterial.roughness = 1;
 
@@ -104,12 +106,13 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
 
   const aspect = sizes.width / sizes.height;
   camera = new THREE.PerspectiveCamera(FOV / aspect, aspect, 0.1, 2500);
+  const cameraY = 1.2;
   camera.position.copy({
-    x: -0.6639131743538825,
-    y: 51.77881705665486,
-    z: 86.61668236918044,
+    x: 0,
+    y: cameraY,
+    z: 10,
   });
-  const cameraTarget = new THREE.Vector3(0, 10, 0);
+  const cameraTarget = new THREE.Vector3(0, cameraY, 0);
   const controls = new OrbitControls(camera, canvas);
   controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
