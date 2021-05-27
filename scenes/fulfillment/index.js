@@ -73,55 +73,55 @@ let planeShadow;
 const PURPLE_EM_INT = 0.9;
 
 export const launchDeliveryScene = (resolve) => {
-  showOverlay("white", 600).then(() => {
-    initDeliveryScene();
-    hideOverlay(600).then(() => {
-      const timeline = anime.timeline({
-        autoplay: false,
-        easing: "easeInOutSine",
-        complete: resolve,
-      });
-      timeline
-        .add({
-          duration: 500,
-          targets: planeMaterial,
-          emissiveIntensity: PURPLE_EM_INT,
-          __color: PURPLE,
-          __emissive: PURPLE,
-          update: () => {
-            planeMaterial.color.set(planeMaterial.__color);
-            planeMaterial.emissive.set(planeMaterial.__emissive);
-          },
-        })
-        .add(
-          {
-            duration: 2000,
-            targets: plane.position,
-            y: 15000,
-            z: 30000,
-          },
-          "-=500"
-        )
-        .add(
-          {
-            targets: planeShadow.material,
-            opacity: 0,
-            duration: 800,
-          },
-          "-=2000"
-        )
-        .add(
-          {
-            targets: planeShadow.position,
-            z: "+=300",
-            duration: 1000,
-          },
-          "-=2000"
-        );
-
-      timeline.play();
-    });
+  // showOverlay("white", 600).then(() => {
+  // initDeliveryScene();
+  // hideOverlay(600).then(() => {
+  const timeline = anime.timeline({
+    autoplay: false,
+    easing: "easeInOutSine",
+    complete: resolve,
   });
+  timeline
+    .add({
+      duration: 500,
+      targets: planeMaterial,
+      emissiveIntensity: PURPLE_EM_INT,
+      __color: PURPLE,
+      __emissive: PURPLE,
+      update: () => {
+        planeMaterial.color.set(planeMaterial.__color);
+        planeMaterial.emissive.set(planeMaterial.__emissive);
+      },
+    })
+    .add(
+      {
+        duration: 2000,
+        targets: plane.position,
+        y: 15000,
+        z: 30000,
+      },
+      "-=500"
+    )
+    .add(
+      {
+        targets: planeShadow.material,
+        opacity: 0,
+        duration: 800,
+      },
+      "-=2000"
+    )
+    .add(
+      {
+        targets: planeShadow.position,
+        z: "+=300",
+        duration: 1000,
+      },
+      "-=2000"
+    );
+
+  timeline.play();
+  //   });
+  // });
 };
 
 export const launchFulfillmentScene = () =>
@@ -373,8 +373,8 @@ const initDeliveryScene = () => {
   sceneObject.scene = deliveryScene;
   sceneObject.camera = deliveryCamera;
   sceneObject.onResize = (newSizes) => {
-    camera.aspect = newSizes.width / newSizes.height;
-    camera.updateProjectionMatrix();
+    sceneObject.camera.aspect = newSizes.width / newSizes.height;
+    sceneObject.camera.updateProjectionMatrix();
   };
 };
 
@@ -583,5 +583,6 @@ export const initFulfillmentSceneObject = ({
   // });
 
   sceneObject = { scene, camera, onResize };
+  initDeliveryScene();
   return sceneObject;
 };

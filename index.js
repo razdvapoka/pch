@@ -61,6 +61,7 @@ import {
 import {
   initFulfillmentSceneObject,
   launchFulfillmentScene,
+  launchDeliveryScene,
 } from "./scenes/fulfillment";
 import {
   initPostponementSceneObject,
@@ -135,6 +136,7 @@ manager.onLoad = () => {
     setElementVisibility(launchButton, true);
     progressBar.style.opacity = 0;
     hideOverlay(800);
+    setCurrentStep(FULFILLMENT_STEP);
   });
 };
 
@@ -145,15 +147,15 @@ gltfLoader.setDRACOLoader(dracoLoader);
 gltfLoader.load(pyramidSrc, (gltf) => {
   setPyramidModel(gltf.scene.children[0]);
 });
-gltfLoader.load(serversModelSrc, (gltf) => {
-  serversModel = gltf.scene.children[0];
-});
-gltfLoader.load(manufacturingModelSrc, (gltf) => {
-  manufacturingModel = gltf.scene.children[0];
-});
-gltfLoader.load(postponementModelSrc, (gltf) => {
-  postponementModel = gltf.scene.children[0];
-});
+// gltfLoader.load(serversModelSrc, (gltf) => {
+//   serversModel = gltf.scene.children[0];
+// });
+// gltfLoader.load(manufacturingModelSrc, (gltf) => {
+//   manufacturingModel = gltf.scene.children[0];
+// });
+// gltfLoader.load(postponementModelSrc, (gltf) => {
+//   postponementModel = gltf.scene.children[0];
+// });
 gltfLoader.load(fulfillmentModelSrc, (gltf) => {
   fulfillmentModel = gltf.scene.children[0];
 });
@@ -172,9 +174,9 @@ gltfLoader.load(deliveryC_D2C_ModelSrc, (gltf) => {
 gltfLoader.load(deliveryC0_D2C_ModelSrc, (gltf) => {
   deliveryC0_D2C_Model = gltf.scene.children[0];
 });
-gltfLoader.load(orderD2CModelSrc, (gltf) => {
-  orderD2CModel = gltf.scene.children[0];
-});
+// gltfLoader.load(orderD2CModelSrc, (gltf) => {
+//   orderD2CModel = gltf.scene.children[0];
+// });
 
 const textureLoader = new THREE.TextureLoader(manager);
 const lightMap = textureLoader.load(lightMapTexture);
@@ -570,7 +572,7 @@ const handleTodayButtonClick = () => {
 
 const addEventListeners = () => {
   tomorrowButton.addEventListener("click", handleTomorrowButtonClick);
-  launchButton.addEventListener("click", handleLaunchButtonClick);
+  launchButton.addEventListener("click", launchDeliveryScene);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
   d2cButton.addEventListener("click", handleD2CButtonClick);
