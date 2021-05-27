@@ -165,16 +165,16 @@ const initD2C0Scene = () => {
 
 const initD2CScene = () => {
   const d2cScene = new THREE.Scene();
-  d2cScene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(100, 75, 45);
+  d2cScene.background = new THREE.Color("#ebebeb");
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.3);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.3);
+  directionalLight.position.set(60, 50, 10);
   d2cScene.add(ambientLight, directionalLight);
   parts = {};
   d2cModel.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
+      obj.material.emissiveIntensity = 0.75;
       obj.material.color = whiteColor;
       obj.material.emissive = whiteColor;
     }
