@@ -174,9 +174,18 @@ const initD2CScene = () => {
   d2cModel.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
-      obj.material.color = whiteColor;
-      obj.material.emissive = whiteColor;
+      if (obj.name === "road") {
+        obj.material.color = new THREE.Color("#B8B8B8");
+        obj.material.emissive = new THREE.Color("#949494");
+        obj.material.normalScale = new THREE.Vector2(0.5, 0.5);
+        obj.material.normalMap.wrapS = THREE.RepeatWrapping;
+        obj.material.normalMap.wrapT = THREE.RepeatWrapping;
+        obj.material.normalMap.repeat.set(10, 100);
+      } else {
+        obj.material.emissiveIntensity = 0.3;
+        obj.material.color = whiteColor;
+        obj.material.emissive = whiteColor;
+      }
     }
   });
 
