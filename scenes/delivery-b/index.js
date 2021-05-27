@@ -69,16 +69,16 @@ let vanMaterial;
 
 const initB2BScene = () => {
   const b2bScene = new THREE.Scene();
-  b2bScene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.42);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(100, 75, 45);
+  b2bScene.background = new THREE.Color("#ebebeb");
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.42);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.4);
+  directionalLight.position.set(40, 30, 10);
   b2bScene.add(ambientLight, directionalLight);
   parts = {};
   b2bModel.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.3;
+      obj.material.emissiveIntensity = 0.6;
       obj.material.color = whiteColor;
       obj.material.emissive = whiteColor;
     }
@@ -88,8 +88,8 @@ const initB2BScene = () => {
   vanB2B.position.z = 3500;
 
   vanB2BMaterial = cart.material.clone();
-  vanB2BMaterial.color = whiteColor.clone();
-  vanB2BMaterial.__color = WHITE;
+  vanB2BMaterial.color = new THREE.Color("#ebebeb")
+  vanB2BMaterial.__color = "#ebebeb";
   vanB2B.traverse((obj) => {
     if (obj.type === "Mesh") {
       obj.material = vanB2BMaterial;
@@ -318,10 +318,11 @@ export const launchDeliveryB2BScene = (resolve) => {
     .add({
       duration: COLOR_TRANSITION_DURATION,
       targets: vanB2BMaterial,
-      emissiveIntensity: 0.2,
+      emissiveIntensity: 0.4,
       __color: PURPLE,
       update: () => {
         vanB2BMaterial.color.set(vanB2BMaterial.__color);
+        vanB2BMaterial.emissive.set(vanB2BMaterial.__color);
       },
     })
     .add({
