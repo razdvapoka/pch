@@ -70,6 +70,7 @@ import {
   initDeliveryBSceneObject,
   launchDeliveryBScene,
   launchDeliveryB2BScene,
+  launchDeliveryD2CScene,
   launchDeliveryD2C0Scene,
 } from "./scenes/delivery-b";
 import {
@@ -573,7 +574,7 @@ const handleTodayButtonClick = () => {
 
 const addEventListeners = () => {
   tomorrowButton.addEventListener("click", handleTomorrowButtonClick);
-  launchButton.addEventListener("click", launchDeliveryD2C0Scene);
+  launchButton.addEventListener("click", launchDeliveryD2CScene);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
   d2cButton.addEventListener("click", handleD2CButtonClick);
