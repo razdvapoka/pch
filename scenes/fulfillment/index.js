@@ -335,6 +335,11 @@ const initDeliveryScene = () => {
     }
   });
 
+  const landingLane = parts["landing_lane"];
+  landingLane.material.normalMap.wrapS = THREE.RepeatWrapping;
+  landingLane.material.normalMap.wrapT = THREE.RepeatWrapping;
+  landingLane.material.normalMap.repeat = new THREE.Vector2(1, 100);
+
   deliveryScene.add(deliveryModel);
 
   planeShadow = new THREE.Mesh(
@@ -454,8 +459,8 @@ export const initFulfillmentSceneObject = ({
   cube133 = parts["Cube133_1"];
   cube131 = parts["Cube131_1"];
   containerA = parts["container_a"];
-  leftDoor = parts["left_door_3"];
-  rightDoor = parts["right_door_3"];
+  leftDoor = parts["left_door"];
+  rightDoor = parts["right_door"];
   truck = parts["active_truck"];
 
   parts["Cube134"].visible = false;
