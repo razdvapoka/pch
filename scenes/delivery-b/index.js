@@ -142,6 +142,12 @@ const initD2C0Scene = () => {
     }
   });
 
+  const road = parts["road"];
+  road.material.emissiveIntensity = 1.3;
+  road.material.normalMap.wrapS = THREE.RepeatWrapping;
+  road.material.normalMap.wrapT = THREE.RepeatWrapping;
+  road.material.normalMap.repeat = new THREE.Vector2(1, 20);
+
   vanD2C0 = parts["van"];
   roverD2C0 = parts["rover"];
   packageD2C0 = parts["package"];
