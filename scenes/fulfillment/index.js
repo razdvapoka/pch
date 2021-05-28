@@ -95,7 +95,7 @@ export const launchDeliveryScene = (resolve) => {
         })
         .add(
           {
-            duration: 2000,
+            duration: 4000,
             targets: plane.position,
             y: 15000,
             z: 30000,
@@ -106,17 +106,17 @@ export const launchDeliveryScene = (resolve) => {
           {
             targets: planeShadow.material,
             opacity: 0,
-            duration: 800,
+            duration: 2000,
           },
-          "-=2000"
+          "-=4000"
         )
         .add(
           {
             targets: planeShadow.position,
-            z: "+=300",
-            duration: 1000,
+            z: "+=400",
+            duration: 2000,
           },
-          "-=2000"
+          "-=4000"
         );
 
       timeline.play();
@@ -324,6 +324,7 @@ const initDeliveryScene = () => {
   });
 
   plane = parts["plane_update"];
+  plane.translateZ(-3000);
   planeMaterial = plane.children[0].material.clone();
   planeMaterial.color = new THREE.Color(BASE);
   planeMaterial.emissive = new THREE.Color(EMISSIVE);
@@ -353,8 +354,8 @@ const initDeliveryScene = () => {
   );
   planeShadow.rotateX(-Math.PI / 2);
   planeShadow.rotateZ(Math.PI / 2);
-  planeShadow.translateX(100);
-  planeShadow.translateY(10);
+  planeShadow.translateX(250);
+  planeShadow.translateY(-10);
   planeShadow.translateZ(1);
   deliveryScene.add(planeShadow);
 
