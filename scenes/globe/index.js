@@ -545,9 +545,14 @@ export const switchToTomorrow = () => {
         o.hasMovingPoints = true;
       }
     });
+    customData.forEach((o) => {
+      if (o.hideTomorrow && o.objType === "label") {
+        o.isHidden = true;
+      }
+    });
     globe
       .customLayerData([
-        ...customData,
+        ...customData.filter((o) => !(o.objType !== "label" && o.hideTomorrow)),
         ...pyramids,
         shenzhenAirport,
         shenzhenLabel,
@@ -578,6 +583,11 @@ export const switchToToday = () => {
     restArcsData.forEach((arcData) => {
       const arc = customData.find((o) => o.id === arcData.id);
       arc.hasMovingPoints = false;
+    });
+    customData.forEach((o) => {
+      if (o.hideTomorrow && o.objType === "label") {
+        o.isHidden = false;
+      }
     });
     resetCurveAnimations();
     globe
@@ -986,6 +996,12 @@ export const resetGlobeScene = () => {
   });
   resetCurveAnimations();
   setMaxPointTimeout(DEFAULT_POINT_TIMEOUT);
+
+  customData.forEach((o) => {
+    if (o.hideTomorrow && o.objType === "label") {
+      o.isHidden = false;
+    }
+  });
 
   globe
     .customLayerData([

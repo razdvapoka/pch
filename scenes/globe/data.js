@@ -129,12 +129,14 @@ export const customData = [
     lng: 18.9032797724225021,
     objType: "tb",
     id: uid(),
+    hideTomorrow: true,
   },
   {
     lat: 55.879624090684273,
     lng: 22.9032797724225021,
     objType: "tb",
     id: uid(),
+    hideTomorrow: true,
   },
   {
     lat: 53.479624090684273,
@@ -143,6 +145,7 @@ export const customData = [
     label: "B2B Hubs",
     id: uid(),
     state: EUROPE_STATE,
+    hideTomorrow: true,
   },
 
   // Europe B2C Hubs
@@ -151,12 +154,14 @@ export const customData = [
     lng: 0.9032797724225021,
     objType: "tb",
     id: uid(),
+    hideTomorrow: true,
   },
   {
     lat: 46.879624090684273,
     lng: 4.4032797724225021,
     objType: "tb",
     id: uid(),
+    hideTomorrow: true,
   },
   {
     lat: 44.879624090684273,
@@ -165,25 +170,8 @@ export const customData = [
     label: "B2C Hubs",
     id: uid(),
     state: EUROPE_STATE,
+    hideTomorrow: true,
   },
-
-  // Europe labels
-  // {
-  //   lat: 46.879624090684273,
-  //   lng: 19.9032797724225021,
-  //   objType: "label",
-  //   label: "B2B Hubs",
-  //   id: uid(),
-  //   state: EUROPE_STATE,
-  // },
-  // {
-  //   lat: 48.879624090684273,
-  //   lng: 20.9032797724225021,
-  //   objType: "label",
-  //   label: "B2С Hubs",
-  //   id: uid(),
-  //   state: EUROPE_STATE,
-  // },
 
   // USA B2B Hubs
   {
@@ -191,12 +179,14 @@ export const customData = [
     lng: 253.9032797724225021,
     objType: "tb",
     id: uid(),
+    hideTomorrow: true,
   },
   {
     lat: 39.179624090684273,
     lng: 253.9032797724225021,
     objType: "tb",
     id: uid(),
+    hideTomorrow: true,
   },
   {
     lat: 32.179624090684273,
@@ -205,6 +195,7 @@ export const customData = [
     label: "B2B Hubs",
     id: uid(),
     state: USA_STATE,
+    hideTomorrow: true,
   },
 
   // USA B2C Hubs
@@ -213,12 +204,14 @@ export const customData = [
     lng: 265.9032797724225021,
     objType: "tb",
     id: uid(),
+    hideTomorrow: true,
   },
   {
     lat: 43.179624090684273,
     lng: 265.9032797724225021,
     objType: "tb",
     id: uid(),
+    hideTomorrow: true,
   },
   {
     lat: 37.179624090684273,
@@ -227,6 +220,7 @@ export const customData = [
     label: "B2С Hubs",
     id: uid(),
     state: USA_STATE,
+    hideTomorrow: true,
   },
 
   // China
