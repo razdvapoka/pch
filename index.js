@@ -309,7 +309,10 @@ const setHeadingText = (text) => {
 };
 
 const getPathButtonClickHandler = (transition, heading, d2c) => () => {
-  transition().then(() => {
+  transition(() =>
+    showOverlay("#5C63FF", 600).then(() => showOverlay("white", 300))
+  ).then(() => {
+    hideOverlay(300);
     setCurrentStep(d2c ? ORDER_D2C_STEP : ORDER_B2B_STEP);
     isD2C = d2c;
     setLightTheme();
@@ -317,9 +320,7 @@ const getPathButtonClickHandler = (transition, heading, d2c) => () => {
     setElementVisibility(d2c ? placeOrderD2CButton : placeOrderButton, true);
     setElementVisibility(globeButton, true);
     setHeadingText(heading);
-    hideOverlay(600);
   });
-  showOverlay("white", 300, 700);
   setElementVisibility(pathButtons, false);
   setElementVisibility(todayButton, false);
   setElementVisibility(longFlghts, false);
@@ -382,32 +383,28 @@ const getGlobeTransitioner = ({
   nextButton,
   nextStep,
   navButton,
-  waitBeforeOverlay = 1500,
 }) => () => {
   setElementVisibility(startButton, false);
-  return launchScene()
-    .then(() => wait(1000))
-    .then(() => {
-      setElementVisibility(nav, false);
-      setElementVisibility(heading, false);
-      setElementVisibility(globeButton, false);
-      showOverlay("white", 600).then(() => {
-        setCurrentSceneObject(getGlobeSceneObject());
-        hideOverlay(600);
-        transition();
-        wait(waitBeforeOverlay)
-          .then(() => showOverlay("white", 300, 300))
-          .then(() => {
-            setElementVisibility(heading, true);
-            setElementVisibility(nav, true);
-            setElementVisibility(globeButton, true);
-            setElementVisibility(nextButton, true);
-            setCurrentStep(nextStep);
-            setNavButtonActive(navButton);
-            hideOverlay(300);
-          });
+  return launchScene().then(() => {
+    setElementVisibility(nav, false);
+    setElementVisibility(heading, false);
+    setElementVisibility(globeButton, false);
+    showOverlay("white", 600).then(() => {
+      setCurrentSceneObject(getGlobeSceneObject());
+      transition(
+        () => hideOverlay(300), // along with zoom-out
+        () => showOverlay("#5C63FF", 600).then(() => showOverlay("white", 300)) // along with zoom-in
+      ).then(() => {
+        hideOverlay(300);
+        setElementVisibility(heading, true);
+        setElementVisibility(nav, true);
+        setElementVisibility(globeButton, true);
+        setElementVisibility(nextButton, true);
+        setCurrentStep(nextStep);
+        setNavButtonActive(navButton);
       });
     });
+  });
 };
 
 const NEXT_BUTTONS = {
@@ -496,7 +493,6 @@ const handleFulfillmentClick = getGlobeTransitioner({
   nextButton: deliveryButton,
   nextStep: DELIVERY_B2B_STEP,
   navButton: "delivery",
-  waitBeforeOverlay: 2500,
 });
 
 const showRestartScene = () => {

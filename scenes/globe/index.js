@@ -609,17 +609,17 @@ export const launchGlobeScene = () => {
   });
 };
 
-export const globeToB2B = () => {
+export const globeToB2B = (cb) => {
   hideNavButtons();
   return rotateToUSA()
-    .then(() => zoomIn())
+    .then(() => Promise.all([cb(), zoomIn()]))
     .then(() => wait(100));
 };
 
-export const globeToD2C = () => {
+export const globeToD2C = (cb) => {
   hideNavButtons();
   return leftRotateToEurope()
-    .then(() => zoomIn())
+    .then(() => Promise.all[(cb(), zoomIn())])
     .then(() => wait(100));
 };
 
@@ -772,8 +772,9 @@ const getTransition = (
   initialTheta,
   initialPhi,
   initialR = ZOOMED_CAM_R
-) => () => {
+) => (cb1, cb2) => {
   setObjectPositionOnSphere(camera, initialTheta, initialPhi, initialR);
+  cb1 && cb1();
   return zoomOut()
     .then(() => {
       setHtmlElementsHidden(false);
@@ -781,7 +782,7 @@ const getTransition = (
     })
     .then(() => {
       setHtmlElementsHidden(true);
-      zoomIn();
+      return Promise.all([cb2 ? cb2() : Promise.resolve(), zoomIn()]);
     });
 };
 
