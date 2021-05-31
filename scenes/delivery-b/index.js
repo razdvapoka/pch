@@ -212,6 +212,8 @@ const initD2CScene = () => {
 
   camera.position.copy({ x: -12, y: 205, z: 210 });
   cameraTarget = new THREE.Vector3(-13, 0, 210);
+
+  
   camera.lookAt(cameraTarget);
   // controls.target = cameraTarget;
   // controls.update();
