@@ -69,6 +69,7 @@ import {
 import {
   initDeliveryBSceneObject,
   launchDeliveryBScene,
+  launchDeliveryB2BScene,
 } from "./scenes/delivery-b";
 import {
   initOrderD2CSceneObject,
@@ -135,6 +136,7 @@ manager.onLoad = () => {
     setElementVisibility(launchButton, true);
     progressBar.style.opacity = 0;
     hideOverlay(800);
+    setCurrentStep(DELIVERY_B2B_STEP);
   });
 };
 
@@ -578,7 +580,7 @@ const handleTodayButtonClick = () => {
 
 const addEventListeners = () => {
   tomorrowButton.addEventListener("click", handleTomorrowButtonClick);
-  launchButton.addEventListener("click", handleLaunchButtonClick);
+  launchButton.addEventListener("click", launchDeliveryB2BScene);
   uploadLogoInput.addEventListener("change", handleLogoUpload);
   b2bButton.addEventListener("click", handleB2BButtonClick);
   d2cButton.addEventListener("click", handleD2CButtonClick);

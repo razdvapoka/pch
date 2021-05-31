@@ -7,7 +7,7 @@ import anime from "animejs/lib/anime.es.js";
 import { showOverlay, hideOverlay } from "../../ui";
 import { SKIP, BASE, EMISSIVE } from "../../consts";
 
-const WHITE = "#b7b7b7";
+const WHITE = "#ebebeb";
 const PURPLE = "#5964fa";
 const COLOR_TRANSITION_DURATION = 700;
 const SCALE_FACTOR = 0.03;
@@ -69,32 +69,34 @@ let vanMaterial;
 
 const initB2BScene = () => {
   const b2bScene = new THREE.Scene();
-  b2bScene.background = new THREE.Color("#ebebeb");
-  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.42);
-  const directionalLight = new THREE.DirectionalLight(0xebebeb, 1);
+  b2bScene.background = new THREE.Color(WHITE);
+  const ambientLight = new THREE.AmbientLight(WHITE, 0.4);
+  const directionalLight = new THREE.DirectionalLight(WHITE, 0.5);
   directionalLight.position.set(40, 30, 10);
   b2bScene.add(ambientLight, directionalLight);
   parts = {};
   b2bModel.traverse((obj) => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 0.6;
+      obj.material.emissiveIntensity = 0.5;
       obj.material.color = whiteColor;
       obj.material.emissive = whiteColor;
     }
   });
   const plane = parts["Plane"];
+  console.log(plane.material);
   plane.material.normalMap.wrapS = THREE.RepeatWrapping;
   plane.material.normalMap.wrapT = THREE.RepeatWrapping;
   plane.material.normalMap.repeat = new THREE.Vector2(10, 20);
-  plane.material.emissiveIntensity = 0.8;
+  // plane.material.emissiveIntensity = 0.8;
 
   vanB2B = parts["van"];
   vanB2B.position.z = 3500;
 
   vanB2BMaterial = cart.material.clone();
-  vanB2BMaterial.color = new THREE.Color("#ebebeb");
-  vanB2BMaterial.__color = "#ebebeb";
+  vanB2BMaterial.color = new THREE.Color(WHITE);
+  vanB2BMaterial.emissive = new THREE.Color(WHITE);
+  vanB2BMaterial.__color = WHITE;
   vanB2B.traverse((obj) => {
     if (obj.type === "Mesh") {
       obj.material = vanB2BMaterial;
@@ -321,39 +323,39 @@ export const launchDeliveryD2CScene = (resolve) => {
   });
 };
 
-const launchDeliveryB2BScene = (resolve) => {
-  showOverlay("white", 600).then(() => {
-    initB2BScene();
-    hideOverlay(600).then(() => {
-      const timeline = anime.timeline({
-        autoplay: false,
-        easing: "easeInOutSine",
-        complete: resolve,
-      });
-      timeline
-        .add({
-          targets: camera.position,
-          y: 200,
-          duration: 500,
-        })
-        .add({
-          duration: COLOR_TRANSITION_DURATION,
-          targets: vanB2BMaterial,
-          emissiveIntensity: 0.4,
-          __color: PURPLE,
-          update: () => {
-            vanB2BMaterial.color.set(vanB2BMaterial.__color);
-            vanB2BMaterial.emissive.set(vanB2BMaterial.__color);
-          },
-        })
-        .add({
-          targets: [vanB2B.position, camera.position],
-          z: (_, i) => (i === 0 ? -9690 : -290),
-          duration: 3000,
-        });
-      timeline.play();
-    });
+export const launchDeliveryB2BScene = (resolve) => {
+  // showOverlay("white", 600).then(() => {
+  //   initB2BScene();
+  //   hideOverlay(600).then(() => {
+  const timeline = anime.timeline({
+    autoplay: false,
+    easing: "easeInOutSine",
+    complete: resolve,
   });
+  timeline
+    .add({
+      targets: camera.position,
+      y: 200,
+      duration: 500,
+    })
+    .add({
+      duration: COLOR_TRANSITION_DURATION,
+      targets: vanB2BMaterial,
+      emissiveIntensity: 0.4,
+      __color: PURPLE,
+      update: () => {
+        vanB2BMaterial.color.set(vanB2BMaterial.__color);
+        vanB2BMaterial.emissive.set(vanB2BMaterial.__color);
+      },
+    })
+    .add({
+      targets: [vanB2B.position, camera.position],
+      z: (_, i) => (i === 0 ? -9690 : -290),
+      duration: 3000,
+    });
+  timeline.play();
+  //   });
+  // });
 };
 
 export const launchDeliveryBScene = () =>
@@ -706,5 +708,6 @@ export const initDeliveryBSceneObject = ({
   ground.material.emissiveIntensity = 0.6;
 
   sceneObject = { scene, camera, onResize };
+  initB2BScene();
   return sceneObject;
 };
