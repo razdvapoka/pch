@@ -774,8 +774,8 @@ const leftRotateToFulfillment = getCameraRotator(
   1500
 );
 
-const zoomIn = getCameraRotator(null, null, ZOOMED_CAM_R);
-const zoomOut = getCameraRotator(null, null, CAM_R);
+const zoomIn = getCameraRotator(null, null, ZOOMED_CAM_R, false, 1000);
+const zoomOut = getCameraRotator(null, null, CAM_R, false, 1000);
 
 const getTransition = (
   rotateToDestination,

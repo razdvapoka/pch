@@ -40,7 +40,7 @@ export const LIGHT_1_CHINA_R = 400;
 export const LIGHT_2_INTRO_THETA = -2.74;
 export const LIGHT_2_INTRO_PHI = 1.413;
 
-export const ROTATION_DURATION = 500;
+export const ROTATION_DURATION = 666;
 
 export const DEFAULT_POINT_TIMEOUT = 50000;
 

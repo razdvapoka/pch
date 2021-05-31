@@ -28,6 +28,7 @@ import {
   ORDER_D2C_STEP,
   RESET_STEP,
   DEFAULT_POINT_TIMEOUT,
+  ROTATION_DURATION,
 } from "./consts";
 
 import { wait } from "./utils";
@@ -310,9 +311,9 @@ const setHeadingText = (text) => {
 
 const getPathButtonClickHandler = (transition, heading, d2c) => () => {
   transition(() =>
-    showOverlay("#5C63FF", 600).then(() => showOverlay("white", 300))
+    showOverlay("#5C63FF", 1000).then(() => showOverlay("white", 600))
   ).then(() => {
-    hideOverlay(300);
+    hideOverlay(600);
     setCurrentStep(d2c ? ORDER_D2C_STEP : ORDER_B2B_STEP);
     isD2C = d2c;
     setLightTheme();
@@ -392,10 +393,10 @@ const getGlobeTransitioner = ({
     showOverlay("white", 600).then(() => {
       setCurrentSceneObject(getGlobeSceneObject());
       transition(
-        () => hideOverlay(300), // along with zoom-out
-        () => showOverlay("#5C63FF", 600).then(() => showOverlay("white", 300)) // along with zoom-in
+        () => hideOverlay(600), // along with zoom-out
+        () => showOverlay("#5C63FF", 1000).then(() => showOverlay("white", 600)) // along with zoom-in
       ).then(() => {
-        hideOverlay(300);
+        hideOverlay(600);
         setElementVisibility(heading, true);
         setElementVisibility(nav, true);
         setElementVisibility(globeButton, true);
