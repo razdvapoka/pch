@@ -37,6 +37,12 @@ export const LIGHT_1_CHINA_THETA = 0.89;
 export const LIGHT_1_CHINA_PHI = 1.553;
 export const LIGHT_1_CHINA_R = 400;
 
+export const LIGHT_1_USA_THETA = 4.72;
+export const LIGHT_1_USA_PHI = 1.32;
+
+export const LIGHT_1_EROPE_THETA = 1.04;
+export const LIGHT_1_EUROPE_PHI = 1.32;
+
 export const LIGHT_2_INTRO_THETA = -2.74;
 export const LIGHT_2_INTRO_PHI = 1.413;
 

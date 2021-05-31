@@ -28,7 +28,6 @@ import {
   ORDER_D2C_STEP,
   RESET_STEP,
   DEFAULT_POINT_TIMEOUT,
-  ROTATION_DURATION,
 } from "./consts";
 
 import { wait } from "./utils";
