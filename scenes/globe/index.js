@@ -629,7 +629,7 @@ export const globeToB2B = (cb) => {
 export const globeToD2C = (cb) => {
   hideNavButtons();
   return leftRotateToEurope()
-    .then(() => Promise.all[(cb(), zoomIn())])
+    .then(() => Promise.all([cb(), zoomIn()]))
     .then(() => wait(100));
 };
 
