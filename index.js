@@ -106,6 +106,9 @@ import {
   longFlghts,
   todayButton,
   menuButtons,
+  gradTop,
+  gradBottom,
+  logo,
 } from "./ui";
 
 let serversModel;
@@ -309,18 +312,26 @@ const setHeadingText = (text) => {
   heading.innerText = text;
 };
 
-const getPathButtonClickHandler = (transition, heading, d2c) => () => {
+const getPathButtonClickHandler = (transition, headingText, d2c) => () => {
+  setElementVisibility(heading, false);
+  setElementVisibility(logo, false);
   transition(() =>
-    showOverlay("#5C63FF", 1000).then(() => showOverlay("white", 600))
+    showOverlay("#5C63FF", 1000).then(() => {
+      return showOverlay("white", 600);
+    })
   ).then(() => {
     hideOverlay(600);
     setCurrentStep(d2c ? ORDER_D2C_STEP : ORDER_B2B_STEP);
     isD2C = d2c;
     setLightTheme();
     setNavVisibility(true);
+    setElementVisibility(heading, true);
+    setElementVisibility(logo, true);
+    setElementVisibility(gradTop, true);
+    setElementVisibility(gradBottom, true);
     setElementVisibility(d2c ? placeOrderD2CButton : placeOrderButton, true);
     setElementVisibility(globeButton, true);
-    setHeadingText(heading);
+    setHeadingText(headingText);
   });
   setElementVisibility(pathButtons, false);
   setElementVisibility(todayButton, false);
@@ -390,6 +401,9 @@ const getGlobeTransitioner = ({
     setElementVisibility(nav, false);
     setElementVisibility(heading, false);
     setElementVisibility(globeButton, false);
+    setElementVisibility(gradTop, false);
+    setElementVisibility(gradBottom, false);
+    setElementVisibility(logo, false);
     showOverlay("white", 600).then(() => {
       setCurrentSceneObject(getGlobeSceneObject());
       transition(
@@ -397,6 +411,9 @@ const getGlobeTransitioner = ({
         () => showOverlay("#5C63FF", 1000).then(() => showOverlay("white", 600)) // along with zoom-in
       ).then(() => {
         hideOverlay(600);
+        setElementVisibility(gradTop, true);
+        setElementVisibility(gradBottom, true);
+        setElementVisibility(logo, true);
         setElementVisibility(heading, true);
         setElementVisibility(nav, true);
         setElementVisibility(globeButton, true);
@@ -510,6 +527,8 @@ const handleDeliveryButtonClick = () => {
   return launchDeliveryBScene().then(() => {
     setElementVisibility(nav, false);
     setElementVisibility(heading, false);
+    setElementVisibility(gradTop, false);
+    setElementVisibility(gradBottom, false);
     showOverlay("black", 600).then(() => {
       setCurrentStep(RESET_STEP);
       const explosionBox = document.querySelector(".explosion-box");
@@ -552,6 +571,8 @@ const handleGlobeButtonClick = () => {
   setElementVisibility(nav, false);
   setElementVisibility(heading, false);
   setElementVisibility(globeButton, false);
+  setElementVisibility(gradTop, false);
+  setElementVisibility(gradBottom, false);
   const actionButton = document.querySelector(".action-button:not(.hidden)");
   setElementVisibility(actionButton, false);
   setDarkTheme();
@@ -561,6 +582,7 @@ const handleGlobeButtonClick = () => {
     sceneToChinaRotator(currentStep)().then(() => {
       setElementVisibility(pathButtons, true);
       setElementVisibility(heading, true);
+      setElementVisibility(todayButton, true);
       setHeadingText("Tomorrow");
       showNavButtons();
       setHtmlElementsHidden(false);

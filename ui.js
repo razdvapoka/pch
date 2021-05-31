@@ -1,5 +1,8 @@
 import { wait } from "./utils";
 
+export const logo = document.querySelector(".logo");
+export const gradTop = document.querySelector(".grad-top");
+export const gradBottom = document.querySelector(".grad-bottom");
 export const todayButton = document.querySelector(".today-button");
 export const longFlghts = document.querySelector(".long-flights");
 export const canvas = document.querySelector("#canvas");
