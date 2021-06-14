@@ -54,6 +54,9 @@ const animateCurvePoint = (curvePoints, duration) => {
         delete visiblePoints[id];
       }
     },
+    complete: () => {
+      delete animations[id];
+    },
   });
 };
 
@@ -75,6 +78,16 @@ const launchCurveAnimationLoop = (id, curvePoints, dist) => {
 };
 
 const getArcAnimationHandle = (id) => arcAnimationHandles[id];
+
+export const pauseCurveAnimations = () => {
+  Object.values(arcAnimationHandles).forEach(clearTimeout);
+  arcAnimationHandles = {};
+  Object.values(animations).forEach((a) => a.pause());
+};
+
+export const resumePointAnimations = () => {
+  Object.values(animations).forEach((a) => a.play());
+};
 
 export const resetCurveAnimations = () => {
   Object.values(arcAnimationHandles).forEach(clearTimeout);

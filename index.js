@@ -51,8 +51,9 @@ import {
   showNavButtons,
   setHtmlElementsHidden,
   getTransitionFromStepToStep,
+  resumeCurveAnimations,
 } from "./scenes/globe";
-import { setMaxPointTimeout } from "./scenes/globe/arcs";
+import { setMaxPointTimeout, pauseCurveAnimations } from "./scenes/globe/arcs";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
 import {
   initManufacturingSceneObject,
@@ -620,6 +621,12 @@ const addEventListeners = () => {
     button.addEventListener("click", handleMenuButtonClick)
   );
   window.addEventListener("resize", onResize);
+  window.addEventListener("blur", () => {
+    pauseCurveAnimations();
+  });
+  window.addEventListener("focus", () => {
+    resumeCurveAnimations();
+  });
 };
 
 addEventListeners();

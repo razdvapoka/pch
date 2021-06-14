@@ -24,6 +24,7 @@ import {
   getArcAnimationHandle,
   setMaxPointTimeout,
   resetCurveAnimations,
+  resumePointAnimations,
 } from "./arcs";
 
 import {
@@ -229,6 +230,15 @@ const handleArcObject = (arc) => {
     const curve = calcCurve(arc);
     launchCurveAnimationLoop(arc.id, curve.getPoints(1500), dist);
   }
+};
+
+export const resumeCurveAnimations = () => {
+  resumePointAnimations();
+  customData.forEach((o) => {
+    if (o.objType === "arc") {
+      handleArcObject(o);
+    }
+  });
 };
 
 const handleCustomObject = (objData) => {
@@ -589,7 +599,13 @@ export const switchToTomorrow = () => {
   setAesterisksVisible(true);
   currentStepLabel.classList.add("hidden");
   const rotator = getBackToChinaRotator();
-  Promise.all([rotator(), rotateLight1ToChina()]).then(() => {
+  const lightRotator =
+    currentGlobeState === CHINA_STATE
+      ? () => Promise.resolve()
+      : currentGlobeState === USA_STATE
+      ? rotateLight1ToChina
+      : rotateLight1ToChinaLeft;
+  Promise.all([rotator(), lightRotator()]).then(() => {
     setCurrentGlobeState(CHINA_STATE);
     setHtmlElementsHidden(false);
     updateCurrentStepLabel(CHINA_STATE);
@@ -769,6 +785,13 @@ const rotateLight1ToChina = getObjectRotator(
   LIGHT_1_CHINA_R,
   getLight1,
   true
+);
+
+const rotateLight1ToChinaLeft = getObjectRotator(
+  LIGHT_1_CHINA_THETA,
+  LIGHT_1_CHINA_PHI,
+  LIGHT_1_CHINA_R,
+  getLight1
 );
 
 const rotateLight1ToUSA = getObjectRotator(
