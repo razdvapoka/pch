@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 // import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
@@ -112,10 +112,10 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
     z: 10,
   });
   const cameraTarget = new THREE.Vector3(0, cameraY, 0);
-  const controls = new OrbitControls(camera, canvas);
-  controls.target = cameraTarget;
+  // const controls = new OrbitControls(camera, canvas);
+  // controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
-  controls.update();
+  // controls.update();
 
   // transformControls = new TransformControls(camera, canvas);
   // transformControls.attach(parts["glass"]);
@@ -135,7 +135,7 @@ export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
     camera.fov = FOV / aspect;
     camera.updateProjectionMatrix();
 
-    controls.update();
+    // controls.update();
   };
 
   // const gui = new dat.GUI();
