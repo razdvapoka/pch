@@ -52,6 +52,7 @@ import {
   setHtmlElementsHidden,
   getTransitionFromStepToStep,
   resumeCurveAnimations,
+  setCurrentGlobeState,
 } from "./scenes/globe";
 import { setMaxPointTimeout, pauseCurveAnimations } from "./scenes/globe/arcs";
 import { initServersSceneObject, launchServerScene } from "./scenes/servers";
@@ -522,6 +523,8 @@ const showRestartScene = () => {
   setElementVisibility(heading, true);
   setElementVisibility(restartButton, true);
   setElementVisibility(restartScene, true);
+  setElementVisibility(todayButton, true);
+  setElementVisibility(globeButton, false);
 };
 
 const handleDeliveryButtonClick = () => {
@@ -548,6 +551,7 @@ const handleDeliveryButtonClick = () => {
 
 const handleRestartButtonClick = () => {
   setElementVisibility(restartButton, false);
+  setElementVisibility(todayButton, false);
   setElementVisibility(nav, false);
   setElementVisibility(heading, false);
   setElementVisibility(restartScene, false);
@@ -595,9 +599,17 @@ const handleGlobeButtonClick = () => {
 
 const handleTodayButtonClick = () => {
   setElementVisibility(tomorrowButton, true);
+  setElementVisibility(currentStepLabel, true);
   setElementVisibility(pathButtons, false);
   setElementVisibility(todayButton, false);
   setElementVisibility(longFlghts, false);
+  heading.classList.add("today-heading");
+  heading.classList.remove("intro-heading");
+  if (currentStep === RESET_STEP) {
+    setCurrentGlobeState(USA_STATE);
+  }
+  setCurrentStep(GLOBE_STEP);
+  setElementVisibility(restartScene, false);
   setHeadingText("Today");
   switchToToday();
 };

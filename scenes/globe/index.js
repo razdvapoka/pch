@@ -131,7 +131,7 @@ export const setPyramidModel = (model) => {
   ]);
 };
 
-const setCurrentGlobeState = (s) => {
+export const setCurrentGlobeState = (s) => {
   currentGlobeState = s;
 };
 
@@ -572,6 +572,8 @@ const getBackToChinaRotator = () => {
       return rotateToChina;
     case CHINA_STATE:
       return () => Promise.resolve();
+    default:
+      return rotateToChina;
   }
 };
 
@@ -594,17 +596,20 @@ const setAesterisksVisible = (isVisible) => {
   });
 };
 
+const getBackToChinaLightRotator = () => {
+  return currentGlobeState === CHINA_STATE
+    ? () => Promise.resolve()
+    : currentGlobeState === USA_STATE
+    ? rotateLight1ToChina
+    : rotateLight1ToChinaLeft;
+};
+
 export const switchToTomorrow = () => {
   setHtmlElementsHidden(true);
   setAesterisksVisible(true);
   currentStepLabel.classList.add("hidden");
   const rotator = getBackToChinaRotator();
-  const lightRotator =
-    currentGlobeState === CHINA_STATE
-      ? () => Promise.resolve()
-      : currentGlobeState === USA_STATE
-      ? rotateLight1ToChina
-      : rotateLight1ToChinaLeft;
+  const lightRotator = getBackToChinaLightRotator();
   Promise.all([rotator(), lightRotator()]).then(() => {
     setCurrentGlobeState(CHINA_STATE);
     setHtmlElementsHidden(false);
@@ -648,7 +653,8 @@ export const switchToToday = () => {
   setHtmlElementsHidden(true);
   setAesterisksVisible(false);
   const rotator = getBackToChinaRotator();
-  rotator().then(() => {
+  const lightRotator = getBackToChinaLightRotator();
+  Promise.all([rotator(), lightRotator()]).then(() => {
     setCurrentGlobeState(CHINA_STATE);
     setHtmlElementsHidden(false);
     shenzhenLabel.isHidden = false;
@@ -908,7 +914,7 @@ export const transitionD2CToManufacturing = (cb1, cb2) =>
       EUROPE_CAM_THETA,
       EUROPE_CAM_PHI
     )(cb1, cb2),
-    rotateLight1ToChina(),
+    wait(1000).then(() => rotateLight1ToChinaLeft()),
   ]);
 
 export const transitionB2BToManufacturing = (cb1, cb2) =>
@@ -918,7 +924,7 @@ export const transitionB2BToManufacturing = (cb1, cb2) =>
       USA_CAM_THETA,
       USA_CAM_PHI
     )(cb1, cb2),
-    rotateLight1ToChina(),
+    wait(1000).then(() => rotateLight1ToChinaLeft()),
   ]);
 
 export const transitionToPostponement = (cb1, cb2) =>
@@ -928,7 +934,7 @@ export const transitionToPostponement = (cb1, cb2) =>
       MANUFACTURERS_CAM_THETA,
       MANUFACTURERS_CAM_PHI
     )(cb1, cb2),
-    rotateLight1ToChina(),
+    rotateLight1ToChinaLeft(),
   ]);
 
 export const transitionToFulfillment = (cb1, cb2) =>
@@ -938,7 +944,7 @@ export const transitionToFulfillment = (cb1, cb2) =>
       POSTPONEMENT_CAM_THETA,
       POSTPONEMENT_CAM_PHI
     )(cb1, cb2),
-    rotateLight1ToChina(),
+    rotateLight1ToChinaLeft(),
   ]);
 
 export const transitionToDelivery = (cb1, cb2) =>
@@ -948,7 +954,7 @@ export const transitionToDelivery = (cb1, cb2) =>
       FULFILLMENT_CAM_THETA,
       FULFILLMENT_CAM_PHI
     )(cb1, cb2),
-    rotateLight1ToUSA(),
+    wait(1000).then(() => rotateLight1ToUSA()),
   ]);
 
 export const transitionFromDeliveryToFulfillment = (cb1, cb2) =>
@@ -958,7 +964,7 @@ export const transitionFromDeliveryToFulfillment = (cb1, cb2) =>
       DELIVERY_CAM_THETA,
       DELIVERY_CAM_PHI
     )(cb1, cb2),
-    rotateLight1ToChina(),
+    wait(1000).then(() => rotateLight1ToChina()),
   ]);
 
 export const getTransitionFromStepToStep = (stepFrom, stepTo) => {
@@ -980,137 +986,138 @@ export const getGlobeSceneObject = () => {
 };
 
 export const initGlobeSceneObject = ({ lightMap, cloudsMap, sizes }) => {
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color("#000000");
+  if (!scene) {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color("#000000");
 
-  // Globe
-  globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
-    .rendererSize(new THREE.Vector2(sizes.width, sizes.height))
-    .globeImageUrl(globeImage)
-    .atmosphereColor("white")
-    .atmosphereAltitude(0.1)
-    .customLayerData(customData)
-    .customThreeObject(handleCustomObject)
-    .customThreeObjectUpdate(handleCustomObjectUpdate)
-    .arcsData(quarterArcsData)
-    .arcColor("color")
-    .arcAltitudeAutoScale((arc) => arc.altAutoScale)
-    .pathsData(pathsData)
-    .pathPointAlt(0.01)
-    .pathColor(() => "rgb(90, 100, 250)")
-    .onGlobeReady(() => {
-      handleGlobeReady();
-    });
+    // Globe
+    globe = new ThreeGlobe({ animateIn: false, atmosphereColor: "white" })
+      .rendererSize(new THREE.Vector2(sizes.width, sizes.height))
+      .globeImageUrl(globeImage)
+      .atmosphereColor("white")
+      .atmosphereAltitude(0.1)
+      .customLayerData(customData)
+      .customThreeObject(handleCustomObject)
+      .customThreeObjectUpdate(handleCustomObjectUpdate)
+      .arcsData(quarterArcsData)
+      .arcColor("color")
+      .arcAltitudeAutoScale((arc) => arc.altAutoScale)
+      .pathsData(pathsData)
+      .pathPointAlt(0.01)
+      .pathColor(() => "rgb(90, 100, 250)")
+      .onGlobeReady(() => {
+        handleGlobeReady();
+      });
 
-  // Globe mesh
-  globeMesh = globe.children[0].children[0].children[0];
-  const uv = globeMesh.geometry.getAttribute("uv").array;
-  globeMesh.geometry.setAttribute("uv2", new THREE.BufferAttribute(uv, 2));
+    // Globe mesh
+    globeMesh = globe.children[0].children[0].children[0];
+    const uv = globeMesh.geometry.getAttribute("uv").array;
+    globeMesh.geometry.setAttribute("uv2", new THREE.BufferAttribute(uv, 2));
 
-  // Globe material
-  material = globe.globeMaterial();
-  material.color = new THREE.Color("#2750CC");
-  material.lightMap = lightMap;
-  material.lightMapIntensity = 15;
+    // Globe material
+    material = globe.globeMaterial();
+    material.color = new THREE.Color("#2750CC");
+    material.lightMap = lightMap;
+    material.lightMapIntensity = 15;
 
-  scene.add(globe);
+    scene.add(globe);
 
-  cloudSphere = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(101, 64, 64),
-    new THREE.MeshStandardMaterial({
-      color: "white",
-      alphaMap: cloudsMap,
-      transparent: true,
-      opacity: 0,
-    })
-  );
-  globe.add(cloudSphere);
+    cloudSphere = new THREE.Mesh(
+      new THREE.SphereBufferGeometry(101, 64, 64),
+      new THREE.MeshStandardMaterial({
+        color: "white",
+        alphaMap: cloudsMap,
+        transparent: true,
+        opacity: 0,
+      })
+    );
+    globe.add(cloudSphere);
 
-  const aspect = sizes.width / sizes.height;
-
-  camera = new THREE.PerspectiveCamera(FOV / aspect, aspect, 0.1, 2500);
-  setObjectPositionOnSphere(
-    camera,
-    INTRO_CAM_THETA,
-    INTRO_CAM_PHI,
-    INTRO_CAM_R
-  );
-
-  light1 = createLight(LIGHT_1_INTRO_THETA, LIGHT_1_INTRO_PHI, 200);
-  light2 = createLight(LIGHT_2_INTRO_THETA, LIGHT_2_INTRO_PHI, 200);
-  light1.intensity = 2;
-  light2.intensity = 0;
-
-  scene.lights = { light1, light2 };
-
-  rightButton.addEventListener("click", handleRightButtonClick);
-  leftButton.addEventListener("click", handleLeftButtonClick);
-
-  tick = (elapsedTime, sizes) => {
-    if (isGlobeReady) {
-      updateGlobeHTMLElements(labels, sizes);
-      updateGlobeHTMLElements(explosions, sizes);
-      if (cloudSphere.material.opacity === 0) {
-        cloudSphere.material.opacity = 0.5;
-      }
-    }
-
-    cloudSphere.rotation.y = elapsedTime / 100;
-  };
-
-  camera.updateProjectionMatrix();
-
-  // const controls = new OrbitControls(camera, canvas);
-  // controls.update();
-
-  onResize = (sizes) => {
     const aspect = sizes.width / sizes.height;
-    camera.aspect = aspect;
-    camera.fov = FOV / aspect;
+
+    camera = new THREE.PerspectiveCamera(FOV / aspect, aspect, 0.1, 2500);
+    setObjectPositionOnSphere(
+      camera,
+      INTRO_CAM_THETA,
+      INTRO_CAM_PHI,
+      INTRO_CAM_R
+    );
+
+    light1 = createLight(LIGHT_1_INTRO_THETA, LIGHT_1_INTRO_PHI, 200);
+    light2 = createLight(LIGHT_2_INTRO_THETA, LIGHT_2_INTRO_PHI, 200);
+    light1.intensity = 2;
+    light2.intensity = 0;
+
+    scene.lights = { light1, light2 };
+
+    rightButton.addEventListener("click", handleRightButtonClick);
+    leftButton.addEventListener("click", handleLeftButtonClick);
+
+    tick = (elapsedTime, sizes) => {
+      if (isGlobeReady) {
+        updateGlobeHTMLElements(labels, sizes);
+        updateGlobeHTMLElements(explosions, sizes);
+        if (cloudSphere.material.opacity === 0) {
+          cloudSphere.material.opacity = 0.5;
+        }
+      }
+
+      cloudSphere.rotation.y = elapsedTime / 100;
+    };
+
     camera.updateProjectionMatrix();
+
+    // const controls = new OrbitControls(camera, canvas);
     // controls.update();
-  };
 
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("click", onClick);
+    onResize = (sizes) => {
+      const aspect = sizes.width / sizes.height;
+      camera.aspect = aspect;
+      camera.fov = FOV / aspect;
+      camera.updateProjectionMatrix();
+      // controls.update();
+    };
 
-  // const lightParams = {
-  //   theta: LIGHT_1_CHINA_THETA,
-  //   phi: LIGHT_1_CHINA_PHI,
-  //   r: LIGHT_1_CHINA_R,
-  // };
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("click", onClick);
 
-  // gui
-  //   .add(lightParams, "theta", -Math.PI * 2, Math.PI * 2, 0.01)
-  //   .onChange(() => {
-  //     setObjectPositionOnSphere(
-  //       light1,
-  //       lightParams.theta,
-  //       lightParams.phi,
-  //       lightParams.r
-  //     );
-  //     setObjectPositionOnSphere(
-  //       light1.target,
-  //       lightParams.theta + Math.PI,
-  //       lightParams.phi + Math.PI,
-  //       1
-  //     );
-  //   });
-  // gui.add(lightParams, "phi", -Math.PI * 2, Math.PI * 2, 0.01).onChange(() => {
-  //   setObjectPositionOnSphere(
-  //     light1,
-  //     lightParams.theta,
-  //     lightParams.phi,
-  //     lightParams.r
-  //   );
-  //   setObjectPositionOnSphere(
-  //     light1.target,
-  //     lightParams.theta + Math.PI,
-  //     lightParams.phi + Math.PI,
-  //     1
-  //   );
-  // });
+    // const lightParams = {
+    //   theta: LIGHT_1_CHINA_THETA,
+    //   phi: LIGHT_1_CHINA_PHI,
+    //   r: LIGHT_1_CHINA_R,
+    // };
 
+    // gui
+    //   .add(lightParams, "theta", -Math.PI * 2, Math.PI * 2, 0.01)
+    //   .onChange(() => {
+    //     setObjectPositionOnSphere(
+    //       light1,
+    //       lightParams.theta,
+    //       lightParams.phi,
+    //       lightParams.r
+    //     );
+    //     setObjectPositionOnSphere(
+    //       light1.target,
+    //       lightParams.theta + Math.PI,
+    //       lightParams.phi + Math.PI,
+    //       1
+    //     );
+    //   });
+    // gui.add(lightParams, "phi", -Math.PI * 2, Math.PI * 2, 0.01).onChange(() => {
+    //   setObjectPositionOnSphere(
+    //     light1,
+    //     lightParams.theta,
+    //     lightParams.phi,
+    //     lightParams.r
+    //   );
+    //   setObjectPositionOnSphere(
+    //     light1.target,
+    //     lightParams.theta + Math.PI,
+    //     lightParams.phi + Math.PI,
+    //     1
+    //   );
+    // });
+  }
   return { scene, camera, tick, onResize };
 };
 
