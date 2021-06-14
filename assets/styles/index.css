@@ -310,6 +310,18 @@ a, a:visited {
   margin-right: 1.5rem;
 }
 
+.current-step {
+  position: fixed;
+  top: 9rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 1.4;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
 .canvas-box {
   position: relative;
 }

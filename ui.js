@@ -1,5 +1,6 @@
 import { wait } from "./utils";
 
+export const currentStepLabel = document.querySelector(".current-step");
 export const logo = document.querySelector(".logo");
 export const gradTop = document.querySelector(".grad-top");
 export const gradBottom = document.querySelector(".grad-bottom");

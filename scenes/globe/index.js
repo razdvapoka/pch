@@ -7,6 +7,7 @@ import ThreeGlobe from "three-globe";
 import globeImage from "../../assets/images/earth-gray.png";
 import { calcCurve } from "./calcCurve";
 import { wait, setObjectPositionOnSphere, polar2Cartesian } from "../../utils";
+import { currentStepLabel } from "../../ui";
 // const gui = new dat.GUI();
 
 import {
@@ -131,6 +132,23 @@ export const setPyramidModel = (model) => {
 
 const setCurrentGlobeState = (s) => {
   currentGlobeState = s;
+};
+
+const updateCurrentStepLabel = (globeState) => {
+  switch (globeState) {
+    case CHINA_STATE: {
+      currentStepLabel.innerHTML = "China";
+      break;
+    }
+    case USA_STATE: {
+      currentStepLabel.innerHTML = "USA";
+      break;
+    }
+    case EUROPE_STATE: {
+      currentStepLabel.innerHTML = "Europe";
+      break;
+    }
+  }
 };
 
 const FOV = 60;
@@ -452,6 +470,7 @@ const hideAndRevealNav = (cb) => {
 
 const handleRightButtonClick = () => {
   setHtmlElementsHidden(true);
+  currentStepLabel.classList.add("hidden");
   switch (currentGlobeState) {
     case CHINA_STATE: {
       rotateToUSA();
@@ -459,6 +478,8 @@ const handleRightButtonClick = () => {
       hideAndRevealNav(() => {
         updateGlobeNavButtons(USA_STATE);
         setHtmlElementsHidden(false);
+        updateCurrentStepLabel(USA_STATE);
+        currentStepLabel.classList.remove("hidden");
       });
       setCurrentGlobeState(USA_STATE);
       return;
@@ -469,6 +490,8 @@ const handleRightButtonClick = () => {
       hideAndRevealNav(() => {
         updateGlobeNavButtons(EUROPE_STATE);
         setHtmlElementsHidden(false);
+        updateCurrentStepLabel(EUROPE_STATE);
+        currentStepLabel.classList.remove("hidden");
       });
       setCurrentGlobeState(EUROPE_STATE);
       return;
@@ -480,6 +503,8 @@ const handleRightButtonClick = () => {
         updateGlobeNavButtons(CHINA_STATE);
         setCurrentGlobeState(CHINA_STATE);
         setHtmlElementsHidden(false);
+        updateCurrentStepLabel(CHINA_STATE);
+        currentStepLabel.classList.remove("hidden");
       });
       return;
     }
@@ -488,6 +513,7 @@ const handleRightButtonClick = () => {
 
 const handleLeftButtonClick = () => {
   setHtmlElementsHidden(true);
+  currentStepLabel.classList.add("hidden");
   switch (currentGlobeState) {
     case CHINA_STATE: {
       leftRotateToEurope();
@@ -495,6 +521,8 @@ const handleLeftButtonClick = () => {
       hideAndRevealNav(() => {
         updateGlobeNavButtons(EUROPE_STATE);
         setHtmlElementsHidden(false);
+        updateCurrentStepLabel(EUROPE_STATE);
+        currentStepLabel.classList.remove("hidden");
       });
       setCurrentGlobeState(EUROPE_STATE);
       return;
@@ -505,6 +533,8 @@ const handleLeftButtonClick = () => {
       hideAndRevealNav(() => {
         updateGlobeNavButtons(USA_STATE);
         setHtmlElementsHidden(false);
+        updateCurrentStepLabel(USA_STATE);
+        currentStepLabel.classList.remove("hidden");
       });
       setCurrentGlobeState(USA_STATE);
       return;
@@ -516,6 +546,8 @@ const handleLeftButtonClick = () => {
         updateGlobeNavButtons(CHINA_STATE);
         setCurrentGlobeState(CHINA_STATE);
         setHtmlElementsHidden(false);
+        updateCurrentStepLabel(CHINA_STATE);
+        currentStepLabel.classList.remove("hidden");
       });
       return;
     }
@@ -555,10 +587,13 @@ const setAesterisksVisible = (isVisible) => {
 export const switchToTomorrow = () => {
   setHtmlElementsHidden(true);
   setAesterisksVisible(true);
+  currentStepLabel.classList.add("hidden");
   const rotator = getBackToChinaRotator();
-  rotator().then(() => {
+  Promise.all([rotator(), rotateLight1ToChina()]).then(() => {
     setCurrentGlobeState(CHINA_STATE);
     setHtmlElementsHidden(false);
+    updateCurrentStepLabel(CHINA_STATE);
+    currentStepLabel.classList.remove("hidden");
     Object.values(explosions).map((explosion) => {
       explosion.element.classList.add("active");
     });
@@ -644,6 +679,8 @@ export const launchGlobeScene = () => {
   return wait(600).then(() => {
     setCurrentGlobeState(CHINA_STATE);
     updateGlobeNavButtons(CHINA_STATE);
+    updateCurrentStepLabel(CHINA_STATE);
+    currentStepLabel.classList.remove("hidden");
     showNavButtons();
   });
 };
@@ -1092,6 +1129,7 @@ export const resetGlobeScene = () => {
   Object.values(explosions).map((explosion) => {
     explosion.element.classList.remove("active");
   });
+  currentStepLabel.classList.add("hidden");
   setAesterisksVisible(false);
   pyramids.forEach((p) => {
     p.isAnimated = false;

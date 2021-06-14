@@ -108,6 +108,7 @@ import {
   gradTop,
   gradBottom,
   logo,
+  currentStepLabel,
 } from "./ui";
 
 let serversModel;
@@ -314,6 +315,7 @@ const setHeadingText = (text) => {
 const getPathButtonClickHandler = (transition, headingText, d2c) => () => {
   setElementVisibility(heading, false);
   setElementVisibility(logo, false);
+  setElementVisibility(currentStepLabel, false);
   transition(() =>
     showOverlay("#5C63FF", 1000).then(() => {
       return showOverlay("white", 600);
@@ -582,6 +584,7 @@ const handleGlobeButtonClick = () => {
       setElementVisibility(pathButtons, true);
       setElementVisibility(heading, true);
       setElementVisibility(todayButton, true);
+      setElementVisibility(currentStepLabel, true);
       setHeadingText("Tomorrow");
       showNavButtons();
       setHtmlElementsHidden(false);
