@@ -41,7 +41,27 @@ export const launchPostponementScene = () =>
           .add({
             targets: boxTop.position,
             y: -28.6,
-          });
+          })
+          .add({
+            targets: [
+              parts["boxes"].position,
+              boxHolder.position,
+              phone.position,
+              boxTop.position,
+            ],
+            z: "-=130",
+            duration: 1500,
+            easing: "linear",
+          })
+          .add(
+            {
+              targets: vynilMaterial.normalMap.offset,
+              y: -150,
+              duration: 1500,
+              easing: "linear",
+            },
+            "-=1500"
+          );
         timeline.play();
       });
 
