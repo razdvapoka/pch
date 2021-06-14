@@ -1,5 +1,5 @@
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-// import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
 import * as THREE from "three";
@@ -21,6 +21,7 @@ let checkIfD2CFunction;
 let vanB2B;
 let vanB2BMaterial;
 let vanD2C;
+let packageD2C;
 let vanD2CMaterial;
 let cameraTarget;
 let sceneObject;
@@ -32,7 +33,7 @@ let b2bModel;
 let d2cModel;
 let d2c0Model;
 let parts = {};
-// let transformControls;
+let transformControls;
 let containerB;
 let cartGroup = new THREE.Group();
 let cartMaterial;
@@ -188,7 +189,8 @@ const initD2CScene = () => {
       if (obj.name === "road") {
         obj.material.color = new THREE.Color("#B8B8B8");
         obj.material.emissive = new THREE.Color("#949494");
-        obj.material.normalScale = new THREE.Vector2(0.5, 0.5);
+        obj.material.emissiveIntensity = 1.1;
+        obj.material.normalScale = new THREE.Vector2(0.1, 0.1);
         obj.material.normalMap.wrapS = THREE.RepeatWrapping;
         obj.material.normalMap.wrapT = THREE.RepeatWrapping;
         obj.material.normalMap.repeat.set(10, 100);
@@ -214,11 +216,21 @@ const initD2CScene = () => {
   vanD2CMaterial.emissiveIntensity = 0.45;
   vanD2CMaterial.emissive = new THREE.Color("#ebebeb");
   vanD2CMaterial.color = new THREE.Color("#ebebeb");
-  vanD2CMaterial.__color = WHITE;
+  vanD2CMaterial.__color = "#ebebeb";
   vanD2C.material = vanD2CMaterial;
 
+  packageD2C = packageD2C0.clone();
+  packageD2C.scale.set(5000, 5000, 5000);
+  packageD2C.position.copy({
+    x: -392,
+    y: 228,
+    z: -2591,
+  });
+  packageD2C.visible = false;
+  d2cScene.add(packageD2C);
+
   // transformControls = new TransformControls(camera, canvas);
-  // transformControls.attach(vanD2C);
+  // transformControls.attach(packageD2C);
   // transformControls.addEventListener("dragging-changed", function (event) {
   //   controls.enabled = !event.value;
   // });
@@ -226,6 +238,9 @@ const initD2CScene = () => {
   //   console.log(transformControls.object.position);
   //   console.log(transformControls.object.rotation);
   // });
+
+  // transformControls.setSize(100);
+  // d2cScene.add(transformControls);
 
   d2cScene.scale.set(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR);
   d2cScene.add(d2cModel);
@@ -304,7 +319,7 @@ export const launchDeliveryD2CScene = (resolve) => {
         .add({
           duration: COLOR_TRANSITION_DURATION,
           targets: vanD2CMaterial,
-          emissiveIntensity: 0.33,
+          emissiveIntensity: 0.7,
           __color: PURPLE,
           update: () => {
             vanD2CMaterial.color.set(vanD2CMaterial.__color);
@@ -313,8 +328,26 @@ export const launchDeliveryD2CScene = (resolve) => {
         })
         .add({
           targets: [vanD2C.position, camera.position],
-          z: (_, i) => (i === 0 ? -2225 : -70),
+          z: (_, i) => (i === 0 ? -2725 : -70),
           duration: 3000,
+        })
+        .add({
+          begin: () => {
+            packageD2C.visible = true;
+          },
+          targets: packageD2C.position,
+          z: -2173,
+          duration: 500,
+        })
+        .add({
+          targets: packageD2C.rotation,
+          z: `+=${Math.PI / 2}`,
+          duration: 500,
+        })
+        .add({
+          targets: packageD2C.position,
+          x: 726,
+          duration: 500,
         });
       timeline.play();
     });
