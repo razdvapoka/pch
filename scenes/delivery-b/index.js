@@ -19,6 +19,7 @@ let roverD2C0;
 let packageD2C0;
 let checkIfD2CFunction;
 let vanB2B;
+let packageB2B;
 let vanB2BMaterial;
 let vanD2C;
 let packageD2C;
@@ -102,8 +103,20 @@ const initB2BScene = () => {
     }
   });
 
+  d2c0Model.traverse((obj) => {
+    if (obj.type === "Mesh" && obj.name === "package") {
+      packageB2B = obj.clone();
+    }
+  });
+  packageB2B.visible = false;
+  packageB2B.material.color = new THREE.Color(PURPLE);
+  packageB2B.material.emissive = new THREE.Color(PURPLE);
+  packageB2B.material.emissiveIntensity = 0.4;
+  packageB2B.position.copy({ x: -7, y: 7, z: -303 });
+  b2bScene.add(packageB2B);
+
   // transformControls = new TransformControls(camera, canvas);
-  // transformControls.attach(vanB2B);
+  // transformControls.attach(packageB2B);
   // transformControls.addEventListener("dragging-changed", function (event) {
   //   controls.enabled = !event.value;
   // });
@@ -354,7 +367,7 @@ export const launchDeliveryD2CScene = (resolve) => {
   });
 };
 
-const launchDeliveryB2BScene = (resolve) => {
+export const launchDeliveryB2BScene = (resolve) => {
   showOverlay("white", 600).then(() => {
     initB2BScene();
     hideOverlay(600).then(() => {
@@ -380,9 +393,27 @@ const launchDeliveryB2BScene = (resolve) => {
           },
         })
         .add({
-          targets: [vanB2B.position, camera.position],
-          z: (_, i) => (i === 0 ? -9690 : -290),
+          targets: [vanB2B.position, camera.position, cameraTarget],
+          z: (_, i) => (i === 0 ? -10400 : -290),
           duration: 3000,
+        })
+        .add({
+          begin: () => {
+            packageB2B.visible = true;
+          },
+          targets: packageB2B.position,
+          z: -288,
+          duration: 500,
+        })
+        .add({
+          targets: packageB2B.rotation,
+          z: `+=${Math.PI / 2}`,
+          duration: 500,
+        })
+        .add({
+          targets: packageB2B.position,
+          x: 18,
+          duration: 500,
         });
       timeline.play();
     });
