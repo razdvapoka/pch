@@ -28,6 +28,7 @@ import {
   ORDER_D2C_STEP,
   RESET_STEP,
   DEFAULT_POINT_TIMEOUT,
+  USA_STATE,
 } from "./consts";
 
 import { wait } from "./utils";
@@ -598,20 +599,24 @@ const handleGlobeButtonClick = () => {
 };
 
 const handleTodayButtonClick = () => {
-  setElementVisibility(tomorrowButton, true);
-  setElementVisibility(currentStepLabel, true);
   setElementVisibility(pathButtons, false);
   setElementVisibility(todayButton, false);
   setElementVisibility(longFlghts, false);
   heading.classList.add("today-heading");
   heading.classList.remove("intro-heading");
+  setElementVisibility(launchButton, false);
+  setElementVisibility(restartButton, false);
   if (currentStep === RESET_STEP) {
     setCurrentGlobeState(USA_STATE);
   }
-  setCurrentStep(GLOBE_STEP);
-  setElementVisibility(restartScene, false);
-  setHeadingText("Today");
   switchToToday();
+  wait(200).then(() => {
+    setHeadingText("Today");
+    setElementVisibility(restartScene, false);
+    setCurrentStep(GLOBE_STEP);
+    setElementVisibility(tomorrowButton, true);
+    setElementVisibility(currentStepLabel, true);
+  });
 };
 
 const addEventListeners = () => {
