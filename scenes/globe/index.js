@@ -541,8 +541,20 @@ export const sceneToChinaRotator = () => {
     ]);
 };
 
+const setAesterisksVisible = (isVisible) => {
+  Object.values(labels).forEach((label) => {
+    if (label.data.hasAesterisk && label.data.subLabel) {
+      const subLabelElement = label.element.querySelector(".sub-label");
+      subLabelElement.innerHTML = isVisible
+        ? label.data.subLabel + " *"
+        : label.data.subLabel;
+    }
+  });
+};
+
 export const switchToTomorrow = () => {
   setHtmlElementsHidden(true);
+  setAesterisksVisible(true);
   const rotator = getBackToChinaRotator();
   rotator().then(() => {
     setCurrentGlobeState(CHINA_STATE);
@@ -583,6 +595,7 @@ export const switchToTomorrow = () => {
 
 export const switchToToday = () => {
   setHtmlElementsHidden(true);
+  setAesterisksVisible(false);
   const rotator = getBackToChinaRotator();
   rotator().then(() => {
     setCurrentGlobeState(CHINA_STATE);
@@ -1079,6 +1092,7 @@ export const resetGlobeScene = () => {
   Object.values(explosions).map((explosion) => {
     explosion.element.classList.remove("active");
   });
+  setAesterisksVisible(false);
   pyramids.forEach((p) => {
     p.isAnimated = false;
     p.isVisible = false;

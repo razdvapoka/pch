@@ -229,9 +229,10 @@ export const customData = [
     lng: 113.5993578911301,
     objType: "label",
     label: "hong kong",
-    subLabel: "airport *",
+    subLabel: "airport",
     id: uid(),
     state: CHINA_STATE,
+    hasAesterisk: true,
   },
   {
     lat: 28,
