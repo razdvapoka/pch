@@ -51,8 +51,8 @@ let usa;
 let eu;
 let boxA;
 let boxB;
-let boxAGroup = new THREE.Group();
-let boxBGroup = new THREE.Group();
+let boxAGroup; //= new THREE.Group();
+let boxBGroup; //= new THREE.Group();
 let boxesMaterial;
 let paletteA;
 let paletteAMaterial;
@@ -70,7 +70,7 @@ let plane;
 let planeMaterial;
 let planeShadow;
 
-const PURPLE_EM_INT = 0.9;
+const PURPLE_EM_INT = 0.7;
 
 export const launchDeliveryScene = (resolve) => {
   showOverlay("white", 600).then(() => {
@@ -144,6 +144,14 @@ export const launchFulfillmentScene = () =>
               boxesMaterial.emissive.set(boxesMaterial.__emissive);
             },
           })
+          .add(
+            {
+              duration: COLOR_TRANSITION_DURATION,
+              targets: [eu.position, usa.position],
+              z: 9.3,
+            },
+            "-=700"
+          )
           .add({
             targets: [
               camera.position,
@@ -392,8 +400,8 @@ export const initFulfillmentSceneObject = ({
 }) => {
   planeShadowAlphaMap = psam;
   s = sizes;
-  boxAGroup = new THREE.Group();
-  boxBGroup = new THREE.Group();
+  // boxAGroup = new THREE.Group();
+  // boxBGroup = new THREE.Group();
   paletteAGroup = new THREE.Group();
   containerAGroup = new THREE.Group();
   model = fulfillmentModel.clone();
@@ -454,24 +462,15 @@ export const initFulfillmentSceneObject = ({
 
   usa = parts["usa"];
   eu = parts["eu"];
-  boxA = parts["main_box_a"];
+  boxA = parts["main__box_a"];
   boxB = parts["main_box_b"];
   paletteA = parts["pallete_activation_a"];
-  cube133 = parts["Cube133_1"];
-  cube131 = parts["Cube131_1"];
   containerA = parts["container_a"];
-  leftDoor = parts["left_door"];
-  rightDoor = parts["right_door"];
+  leftDoor = parts["left_door_2"];
+  rightDoor = parts["right_door_2"];
   truck = parts["active_truck"];
 
-  parts["Cube134"].visible = false;
-  parts["Cube134_1"].visible = false;
   parts["Cube116_1"].visible = false;
-  parts["active_pallete_st1"].visible = false;
-  parts["active_pallete_st2"].visible = false;
-  parts["container_b"].visible = false;
-  cube133.position.x = -13.164300453074018;
-  cube131.position.x = -15.355573540012779;
 
   usa.material = usa.material.clone();
   usa.material.color = new THREE.Color("white");
@@ -482,12 +481,11 @@ export const initFulfillmentSceneObject = ({
   eu.material.emissive = new THREE.Color("white");
   eu.material.emissiveIntensity = 0.4;
 
-  // usa.position.z = 45;
-  // eu.position.z = 45;
-  boxBGroup.add(boxB, usa);
-  boxAGroup.add(boxA, eu);
-  scene.add(boxAGroup);
-  scene.add(boxBGroup);
+  boxAGroup = parts["phone_box_eu"];
+  boxBGroup = parts["phone_box_us"];
+
+  usa.position.z = 45;
+  eu.position.z = 45;
 
   boxesMaterial = boxA.material.clone();
   boxesMaterial.color = new THREE.Color(BASE);
@@ -496,7 +494,8 @@ export const initFulfillmentSceneObject = ({
   boxA.material = boxesMaterial;
   boxB.material = boxesMaterial;
 
-  paletteAMaterial = boxA.material.clone();
+  cube131 = parts["Cube131"];
+  paletteAMaterial = cube131.material.clone();
   paletteAMaterial.color = new THREE.Color(BASE);
   paletteAMaterial.__color = BASE;
   paletteAMaterial.__emissive = EMISSIVE;
