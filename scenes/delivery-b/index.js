@@ -212,13 +212,10 @@ const initD2CScene = () => {
     parts[obj.name] = obj;
     if (obj.type === "Mesh") {
       if (obj.name === "road") {
-        obj.material.color = new THREE.Color("#B8B8B8");
-        obj.material.emissive = new THREE.Color("#949494");
-        obj.material.emissiveIntensity = 1.1;
-        obj.material.normalScale = new THREE.Vector2(0.1, 0.1);
+        obj.material.emissiveIntensity = 1.2;
         obj.material.normalMap.wrapS = THREE.RepeatWrapping;
         obj.material.normalMap.wrapT = THREE.RepeatWrapping;
-        obj.material.normalMap.repeat.set(10, 100);
+        obj.material.normalMap.repeat.set(100, 100);
       } else {
         obj.material.emissiveIntensity = 0.75;
         obj.material.color = whiteColor;
@@ -390,58 +387,57 @@ export const launchDeliveryD2CScene = (resolve) => {
 };
 
 export const launchDeliveryB2BScene = (resolve) => {
-  // showOverlay("white", 600).then(() => {
-  //   initB2BScene();
-  //   hideOverlay(600).then(() => {
-  const timeline = anime.timeline({
-    autoplay: false,
-    easing: "easeInOutSine",
-    complete: resolve,
-  });
-  timeline
-    .add({
-      targets: camera.position,
-      y: 200,
-      duration: 500,
-    })
-    .add({
-      duration: COLOR_TRANSITION_DURATION,
-      targets: vanB2BMaterial,
-      emissiveIntensity: 0.4,
-      __color: PURPLE,
-      update: () => {
-        vanB2BMaterial.color.set(vanB2BMaterial.__color);
-        vanB2BMaterial.emissive.set(vanB2BMaterial.__color);
-      },
-    })
-    .add({
-      targets: [vanB2B.position, camera.position, cameraTarget],
-      z: (_, i) => (i === 0 ? -10400 : -290),
-      duration: 3000,
-    })
-    .add({
-      begin: () => {
-        packageB2B.visible = true;
-      },
-      targets: packageB2B.position,
-      z: -288,
-      duration: 500,
-    })
-    .add({
-      targets: packageB2B.rotation,
-      z: `+=${Math.PI / 2}`,
-      duration: 500,
-    })
-    .add({
-      targets: packageB2B.position,
-      x: 18,
-      duration: 500,
+  showOverlay("white", 600).then(() => {
+    initB2BScene();
+    hideOverlay(600).then(() => {
+      const timeline = anime.timeline({
+        autoplay: false,
+        easing: "easeInOutSine",
+        complete: resolve,
+      });
+      timeline
+        .add({
+          targets: camera.position,
+          y: 200,
+          duration: 500,
+        })
+        .add({
+          duration: COLOR_TRANSITION_DURATION,
+          targets: vanB2BMaterial,
+          emissiveIntensity: 0.4,
+          __color: PURPLE,
+          update: () => {
+            vanB2BMaterial.color.set(vanB2BMaterial.__color);
+            vanB2BMaterial.emissive.set(vanB2BMaterial.__color);
+          },
+        })
+        .add({
+          targets: [vanB2B.position, camera.position, cameraTarget],
+          z: (_, i) => (i === 0 ? -10400 : -290),
+          duration: 3000,
+        })
+        .add({
+          begin: () => {
+            packageB2B.visible = true;
+          },
+          targets: packageB2B.position,
+          z: -288,
+          duration: 500,
+        })
+        .add({
+          targets: packageB2B.rotation,
+          z: `+=${Math.PI / 2}`,
+          duration: 500,
+        })
+        .add({
+          targets: packageB2B.position,
+          x: 18,
+          duration: 500,
+        });
+      timeline.play();
     });
-  timeline.play();
+  });
 };
-// });
-// });
-// };
 
 export const launchDeliveryBScene = () =>
   SKIP
