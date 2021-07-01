@@ -140,9 +140,9 @@ const initB2BScene = () => {
 
 const initD2C0Scene = () => {
   const d2c0Scene = new THREE.Scene();
-  d2c0Scene.background = new THREE.Color("#ffffff");
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+  d2c0Scene.background = new THREE.Color("#ebebeb");
+  const ambientLight = new THREE.AmbientLight(0xebebeb, 0.3);
+  const directionalLight = new THREE.DirectionalLight(0xebebeb, 0.5);
   directionalLight.position.set(1000, 773, 166);
   d2c0Scene.add(ambientLight, directionalLight);
   parts = {};
@@ -162,10 +162,10 @@ const initD2C0Scene = () => {
   });
 
   const road = parts["road"];
-  road.material.emissiveIntensity = 1.3;
+  road.material.emissiveIntensity = 1.2;
   road.material.normalMap.wrapS = THREE.RepeatWrapping;
   road.material.normalMap.wrapT = THREE.RepeatWrapping;
-  road.material.normalMap.repeat = new THREE.Vector2(1, 20);
+  road.material.normalMap.repeat = new THREE.Vector2(100, 100);
 
   vanD2C0 = parts["van"];
   roverD2C0 = parts["rover"];
@@ -184,6 +184,18 @@ const initD2C0Scene = () => {
   camera.lookAt(cameraTarget);
   // controls.target = cameraTarget;
   // controls.update();
+  // transformControls = new TransformControls(camera, canvas);
+  // transformControls.attach(packageD2C0);
+  // transformControls.addEventListener("dragging-changed", function (event) {
+  // controls.enabled = !event.value;
+  // });
+  // transformControls.addEventListener("change", () => {
+  //   console.log(transformControls.object.position);
+  //   console.log(transformControls.object.rotation);
+  // });
+
+  // transformControls.setSize(30);
+  // d2c0Scene.add(transformControls);
 
   sceneObject.scene = d2c0Scene;
 };
@@ -287,15 +299,14 @@ export const launchDeliveryD2C0Scene = (resolve) => {
           },
         })
         .add({
-          targets: roverD2C0.position,
-          z: 24,
-          duration: 2000,
+          targets: packageD2C0.position,
+          z: -20,
+          duration: 500,
         })
         .add({
           targets: packageD2C0.position,
-          z: 27,
-          y: 10,
-          duration: 1000,
+          x: -56,
+          duration: 500,
         })
         .add({
           targets: vanD2C0.position,
@@ -304,6 +315,17 @@ export const launchDeliveryD2C0Scene = (resolve) => {
           complete: () => {
             vanD2C0.visible = false;
           },
+        })
+        .add({
+          targets: roverD2C0.position,
+          z: -32,
+          duration: 2000,
+        })
+        .add({
+          targets: packageD2C0.position,
+          x: 68,
+          y: 20,
+          duration: 500,
         })
         .add({
           targets: [roverD2C0.position, packageD2C0.position],
@@ -368,57 +390,58 @@ export const launchDeliveryD2CScene = (resolve) => {
 };
 
 export const launchDeliveryB2BScene = (resolve) => {
-  showOverlay("white", 600).then(() => {
-    initB2BScene();
-    hideOverlay(600).then(() => {
-      const timeline = anime.timeline({
-        autoplay: false,
-        easing: "easeInOutSine",
-        complete: resolve,
-      });
-      timeline
-        .add({
-          targets: camera.position,
-          y: 200,
-          duration: 500,
-        })
-        .add({
-          duration: COLOR_TRANSITION_DURATION,
-          targets: vanB2BMaterial,
-          emissiveIntensity: 0.4,
-          __color: PURPLE,
-          update: () => {
-            vanB2BMaterial.color.set(vanB2BMaterial.__color);
-            vanB2BMaterial.emissive.set(vanB2BMaterial.__color);
-          },
-        })
-        .add({
-          targets: [vanB2B.position, camera.position, cameraTarget],
-          z: (_, i) => (i === 0 ? -10400 : -290),
-          duration: 3000,
-        })
-        .add({
-          begin: () => {
-            packageB2B.visible = true;
-          },
-          targets: packageB2B.position,
-          z: -288,
-          duration: 500,
-        })
-        .add({
-          targets: packageB2B.rotation,
-          z: `+=${Math.PI / 2}`,
-          duration: 500,
-        })
-        .add({
-          targets: packageB2B.position,
-          x: 18,
-          duration: 500,
-        });
-      timeline.play();
-    });
+  // showOverlay("white", 600).then(() => {
+  //   initB2BScene();
+  //   hideOverlay(600).then(() => {
+  const timeline = anime.timeline({
+    autoplay: false,
+    easing: "easeInOutSine",
+    complete: resolve,
   });
+  timeline
+    .add({
+      targets: camera.position,
+      y: 200,
+      duration: 500,
+    })
+    .add({
+      duration: COLOR_TRANSITION_DURATION,
+      targets: vanB2BMaterial,
+      emissiveIntensity: 0.4,
+      __color: PURPLE,
+      update: () => {
+        vanB2BMaterial.color.set(vanB2BMaterial.__color);
+        vanB2BMaterial.emissive.set(vanB2BMaterial.__color);
+      },
+    })
+    .add({
+      targets: [vanB2B.position, camera.position, cameraTarget],
+      z: (_, i) => (i === 0 ? -10400 : -290),
+      duration: 3000,
+    })
+    .add({
+      begin: () => {
+        packageB2B.visible = true;
+      },
+      targets: packageB2B.position,
+      z: -288,
+      duration: 500,
+    })
+    .add({
+      targets: packageB2B.rotation,
+      z: `+=${Math.PI / 2}`,
+      duration: 500,
+    })
+    .add({
+      targets: packageB2B.position,
+      x: 18,
+      duration: 500,
+    });
+  timeline.play();
 };
+// });
+// });
+// };
 
 export const launchDeliveryBScene = () =>
   SKIP
