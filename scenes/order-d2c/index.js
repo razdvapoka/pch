@@ -2,7 +2,7 @@ import * as THREE from "three";
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 // import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import anime from "animejs/lib/anime.es.js";
-// import { wait } from "../../utils";
+import { wait } from "../../utils";
 // import * as dat from "dat.gui";
 import { SKIP } from "../../consts";
 
@@ -36,7 +36,7 @@ export const launchOrderD2CScene = () =>
             screenFinal.visible = true;
             screenInit.visible = false;
           },
-          complete: resolve,
+          complete: () => wait(1000).then(resolve),
         });
         timeline.add({
           duration: COLOR_TRANSITION_DURATION,
@@ -52,7 +52,7 @@ export const launchOrderD2CScene = () =>
         timeline.play();
       });
 
-export const initOrderD2CSceneObject = ({ orderD2CModel, sizes, canvas }) => {
+export const initOrderD2CSceneObject = ({ orderD2CModel, sizes }) => {
   model = orderD2CModel.clone();
   scene = new THREE.Scene();
   scene.background = new THREE.Color(WHITE);

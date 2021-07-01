@@ -39,7 +39,7 @@ export const launchServerScene = () => {
     loop: true,
     easing: "easeInOutSine",
   });
-  return wait(BLINK_DURATION * 2);
+  return wait(BLINK_DURATION * 4);
 };
 
 export const initServersSceneObject = ({ serversModel, sizes }) => {
