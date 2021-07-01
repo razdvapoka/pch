@@ -388,7 +388,7 @@ const handleTomorrowButtonClick = () => {
   setElementVisibility(pathButtons, true);
   setElementVisibility(todayButton, true);
   setElementVisibility(longFlghts, true);
-  setHeadingText("Tomorrow");
+  setHeadingText("Future");
   switchToTomorrow();
 };
 
@@ -591,7 +591,7 @@ const handleGlobeButtonClick = () => {
       setElementVisibility(heading, true);
       setElementVisibility(todayButton, true);
       setElementVisibility(currentStepLabel, true);
-      setHeadingText("Tomorrow");
+      setHeadingText("Future");
       showNavButtons();
       setHtmlElementsHidden(false);
     });
