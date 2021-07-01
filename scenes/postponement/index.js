@@ -1,6 +1,6 @@
 import * as THREE from "three";
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-// import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
+import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
@@ -15,7 +15,7 @@ let model;
 let purpleMaterial;
 let vynilMaterial;
 let parts = {};
-// let transformControls;
+let transformControls;
 
 export const launchPostponementScene = () =>
   SKIP
@@ -46,23 +46,29 @@ export const launchPostponementScene = () =>
           })
           .add({
             targets: [
-              parts["boxes"].position,
+              parts["box3"].position,
               boxHolder.position,
               phone.position,
               boxTop.position,
             ],
-            z: "-=130",
-            duration: 1500,
+            x: "-=100",
+            duration: 1000,
+            easing: "easeOutExpo",
+          })
+          .add({
+            targets: [parts["box_1"].position, parts["box_2"].position],
+            z: "-=50",
+            duration: 1000,
             easing: "linear",
           })
           .add(
             {
               targets: vynilMaterial.normalMap.offset,
               y: -150,
-              duration: 1500,
+              duration: 1000,
               easing: "linear",
             },
-            "-=1500"
+            "-=1000"
           );
         timeline.play();
       });
@@ -140,11 +146,12 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
   parts["box_holder"].position.x = -167; // 0 // y -9.6
 
   // transformControls = new TransformControls(camera, canvas);
-  // transformControls.attach(parts["phone"]);
+  // transformControls.attach(parts["boxes"]);
   // transformControls.addEventListener("dragging-changed", function (event) {
   //   controls.enabled = !event.value;
   // });
-  // transformControls.addEventListener("change", () => { console.log(transformControls.object.position);
+  // transformControls.addEventListener("change", () => {
+  //   console.log(transformControls.object.position);
   // });
   // scene.add(transformControls);
 
@@ -196,7 +203,7 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
     .add(
       {
         targets: parts["phone"].position,
-        x: 15.82770824432373,
+        x: 9,
         easing: "easeOutExpo",
         duration: 900,
       },
@@ -237,7 +244,6 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
   // window.addEventListener("click", () => {
   //   console.log(camera.position);
   // });
-
   // console.log(parts);
 
   return { scene, camera, onResize };
