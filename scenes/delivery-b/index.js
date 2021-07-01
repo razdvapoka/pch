@@ -1,7 +1,7 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 // import { wait } from "../../utils";
-// import * as dat from "dat.gui";
+import * as dat from "dat.gui";
 import * as THREE from "three";
 import anime from "animejs/lib/anime.es.js";
 import { showOverlay, hideOverlay } from "../../ui";
@@ -88,8 +88,8 @@ const initB2BScene = () => {
   const plane = parts["Plane"];
   plane.material.normalMap.wrapS = THREE.RepeatWrapping;
   plane.material.normalMap.wrapT = THREE.RepeatWrapping;
-  plane.material.normalMap.repeat = new THREE.Vector2(10, 20);
-  plane.material.emissiveIntensity = 0.8;
+  plane.material.normalMap.repeat = new THREE.Vector2(100, 100);
+  plane.material.emissiveIntensity = 0.85;
 
   vanB2B = parts["van"];
   vanB2B.position.z = 3500;
@@ -725,16 +725,6 @@ export const initDeliveryBSceneObject = ({
     // controls.update();
   };
 
-  // const gui = new dat.GUI();
-  // gui.add(directionalLight.position, "x", -100, 100, 1).onChange(() => {
-  //   helper.update();
-  // });
-  // gui.add(directionalLight.position, "y", -100, 100, 1).onChange(() => {
-  //   helper.update();
-  // });
-  // gui.add(directionalLight.position, "z", -100, 100, 1).onChange(() => {
-  //   helper.update();
-  // });
   // window.addEventListener("mousemove", onMouseMove);
   // window.addEventListener("click", onClick);
   // window.addEventListener("keydown", (e) => {
@@ -766,8 +756,17 @@ export const initDeliveryBSceneObject = ({
   const ground = parts["Plane"];
   ground.material.normalMap.wrapS = THREE.RepeatWrapping;
   ground.material.normalMap.wrapT = THREE.RepeatWrapping;
-  ground.material.normalMap.repeat = new THREE.Vector2(50, 20);
-  ground.material.emissiveIntensity = 0.6;
+  ground.material.normalMap.repeat = new THREE.Vector2(100, 100);
+  ground.material.emissiveIntensity = 0.7;
+  // const gui = new dat.GUI();
+  // gui.add(ground.material.normalMap.repeat, "x", 1, 100, 1);
+  // gui.add(ground.material.normalMap.repeat, "y", 1, 100, 1);
+  // gui.add(directionalLight.position, "y", -100, 100, 1).onChange(() => {
+  //   helper.update();
+  // });
+  // gui.add(directionalLight.position, "z", -100, 100, 1).onChange(() => {
+  //   helper.update();
+  // });
 
   sceneObject = { scene, camera, onResize };
   return sceneObject;
