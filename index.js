@@ -408,12 +408,20 @@ const getGlobeTransitioner = ({
     setElementVisibility(gradTop, false);
     setElementVisibility(gradBottom, false);
     setElementVisibility(logo, false);
-    showOverlay("white", 600).then(() => {
-      setCurrentSceneObject(getGlobeSceneObject());
-      transition(
-        () => hideOverlay(600), // along with zoom-out
-        () => showOverlay("#5C63FF", 1000).then(() => showOverlay("white", 600)) // along with zoom-in
-      ).then(() => {
+    showOverlay("white", 600)
+      .then(() => {
+        if (nextStep === FULFILLMENT_STEP) {
+          return Promise.resolve();
+        } else {
+          setCurrentSceneObject(getGlobeSceneObject());
+          return transition(
+            () => hideOverlay(600), // along with zoom-out
+            () =>
+              showOverlay("#5C63FF", 1000).then(() => showOverlay("white", 600)) // along with zoom-in
+          );
+        }
+      })
+      .then(() => {
         hideOverlay(600);
         setElementVisibility(gradTop, true);
         setElementVisibility(gradBottom, true);
@@ -425,7 +433,6 @@ const getGlobeTransitioner = ({
         setCurrentStep(nextStep);
         setNavButtonActive(navButton);
       });
-    });
   });
 };
 
