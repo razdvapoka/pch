@@ -158,18 +158,18 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
     .add({
       targets: parts["boxes"].position,
       z: -46.2,
-      duration: 1500,
+      duration: 1200,
       delay: 500,
-      easing: "easeOutExpo",
+      easing: "linear",
     })
     .add(
       {
         targets: vynilMaterial.normalMap.offset,
         y: -46.2,
-        duration: 1500,
-        easing: "easeOutExpo",
+        duration: 1200,
+        easing: "linear",
       },
-      "-=1500"
+      "-=1200"
     )
     .add(
       {
@@ -191,25 +191,25 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
       targets: parts["box_holder"].position,
       x: 0,
       easing: "easeOutExpo",
-      duration: 600,
+      duration: 900,
     })
     .add(
       {
         targets: parts["phone"].position,
         x: 15.82770824432373,
         easing: "easeOutExpo",
-        duration: 600,
+        duration: 900,
       },
-      "-=400"
+      "-=600"
     )
     .add(
       {
         targets: parts["box_top"].position,
         x: 0,
         easing: "easeOutExpo",
-        duration: 600,
+        duration: 900,
       },
-      "-=400"
+      "-=600"
     );
   timeline.play();
 

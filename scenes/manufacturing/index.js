@@ -2,7 +2,7 @@ import * as THREE from "three";
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 // import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import anime from "animejs/lib/anime.es.js";
-// import { wait } from "../../utils";
+import { wait } from "../../utils";
 // import * as dat from "dat.gui";
 import { SKIP, PURPLE, WHITE, BASE, EMISSIVE } from "../../consts";
 
@@ -28,7 +28,7 @@ export const launchManufacturingScene = () =>
         const timeline = anime.timeline({
           autoplay: false,
           easing: "easeInOutSine",
-          complete: resolve,
+          complete: () => wait(500).then(resolve),
         });
         timeline
           .add(
@@ -64,19 +64,19 @@ export const launchManufacturingScene = () =>
             offset
           )
           .add({
-            duration: 600,
+            duration: 1000,
             targets: phone.position,
             easing: "linear",
             x: -80,
           })
           .add(
             {
-              duration: 600,
+              duration: 1000,
               targets: vynilMaterial.normalMap.offset,
               easing: "linear",
               x: -80,
             },
-            "-=600"
+            "-=1000"
           );
         timeline.play();
       });
