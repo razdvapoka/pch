@@ -5,6 +5,7 @@ import anime from "animejs/lib/anime.es.js";
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
 import { SKIP, BASE, EMISSIVE, WHITE, PURPLE } from "../../consts";
+import { postponementButton } from "../../ui";
 
 const COLOR_TRANSITION_DURATION = 700;
 
@@ -23,6 +24,7 @@ export const launchPostponementScene = () =>
         const phone = parts["phone"];
         const boxTop = parts["box_top"];
         const boxHolder = parts["box_holder"];
+        postponementButton.disabled = true;
         const timeline = anime
           .timeline({
             autoplay: false,
@@ -117,9 +119,9 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
     1000
   );
   camera.position.copy({
-    x: -95.14147177159829,
-    y: 115.95072054418478,
-    z: -95.79763594924385,
+    x: -108,
+    y: 95,
+    z: -101,
   });
   camera.zoom = 8;
   camera.updateProjectionMatrix();
@@ -149,6 +151,9 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
   const timeline = anime
     .timeline({
       autoplay: false,
+      complete: () => {
+        postponementButton.disabled = false;
+      },
     })
     .add({
       targets: parts["boxes"].position,
