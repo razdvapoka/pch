@@ -112,6 +112,7 @@ import {
   gradBottom,
   logo,
   currentStepLabel,
+  updateNavLine,
 } from "./ui";
 
 let serversModel;
@@ -259,6 +260,7 @@ let currentStep;
 const setCurrentStep = (s) => {
   currentStep = s;
   setCurrentSceneObject(stepToSceneObject[s]());
+  updateNavLine(s);
 };
 const getCurrentStep = () => currentStep;
 

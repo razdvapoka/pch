@@ -1,4 +1,14 @@
 import { wait } from "./utils";
+import {
+  RESET_STEP,
+  ORDER_B2B_STEP,
+  ORDER_D2C_STEP,
+  MANUFACTURING_STEP,
+  POSTPONEMENT_STEP,
+  FULFILLMENT_STEP,
+  DELIVERY_B2B_STEP,
+  DELIVERY_D2C_STEP,
+} from "./consts";
 
 export const currentStepLabel = document.querySelector(".current-step");
 export const logo = document.querySelector(".logo");
@@ -74,4 +84,42 @@ export const hideOverlay = (duration, delay = 0) => {
   overlay.style.opacity = 0;
   overlay.style.pointerEvents = "none";
   return wait(duration + delay);
+};
+
+export const updateNavLine = (step) => {
+  switch (step) {
+    case ORDER_B2B_STEP:
+    case ORDER_D2C_STEP: {
+      document.querySelector(".star-1").classList.add("star-active");
+      document.querySelector(".active-line").style.right = "100%";
+      return;
+    }
+    case MANUFACTURING_STEP: {
+      document.querySelector(".star-2").classList.add("star-active");
+      document.querySelector(".active-line").style.right = "79%";
+      return;
+    }
+    case POSTPONEMENT_STEP: {
+      document.querySelector(".star-3").classList.add("star-active");
+      document.querySelector(".active-line").style.right = "49%";
+      return;
+    }
+    case FULFILLMENT_STEP: {
+      document.querySelector(".star-4").classList.add("star-active");
+      document.querySelector(".active-line").style.right = "22%";
+      return;
+    }
+    case DELIVERY_B2B_STEP:
+    case DELIVERY_D2C_STEP: {
+      document.querySelector(".star-5").classList.add("star-active");
+      document.querySelector(".active-line").style.right = "0";
+      return;
+    }
+    case RESET_STEP: {
+      document
+        .querySelectorAll(".star")
+        .forEach((star) => star.classList.add("star-active"));
+      document.querySelector(".active-line").style.right = "100%";
+    }
+  }
 };
