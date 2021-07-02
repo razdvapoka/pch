@@ -1,6 +1,6 @@
 import * as THREE from "three";
-// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-// import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
 import anime from "animejs/lib/anime.es.js";
 import { showOverlay, hideOverlay } from "../../ui";
 // import { wait } from "../../utils";
@@ -70,7 +70,7 @@ let plane;
 let planeMaterial;
 let planeShadow;
 
-const PURPLE_EM_INT = 0.7;
+const PURPLE_EM_INT = 0.6;
 
 export const launchDeliveryScene = (resolve) => {
   showOverlay("white", 600).then(() => {
@@ -148,19 +148,14 @@ export const launchFulfillmentScene = () =>
             {
               duration: COLOR_TRANSITION_DURATION,
               targets: [eu.position, usa.position],
-              z: 9.3,
+              y: 2.73,
             },
             "-=700"
           )
           .add({
-            targets: [
-              camera.position,
-              cameraTarget,
-              boxAGroup.position,
-              boxBGroup.position,
-            ],
+            targets: [camera.position, cameraTarget, boxBGroup.position],
             z: (_, i) =>
-              i === 0 || i === 1 ? `+=${1542 * scaleFactor}` : `+=${1402}`,
+              i === 0 || i === 1 ? `+=${1542 * scaleFactor}` : `+=${1368}`,
             duration: 1500,
           })
           .add(
@@ -191,38 +186,11 @@ export const launchFulfillmentScene = () =>
           })
           .add({
             targets: [paletteAGroup.position, camera.position, cameraTarget],
-            z: (_, i) => `+=${273 * (i === 0 ? 1 : scaleFactor)}`,
-            duration: 500,
+            z: (_, i) =>
+              `+=${(1835 + 273 + 352) * (i === 0 ? 1 : scaleFactor)}`,
+            x: (_, i) => (i === 0 ? `+=14` : `+=0`),
+            duration: 1500,
           })
-          .add({
-            targets: [paletteAGroup.position, camera.position, cameraTarget],
-            x: (_, i) => `+=${95.7 * (i === 0 ? 1 : scaleFactor)}`,
-            z: (_, i) => `+=${352 * (i === 0 ? 1 : scaleFactor)}`,
-            duration: 500,
-          })
-          .add(
-            ALT_FULFILLMENT_CAMERA
-              ? {
-                  targets: [
-                    paletteAGroup.position,
-                    camera.position,
-                    cameraTarget,
-                  ],
-                  z: (_, i) => `+=${1835 * (i === 0 ? 1 : scaleFactor)}`,
-                  x: (_, i) => (i === 0 ? `+=14` : `+=0`),
-                  duration: 1500,
-                }
-              : {
-                  targets: [camera.position, cameraTarget],
-                  z: (_, i) => (i === 0 ? "+=47.38" : "+=52.43"),
-                  x: (_, i) => (i === 0 ? "+=2.644" : "+=0.4"),
-                  y: (_, i) => (i === 0 ? "+=2.32" : "+=0"),
-                  duration: 1500,
-                  update: () => {
-                    camera.lookAt(cameraTarget);
-                  },
-                }
-          )
           .add(
             {
               duration: 1500,
@@ -447,14 +415,14 @@ export const initFulfillmentSceneObject = ({
     -100,
     500
   );
-  camera.zoom = 5;
+  camera.zoom = 10;
   camera.updateProjectionMatrix();
   camera.position.copy({
-    x: 8.306184599688665,
-    y: 10.439592469326413,
-    z: 10.489405509234365,
+    x: 10,
+    y: 10,
+    z: 10,
   });
-  cameraTarget = new THREE.Vector3(0, 120 * scaleFactor, 0);
+  cameraTarget = new THREE.Vector3(2, 120 * scaleFactor, 0);
   // controls = new OrbitControls(camera, canvas);
   // controls.target = cameraTarget;
   camera.lookAt(cameraTarget);
@@ -462,15 +430,13 @@ export const initFulfillmentSceneObject = ({
 
   usa = parts["usa"];
   eu = parts["eu"];
-  boxA = parts["main__box_a"];
+  boxA = parts["main_box_a"];
   boxB = parts["main_box_b"];
   paletteA = parts["pallete_activation_a"];
   containerA = parts["container_a"];
   leftDoor = parts["left_door_2"];
   rightDoor = parts["right_door_2"];
   truck = parts["active_truck"];
-
-  parts["Cube116_1"].visible = false;
 
   usa.material = usa.material.clone();
   usa.material.color = new THREE.Color("white");
@@ -484,17 +450,29 @@ export const initFulfillmentSceneObject = ({
   boxAGroup = parts["phone_box_eu"];
   boxBGroup = parts["phone_box_us"];
 
-  usa.position.z = 45;
-  eu.position.z = 45;
+  usa.position.y = 34; // 2.73
+  eu.position.y = 34; //
+  const transformedMesh = boxBGroup;
+
+  // transformControls = new TransformControls(camera, canvas);
+  // transformControls.attach(transformedMesh);
+  // transformControls.addEventListener("dragging-changed", function (event) {
+  //   controls.enabled = !event.value;
+  // });
+  // transformControls.addEventListener("change", () => {
+  //   console.log(transformControls.object.position);
+  // });
+  // transformControls.setSize(100);
+  // scene.add(transformControls);
 
   boxesMaterial = boxA.material.clone();
   boxesMaterial.color = new THREE.Color(BASE);
   boxesMaterial.__color = BASE;
   boxesMaterial.__emissive = EMISSIVE;
-  boxA.material = boxesMaterial;
+  // boxA.material = boxesMaterial;
   boxB.material = boxesMaterial;
 
-  cube131 = parts["Cube131"];
+  cube131 = parts["Cube103"];
   paletteAMaterial = cube131.material.clone();
   paletteAMaterial.color = new THREE.Color(BASE);
   paletteAMaterial.__color = BASE;
@@ -561,31 +539,32 @@ export const initFulfillmentSceneObject = ({
   // });
 
   // window.addEventListener("mousemove", onMouseMove);
-  // window.addEventListener("click", onClick);
-  // window.addEventListener("keydown", (e) => {
-  //   switch (e.which) {
-  //     case 38: {
-  //       camera.position.x -= 10 * scaleFactor;
-  //       controls.target.x -= 10 * scaleFactor;
-  //       break;
-  //     }
-  //     case 37: {
-  //       camera.position.z += 10 * scaleFactor;
-  //       controls.target.z += 10 * scaleFactor;
-  //       break;
-  //     }
-  //     case 39: {
-  //       camera.position.z -= 10 * scaleFactor;
-  //       controls.target.z -= 10 * scaleFactor;
-  //       break;
-  //     }
-  //     case 40: {
-  //       camera.position.x += 10 * scaleFactor;
-  //       controls.target.x += 10 * scaleFactor;
-  //       break;
-  //     }
-  //   }
-  // });
+  //window.addEventListener("click", onClick);
+  window.addEventListener("keydown", (e) => {
+    switch (e.which) {
+      case 38: {
+        camera.position.x -= 10 * scaleFactor;
+        // controls.target.x -= 10 * scaleFactor;
+        break;
+      }
+      case 37: {
+        camera.position.z += 10 * scaleFactor;
+        // controls.target.z += 10 * scaleFactor;
+        break;
+      }
+      case 39: {
+        camera.position.z -= 10 * scaleFactor;
+        // controls.target.z -= 10 * scaleFactor;
+        break;
+      }
+      case 40: {
+        camera.position.x += 10 * scaleFactor;
+        // controls.target.x += 10 * scaleFactor;
+        break;
+      }
+    }
+    console.log(camera);
+  });
 
   sceneObject = { scene, camera, onResize };
   return sceneObject;
