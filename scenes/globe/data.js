@@ -16,20 +16,12 @@ const airportObjects = largeAirports.map((a) => {
 
 export const pathsData = [
   [
-    [23.700551681153613, 112.5178530352569],
-    [30.8541141483191, 108.18689228757488],
-  ],
-  [
-    [23.700551681153613, 112.5178530352569],
-    [30.788767443843554, 110.64099274823512],
-  ],
-  [
-    [32.084486357469686, 109.70366047098372],
-    [34.19275246598128, 101.3431390814407],
-  ],
-  [
-    [31.6, 106.7],
+    [23.7, 112.52],
     [30.7, 99.3],
+  ],
+  [
+    [23.7, 112.52],
+    [34.2, 101.34],
   ],
 ];
 
@@ -40,18 +32,10 @@ export const fulfillmentPaths = [
   ],
   [
     [26.697672656009466, 111.2],
-    [30.788767443843554, 110.64099274823512],
-  ],
-  [
-    [26.697672656009466, 111.2],
-    [30.8541141483191, 108.18689228757488],
-  ],
-  [
-    [32.084486357469686, 109.70366047098372],
     [34.19275246598128, 101.3431390814407],
   ],
   [
-    [31.6, 106.7],
+    [26.697672656009466, 111.2],
     [30.7, 99.3],
   ],
 ];
@@ -104,12 +88,12 @@ export const customData = [
     objType: "a",
     id: uid(),
   },
-  {
-    lat: 31.5,
-    lng: 109,
-    objType: "lb",
-    id: uid(),
-  },
+  // {
+  //   lat: 31.5,
+  //   lng: 109,
+  //   objType: "lb",
+  //   id: uid(),
+  // },
   {
     lat: 34,
     lng: 100,
@@ -236,20 +220,20 @@ export const customData = [
   },
   {
     lat: 28,
-    lng: 98,
+    lng: 93,
     objType: "label",
     label: "manufacturers",
     id: uid(),
     state: CHINA_STATE,
   },
-  {
-    lat: 34.5,
-    lng: 114.41096002666973,
-    objType: "label",
-    label: "postponement",
-    id: uid(),
-    state: CHINA_STATE,
-  },
+  // {
+  //   lat: 34.5,
+  //   lng: 114.41096002666973,
+  //   objType: "label",
+  //   label: "postponement",
+  //   id: uid(),
+  //   state: CHINA_STATE,
+  // },
 
   // Other stuff
 
@@ -286,10 +270,10 @@ export const fulfillment = {
   id: uid(),
 };
 export const fulfillmentLabel = {
-  lat: 26.5,
-  lng: 119.3,
+  lat: 26,
+  lng: 120.2,
   objType: "label",
-  label: "fulfillment",
+  label: "fulfillment &<br/>postponement",
   id: uid(),
   state: CHINA_STATE,
 };

@@ -172,7 +172,7 @@ const createLabel = (objData) => {
   element.id = objData.id;
   element.classList.add("label");
   const textElement = document.createElement("span");
-  textElement.innerText = objData.label;
+  textElement.innerHTML = objData.label;
   element.appendChild(textElement);
   if (objData.subLabel) {
     const subTextElement = document.createElement("span");
