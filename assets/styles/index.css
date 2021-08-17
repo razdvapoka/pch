@@ -3,7 +3,7 @@
 
 html {
   overflow: hidden;
-  font-family: "GT America", sans-serif;
+  font-family: 'GT America', sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: calc(10 / 1920 * 100vw);
@@ -17,7 +17,8 @@ html {
   outline: none;
 }
 
-a, a:visited {
+a,
+a:visited {
   color: inherit;
 }
 
@@ -104,7 +105,7 @@ a, a:visited {
 
 .launch-button {
   color: white;
-  background-color: #5C63FF;
+  background-color: #5c63ff;
   border: 0;
   transition: opacity 0.3s ease;
 }
@@ -144,7 +145,7 @@ a, a:visited {
   line-height: 1;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  background-color: #5C63FF ;
+  background-color: #5c63ff;
   color: black;
   padding: 0.4rem 1.4rem 0.5rem;
   border-radius: 0.5rem;
@@ -167,7 +168,7 @@ a, a:visited {
 
 .label.visible,
 .explosion-box.visible {
-  opacity: 1
+  opacity: 1;
 }
 
 .explosion-box {
@@ -175,17 +176,17 @@ a, a:visited {
   top: 50%;
   left: 50%;
   user-select: none;
-  pointer-events:none;
+  pointer-events: none;
 }
 
 .explosion {
   position: absolute;
   border-radius: 9999px;
-  background-color: #5C63FF;
+  background-color: #5c63ff;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%) scale(0.001, 0.001);
-  pointer-events:none;
+  pointer-events: none;
 }
 
 .explosion-1 {
@@ -349,7 +350,6 @@ nav {
   z-index: 10;
 }
 
-
 nav > ul {
   list-style: none;
   display: flex;
@@ -476,14 +476,19 @@ nav > ul {
   opacity: 1;
 }
 
+.nav-menu-button-text {
+  pointer-events: none;
+}
+
 .progress-bar {
-  background-color: #5C63FF;
+  background-color: #5c63ff;
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100vw;
   height: 2rem;
-  transition: transform 0.2s ease, border-radius 0.2s ease, opacity 0s linear 0.2s;
+  transition: transform 0.2s ease, border-radius 0.2s ease,
+    opacity 0s linear 0.2s;
   transform-origin: center top;
   transform: scaleX(0);
   pointer-events: none;
@@ -547,7 +552,6 @@ nav > ul {
   background-image: url(../images/restart-img-3.png);
 }
 
-
 .restart-images {
   display: flex;
 }
@@ -560,7 +564,7 @@ nav > ul {
 
 .restart-line {
   height: 1px;
-  background-color: rgba(196, 196, 196, 0.5)
+  background-color: rgba(196, 196, 196, 0.5);
 }
 
 .restart-particle {
@@ -611,7 +615,7 @@ nav > ul {
 }
 
 .restart-particle-small-5 {
-  animation: 10s linear 7.40s infinite normal particle-slide;
+  animation: 10s linear 7.4s infinite normal particle-slide;
 }
 
 .restart-particle-big-1 {
@@ -653,8 +657,8 @@ nav > ul {
   position: fixed;
   right: 4.7rem;
   bottom: 3.7rem;
-  text-transform:uppercase;
-  color: rgba(250, 250,250, 0.6);
+  text-transform: uppercase;
+  color: rgba(250, 250, 250, 0.6);
   font-size: 2rem;
   letter-spacing: 0.07em;
 }
@@ -665,7 +669,12 @@ nav > ul {
   left: 0;
   width: 100vw;
   height: 20rem;
-  background: linear-gradient(180deg, #E8E8E8 0%, #E8E8E7 51.56%, rgba(232, 232, 232, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    #e8e8e8 0%,
+    #e8e8e7 51.56%,
+    rgba(232, 232, 232, 0) 100%
+  );
   transition: opacity 0.2s ease;
 }
 .grad-bottom {
@@ -674,6 +683,11 @@ nav > ul {
   left: 0;
   width: 100vw;
   height: 20rem;
-  background: linear-gradient(to top, #E8E8E8 0%, #E8E8E7 51.56%, rgba(232, 232, 232, 0) 100%);
+  background: linear-gradient(
+    to top,
+    #e8e8e8 0%,
+    #e8e8e7 51.56%,
+    rgba(232, 232, 232, 0) 100%
+  );
   transition: opacity 0.2s ease;
 }
