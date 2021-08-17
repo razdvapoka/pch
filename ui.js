@@ -89,12 +89,19 @@ export const updateNavLine = (step) => {
     case ORDER_B2B_STEP:
     case ORDER_D2C_STEP: {
       document.querySelector('.star-1').classList.add('star-active')
+      document.querySelector('.star-2').classList.remove('star-active')
+      document.querySelector('.star-3').classList.remove('star-active')
+      document.querySelector('.star-4').classList.remove('star-active')
+      document.querySelector('.star-5').classList.remove('star-active')
       document.querySelector('.active-line').style.right = '100%'
       return
     }
     case MANUFACTURING_STEP: {
       document.querySelector('.star-1').classList.add('star-active')
       document.querySelector('.star-2').classList.add('star-active')
+      document.querySelector('.star-3').classList.remove('star-active')
+      document.querySelector('.star-4').classList.remove('star-active')
+      document.querySelector('.star-5').classList.remove('star-active')
       document.querySelector('.active-line').style.right = '79%'
       return
     }
@@ -102,6 +109,8 @@ export const updateNavLine = (step) => {
       document.querySelector('.star-1').classList.add('star-active')
       document.querySelector('.star-2').classList.add('star-active')
       document.querySelector('.star-3').classList.add('star-active')
+      document.querySelector('.star-4').classList.remove('star-active')
+      document.querySelector('.star-5').classList.remove('star-active')
       document.querySelector('.active-line').style.right = '49%'
       return
     }
@@ -110,6 +119,7 @@ export const updateNavLine = (step) => {
       document.querySelector('.star-2').classList.add('star-active')
       document.querySelector('.star-3').classList.add('star-active')
       document.querySelector('.star-4').classList.add('star-active')
+      document.querySelector('.star-5').classList.remove('star-active')
       document.querySelector('.active-line').style.right = '22%'
       return
     }
