@@ -8,7 +8,8 @@ import { showOverlay, hideOverlay } from "../../ui";
 import { SKIP, BASE, EMISSIVE } from "../../consts";
 
 const WHITE = "#b7b7b7";
-const PURPLE = "#5964fa";
+const PURPLE = "#5c63ff";
+const PURPLE_EMISSIVE_INTENSITY = 0.75;
 const COLOR_TRANSITION_DURATION = 700;
 const SCALE_FACTOR = 0.03;
 
@@ -92,11 +93,12 @@ const initB2BScene = () => {
   plane.material.emissiveIntensity = 0.85;
 
   vanB2B = parts["van"];
-  vanB2B.position.z = 3500;
+  vanB2B.position.z = 20000;
 
   vanB2BMaterial = cart.material.clone();
-  vanB2BMaterial.color = new THREE.Color("#ebebeb");
-  vanB2BMaterial.__color = "#ebebeb";
+  vanB2BMaterial.color = new THREE.Color(PURPLE);
+  vanB2BMaterial.emissive = new THREE.Color(PURPLE);
+  vanB2BMaterial.emissiveIntensity = 0.4;
   vanB2B.traverse((obj) => {
     if (obj.type === "Mesh") {
       obj.material = vanB2BMaterial;
@@ -156,7 +158,7 @@ const initD2C0Scene = () => {
         obj.material = obj.material.clone();
         obj.material.color = new THREE.Color(PURPLE);
         obj.material.emissive = new THREE.Color(PURPLE);
-        obj.material.emissiveIntensity = 0.8;
+        obj.material.emissiveIntensity = PURPLE_EMISSIVE_INTENSITY;
       }
     }
   });
@@ -351,7 +353,7 @@ export const launchDeliveryD2CScene = (resolve) => {
         .add({
           duration: COLOR_TRANSITION_DURATION,
           targets: vanD2CMaterial,
-          emissiveIntensity: 0.7,
+          emissiveIntensity: PURPLE_EMISSIVE_INTENSITY,
           __color: PURPLE,
           update: () => {
             vanD2CMaterial.color.set(vanD2CMaterial.__color);
@@ -397,19 +399,14 @@ export const launchDeliveryB2BScene = (resolve) => {
       });
       timeline
         .add({
+          targets: vanB2B.position,
+          z: 3500,
+          duration: 2000,
+        })
+        .add({
           targets: camera.position,
           y: 200,
           duration: 500,
-        })
-        .add({
-          duration: COLOR_TRANSITION_DURATION,
-          targets: vanB2BMaterial,
-          emissiveIntensity: 0.4,
-          __color: PURPLE,
-          update: () => {
-            vanB2BMaterial.color.set(vanB2BMaterial.__color);
-            vanB2BMaterial.emissive.set(vanB2BMaterial.__color);
-          },
         })
         .add({
           targets: [vanB2B.position, camera.position, cameraTarget],
@@ -464,7 +461,7 @@ export const launchDeliveryBScene = () =>
           .add({
             duration: COLOR_TRANSITION_DURATION,
             targets: cartMaterial,
-            emissiveIntensity: 0.45,
+            emissiveIntensity: PURPLE_EMISSIVE_INTENSITY,
             __color: PURPLE,
             update: () => {
               cartMaterial.color.set(cartMaterial.__color);
@@ -524,7 +521,7 @@ export const launchDeliveryBScene = () =>
           .add({
             duration: COLOR_TRANSITION_DURATION,
             targets: truckMaterial,
-            emissiveIntensity: 0.4,
+            emissiveIntensity: PURPLE_EMISSIVE_INTENSITY,
             __color: PURPLE,
             update: () => {
               truckMaterial.color.set(truckMaterial.__color);
@@ -561,7 +558,7 @@ export const launchDeliveryBScene = () =>
           .add({
             duration: 100,
             targets: vanMaterial,
-            emissiveIntensity: 0.45,
+            emissiveIntensity: PURPLE_EMISSIVE_INTENSITY,
             __color: PURPLE,
             update: () => {
               vanMaterial.color.set(vanMaterial.__color);
@@ -655,7 +652,7 @@ export const initDeliveryBSceneObject = ({
     z: -1222,
   });
   containerB.material = containerB.material.clone();
-  containerB.material.emissiveIntensity = 0.4;
+  containerB.material.emissiveIntensity = PURPLE_EMISSIVE_INTENSITY;
   containerB.material.color.set(PURPLE);
   containerB.material.emissive.set(PURPLE);
 
@@ -777,7 +774,19 @@ export const initDeliveryBSceneObject = ({
   ground.material.normalMap.wrapT = THREE.RepeatWrapping;
   ground.material.normalMap.repeat = new THREE.Vector2(100, 100);
   ground.material.emissiveIntensity = 0.7;
-  // const gui = new dat.GUI();
+  // const props = {
+  //   purple: PURPLE,
+  // }
+  // const gui = new dat.GUI()
+  // gui.addColor(props, 'purple').onChange((v) => {
+  //   containerB.material.color.set(v)
+  //   cartMaterial.color.set(v)
+  // })
+  // gui
+  //   .add(containerB.material, 'emissiveIntensity', 0, 1, 0.01)
+  //   .onChange((v) => {
+  //     cartMaterial.emissiveIntensity = v
+  //   })
   // gui.add(ground.material.normalMap.repeat, "x", 1, 100, 1);
   // gui.add(ground.material.normalMap.repeat, "y", 1, 100, 1);
   // gui.add(directionalLight.position, "y", -100, 100, 1).onChange(() => {
