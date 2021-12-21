@@ -1,34 +1,34 @@
-import * as THREE from "three";
+import * as THREE from 'three'
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { TransformControls } from "three/examples/jsm/controls/TransformControls.js";
-import anime from "animejs/lib/anime.es.js";
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js'
+import anime from 'animejs/lib/anime.es.js'
 // import { wait } from "../../utils";
 // import * as dat from "dat.gui";
-import { SKIP, BASE, EMISSIVE, WHITE, PURPLE } from "../../consts";
-import { postponementButton } from "../../ui";
+import { SKIP, BASE, EMISSIVE, WHITE, PURPLE } from '../../consts'
+import { postponementButton } from '../../ui'
 
-const COLOR_TRANSITION_DURATION = 700;
+const COLOR_TRANSITION_DURATION = 700
 
-let camera;
-let scene;
-let model;
-let purpleMaterial;
-let vynilMaterial;
-let parts = {};
-let transformControls;
+let camera
+let scene
+let model
+let purpleMaterial
+let vynilMaterial
+let parts = {}
+let transformControls
 
 export const launchPostponementScene = () =>
   SKIP
     ? Promise.resolve()
     : new Promise((resolve) => {
-        const phone = parts["phone"];
-        const boxTop = parts["box_top"];
-        const boxHolder = parts["box_holder"];
-        postponementButton.disabled = true;
+        const phone = parts['phone']
+        const boxTop = parts['box_top']
+        const boxHolder = parts['box_holder']
+        postponementButton.disabled = true
         const timeline = anime
           .timeline({
             autoplay: false,
-            easing: "easeOutExpo",
+            easing: 'easeOutExpo',
             duration: 400,
             complete: resolve,
           })
@@ -46,72 +46,72 @@ export const launchPostponementScene = () =>
           })
           .add({
             targets: [
-              parts["box3"].position,
+              parts['box3'].position,
               boxHolder.position,
               phone.position,
               boxTop.position,
             ],
-            x: "-=100",
+            x: '-=100',
             duration: 1000,
-            easing: "easeOutExpo",
+            easing: 'easeOutExpo',
           })
           .add({
-            targets: [parts["box_1"].position, parts["box_2"].position],
-            z: "-=50",
+            targets: [parts['box_1'].position, parts['box_2'].position],
+            z: '-=50',
             duration: 1000,
-            easing: "linear",
+            easing: 'linear',
           })
           .add(
             {
               targets: vynilMaterial.normalMap.offset,
               y: -150,
               duration: 1000,
-              easing: "linear",
+              easing: 'linear',
             },
-            "-=1000"
-          );
-        timeline.play();
-      });
+            '-=1000'
+          )
+        timeline.play()
+      })
 
 export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
-  model = postponementModel.clone();
-  scene = new THREE.Scene();
-  scene.translateY(-20);
-  scene.background = new THREE.Color(WHITE);
-  const ambientLight = new THREE.AmbientLight(WHITE, 0.42);
-  scene.add(ambientLight);
-  const directionalLight = new THREE.DirectionalLight(WHITE, 0.4);
-  directionalLight.position.set(-180, 120, 180);
-  directionalLight.translateY(20);
+  model = postponementModel.clone()
+  scene = new THREE.Scene()
+  scene.translateY(-20)
+  scene.background = new THREE.Color(WHITE)
+  const ambientLight = new THREE.AmbientLight(WHITE, 0.42)
+  scene.add(ambientLight)
+  const directionalLight = new THREE.DirectionalLight(WHITE, 0.4)
+  directionalLight.position.set(-180, 120, 180)
+  directionalLight.translateY(20)
   // const helper = new THREE.DirectionalLightHelper(directionalLight, 10, "red");
   // scene.add(helper);
 
-  scene.add(ambientLight);
-  scene.add(directionalLight);
-  scene.add(model);
-  parts = {};
+  scene.add(ambientLight)
+  scene.add(directionalLight)
+  scene.add(model)
+  parts = {}
   model.traverse((obj) => {
-    parts[obj.name] = obj;
-    if (obj.type === "Mesh") {
-      obj.material.emissiveIntensity = 1.125;
-      obj.material.color = new THREE.Color(BASE);
-      obj.material.emissive = new THREE.Color(EMISSIVE);
+    parts[obj.name] = obj
+    if (obj.type === 'Mesh') {
+      obj.material.emissiveIntensity = 1.125
+      obj.material.color = new THREE.Color(BASE)
+      obj.material.emissive = new THREE.Color(EMISSIVE)
     }
-  });
-  purpleMaterial = parts["box3"].material.clone();
-  purpleMaterial.__color = BASE;
-  purpleMaterial.__emissive = EMISSIVE;
-  parts["box3"].material = purpleMaterial;
+  })
+  purpleMaterial = parts['box3'].material.clone()
+  purpleMaterial.__color = BASE
+  purpleMaterial.__emissive = EMISSIVE
+  parts['box3'].material = purpleMaterial
   Object.values(parts).map((part) => {
-    if (part.type === "Mesh" && part.material.name === "Plain Violet") {
-      part.material = purpleMaterial;
+    if (part.type === 'Mesh' && part.material.name === 'Plain Violet') {
+      part.material = purpleMaterial
     }
-  });
-  const vynil = parts["vynil"];
-  vynil.material.normalMap.wrapS = THREE.RepeatWrapping;
-  vynil.material.normalMap.wrapT = THREE.RepeatWrapping;
-  vynil.material.normalMap.repeat = new THREE.Vector2(2, 10);
-  vynilMaterial = vynil.material;
+  })
+  const vynil = parts['vynil']
+  vynil.material.normalMap.wrapS = THREE.RepeatWrapping
+  vynil.material.normalMap.wrapT = THREE.RepeatWrapping
+  vynil.material.normalMap.repeat = new THREE.Vector2(2, 10)
+  vynilMaterial = vynil.material
 
   // const axesHelper = new THREE.AxesHelper(1000);
   // scene.add(axesHelper);
@@ -123,112 +123,113 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
     sizes.height / -2,
     1,
     1000
-  );
+  )
   camera.position.copy({
     x: -108,
     y: 95,
     z: -101,
-  });
-  camera.zoom = 8;
-  camera.updateProjectionMatrix();
-  const cameraTarget = new THREE.Vector3(0, 0, 0);
+  })
+  camera.zoom = 8
+  camera.updateProjectionMatrix()
+  const cameraTarget = new THREE.Vector3(0, 0, 0)
   // const controls = new OrbitControls(camera, canvas);
   // controls.target = cameraTarget;
-  camera.lookAt(cameraTarget);
+  camera.lookAt(cameraTarget)
   // controls.update();
   // controls.addEventListener("change", () => {
   //   console.log(camera);
   // });
 
-  parts["boxes"].position.z = 50; //-46.20795933635105 //
-  parts["phone"].position.x = -150; // 15.82770824432373 // y -8.5
-  parts["box_top"].position.x = -167; // 0 // y -28.6
-  parts["box_holder"].position.x = -167; // 0 // y -9.6
+  parts['boxes'].position.z = 50 //-46.20795933635105 //
+  parts['phone'].position.x = 150 // 15.82770824432373 // y -8.5
+  parts['box_top'].position.x = 167 // 0 // y -28.6
+  parts['box_holder'].position.x = 167 // 0 // y -9.6
 
-  // transformControls = new TransformControls(camera, canvas);
-  // transformControls.attach(parts["boxes"]);
-  // transformControls.addEventListener("dragging-changed", function (event) {
-  //   controls.enabled = !event.value;
-  // });
-  // transformControls.addEventListener("change", () => {
-  //   console.log(transformControls.object.position);
-  // });
-  // scene.add(transformControls);
+  // transformControls = new TransformControls(camera, canvas)
+  // transformControls.attach(parts['box_holder'])
+  // transformControls.addEventListener('dragging-changed', function (event) {
+  //   controls.enabled = !event.value
+  // })
+  // transformControls.addEventListener('change', () => {
+  //   console.log(transformControls.object.position)
+  // })
+  // scene.add(transformControls)
+  //
 
   const timeline = anime
     .timeline({
       autoplay: false,
       complete: () => {
-        postponementButton.disabled = false;
+        postponementButton.disabled = false
       },
     })
     .add({
-      targets: parts["boxes"].position,
+      targets: parts['boxes'].position,
       z: -46.2,
       duration: 1200,
       delay: 500,
-      easing: "linear",
+      easing: 'linear',
     })
     .add(
       {
         targets: vynilMaterial.normalMap.offset,
         y: -46.2,
         duration: 1200,
-        easing: "linear",
+        easing: 'linear',
       },
-      "-=1200"
+      '-=1200'
     )
     .add(
       {
         duration: COLOR_TRANSITION_DURATION,
         delay: 500,
         targets: purpleMaterial,
-        easing: "easeOutExpo",
+        easing: 'easeOutExpo',
         emissiveIntensity: 0.8,
         __color: PURPLE,
         __emissive: PURPLE,
         update: () => {
-          purpleMaterial.color.set(purpleMaterial.__color);
-          purpleMaterial.emissive.set(purpleMaterial.__emissive);
+          purpleMaterial.color.set(purpleMaterial.__color)
+          purpleMaterial.emissive.set(purpleMaterial.__emissive)
         },
       },
       0
     )
     .add({
-      targets: parts["box_holder"].position,
+      targets: parts['box_holder'].position,
       x: 0,
-      easing: "easeOutExpo",
+      easing: 'easeOutExpo',
       duration: 900,
     })
     .add(
       {
-        targets: parts["phone"].position,
+        targets: parts['phone'].position,
         x: 9,
-        easing: "easeOutExpo",
+        easing: 'easeOutExpo',
         duration: 900,
       },
-      "-=600"
+      '-=600'
     )
     .add(
       {
-        targets: parts["box_top"].position,
+        targets: parts['box_top'].position,
         x: 0,
-        easing: "easeOutExpo",
+        easing: 'easeOutExpo',
         duration: 900,
       },
-      "-=600"
-    );
-  timeline.play();
+      '-=600'
+    )
+  timeline.play()
 
   const onResize = (sizes) => {
-    camera.left = sizes.width / -2;
-    camera.right = sizes.width / 2;
-    camera.top = sizes.height / 2;
-    camera.bottom = sizes.height / -2;
-    camera.updateProjectionMatrix();
+    camera.left = sizes.width / -2
+    camera.right = sizes.width / 2
+    camera.top = sizes.height / 2
+    camera.bottom = sizes.height / -2
+    camera.updateProjectionMatrix()
 
     // controls.update();
-  };
+  }
 
   // const gui = new dat.GUI();
   // gui.add(directionalLight.position, "x", -100, 100, 1).onChange(() => {
@@ -246,5 +247,5 @@ export const initPostponementSceneObject = ({ postponementModel, sizes }) => {
   // });
   // console.log(parts);
 
-  return { scene, camera, onResize };
-};
+  return { scene, camera, onResize }
+}
